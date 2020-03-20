@@ -39,7 +39,7 @@ public class CommandProcessor<S> {
         try {
             flags = FlagList.generate(command, args);
         } catch (FlagNotFoundException e) {
-            //TODO masterCommand.getDispatcher().warning(sender, "warning.wrongflag", masterCommand.getDispatcher().buildList(command.flags()));
+            //masterCommand.getDispatcher().warning(sender, "warning.wrongflag", masterCommand.getDispatcher().buildList(command.flags()));
         }
         List<String> wildcards = new LinkedList<>();
         for (int i = 0; i < command.parent().length; i++) {
