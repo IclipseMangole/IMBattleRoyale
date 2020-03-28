@@ -1,22 +1,14 @@
 package de.Iclipse.BARO;
 
-import com.google.common.base.Joiner;
-import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
-import org.bukkit.command.Command;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class BARO extends JavaPlugin{
+public class BARO extends JavaPlugin {
     @Override
     public void onLoad() {
         super.onLoad();
@@ -37,20 +29,23 @@ public class BARO extends JavaPlugin{
         super.onDisable();
     }
 
-    public void registerListener(){
+    public void registerListener() {
     }
 
-    public void registerCommands(){
+    public void registerCommands() {
     }
 
-    public void createTables(){
+    public void createTables() {
     }
 
-    public void loadMap(){
-        File existing = new File("/home/IMNetzwerk/Welten/BAROMap");
-        File toCreate = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath().getBytes() + "/world");
+    public void loadMap() {
+        File from = new File("/home/Welten/BAROMap");
+        File to = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/BAROMap");
+        if(to.exists()){
+            to.delete();
+        }
         try {
-            copyFilesInDirectory(existing, toCreate);
+            copyFilesInDirectory(from, to);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +53,7 @@ public class BARO extends JavaPlugin{
     }
 
     private static void copyFilesInDirectory(File from, File to) throws IOException {
-        if(!to.exists()) {
+        if (!to.exists()) {
             to.mkdirs();
         }
         for (File file : from.listFiles()) {
@@ -70,7 +65,6 @@ public class BARO extends JavaPlugin{
             }
         }
     }
-
 
 
 }
