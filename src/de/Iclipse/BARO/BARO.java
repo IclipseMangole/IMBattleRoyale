@@ -1,5 +1,10 @@
 package de.Iclipse.BARO;
 
+import de.Iclipse.BARO.Functions.GameState;
+import de.Iclipse.BARO.Functions.Listener.GameListener;
+import de.Iclipse.BARO.Functions.Listener.LobbyListener;
+import de.Iclipse.IMAPI.IMAPI;
+import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -7,6 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import static de.Iclipse.BARO.Data.langDE;
+import static de.Iclipse.BARO.Data.langEN;
 
 public class BARO extends JavaPlugin {
     @Override
@@ -22,6 +33,8 @@ public class BARO extends JavaPlugin {
         registerCommands();
         createTables();
         loadMap();
+        loadResourceBundles();
+        Data.state = GameState.Lobby;
     }
 
     @Override
@@ -30,6 +43,8 @@ public class BARO extends JavaPlugin {
     }
 
     public void registerListener() {
+        IMAPI.register(new LobbyListener(), this);
+        IMAPI.register(new GameListener(), this);
     }
 
     public void registerCommands() {
@@ -51,6 +66,29 @@ public class BARO extends JavaPlugin {
         }
         getServer().createWorld(new WorldCreator("BAROMap"));
     }
+
+    public void loadResourceBundles(){
+        try {
+            HashMap<String, ResourceBundle> langs = new HashMap<>();
+            langDE = ResourceBundle.getBundle("i18n.langDE");
+            langEN = ResourceBundle.getBundle("i18n.langEN");
+            langs.put("DE", langDE);
+            langs.put("EN", langEN);
+            Data.dsp = new Dispatcher(this,
+                    langs);
+        } catch(MissingResourceException e){
+            e.printStackTrace();
+            de.Iclipse.IMAPI.Data.dispatching = false;
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            System.out.println("Reload oder Bundle not found!");
+            de.Iclipse.IMAPI.Data.dispatching = false;
+        }
+    }
+
+
+
+
 
     private static void copyFilesInDirectory(File from, File to) throws IOException {
         if (!to.exists()) {
