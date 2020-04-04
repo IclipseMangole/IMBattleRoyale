@@ -5,6 +5,7 @@ import de.Iclipse.BARO.Functions.Listener.GameListener;
 import de.Iclipse.BARO.Functions.Listener.LobbyListener;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
+import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -54,6 +55,7 @@ public class BARO extends JavaPlugin {
     }
 
     public void loadMap() {
+        Bukkit.unloadWorld("world", false);
         File from = new File("/home/Welten/BAROMap");
         File to = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/BAROMap");
         if(to.exists()){

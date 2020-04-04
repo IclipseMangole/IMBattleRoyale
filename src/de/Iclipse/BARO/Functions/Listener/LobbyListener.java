@@ -15,7 +15,7 @@ public class LobbyListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         Player p = e.getPlayer();
-        if(state == GameState.Lobby){
+        if(state == GameState.Lobby || state == GameState.Finished){
             e.setJoinMessage(null);
             Bukkit.getOnlinePlayers().forEach(entry ->{
                 dsp.send(entry, "join.message", p.getDisplayName());
