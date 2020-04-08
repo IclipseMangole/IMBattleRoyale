@@ -3,6 +3,4 @@ version: Alpha
 main: de.Iclipse.BARO.BARO
 author: Iclipse
 api-version: 1.15
-load: STARTUP
-depend:
-  - IMAPI
+depend: [IMAPI]
