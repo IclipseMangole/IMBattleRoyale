@@ -1,9 +1,10 @@
 package de.Iclipse.BARO.Functions;
 
-import java.util.UUID;
+import de.Iclipse.BARO.Data;
+import org.bukkit.entity.Player;
 
 public class User {
-    private UUID uuid;
+    private Player player;
     private int kills;
     private int deaths;
     private int damageDealt;
@@ -11,9 +12,10 @@ public class User {
     private int blocksPlaced;
     private int blocksDestroyed;
     private int place;
+    private long finished;
 
-    public User(UUID uuid) {
-        this.uuid = uuid;
+    public User(Player player) {
+        this.player = player;
         kills = 0;
         deaths = 0;
         damageDealt = 0;
@@ -21,6 +23,16 @@ public class User {
         blocksPlaced = 0;
         blocksDestroyed = 0;
         place = 0;
+        finished = 0;
+    }
+
+    public static User getUser(Player player) {
+        for (User user : Data.users) {
+            if (user.getPlayer().equals(player)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     public int getKills() {
@@ -77,5 +89,35 @@ public class User {
 
     public void setPlace(int place) {
         this.place = place;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public long getFinished() {
+        return finished;
+    }
+
+    public void setFinished(long finished) {
+        this.finished = finished;
+    }
+
+    public Team getTeam() {
+        for (Team team : Data.teams) {
+            if (team.isMember(this)) {
+                return team;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInATeam() {
+        for (Team team : Data.teams) {
+            if (team.isMember(this)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -3,6 +3,7 @@ package de.Iclipse.BARO;
 import de.Iclipse.BARO.Functions.GameState;
 import de.Iclipse.BARO.Functions.Listener.GameListener;
 import de.Iclipse.BARO.Functions.Listener.LobbyListener;
+import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.Tablist;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
@@ -40,10 +41,12 @@ public class BARO extends JavaPlugin {
         Data.state = GameState.Lobby;
         tablist = new Tablist();
         createTeams();
+        Scheduler.startScheduler();
     }
 
     @Override
     public void onDisable() {
+        Scheduler.stopScheduler();
         super.onDisable();
     }
 
