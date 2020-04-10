@@ -1,9 +1,8 @@
-package de.Iclipse.BARO.Functions.Listener;
+package de.Iclipse.BARO.Listener;
 
 import de.Iclipse.BARO.Functions.GameState;
 import de.Iclipse.BARO.Functions.User;
-import de.Iclipse.IMAPI.Functions.MySQL.MySQL_User;
-import de.Iclipse.IMAPI.Functions.MySQL.MySQL_UserSettings;
+import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
@@ -30,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
+import static de.Iclipse.BARO.Functions.User.getUser;
 
 public class LobbyListener implements Listener {
 
@@ -66,7 +66,7 @@ public class LobbyListener implements Listener {
             teamInv.addMenuItem(new MenuItem(item) {
                 @Override
                 public void onClick(Player p) {
-                    User u = User.getUser(p);
+                    User u = getUser(p);
                     if (u.getTeam().equals(team)) {
                         dsp.send(p, "team.already");
                         teamInv.closeMenu(p);
@@ -87,7 +87,7 @@ public class LobbyListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
-            if (!MySQL_UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
+            if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
                 e.setJoinMessage(null);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     dsp.send(entry, "join.message", p.getDisplayName());
@@ -126,6 +126,7 @@ public class LobbyListener implements Listener {
             Bukkit.getOnlinePlayers().forEach(entry -> {
                 dsp.send(entry, "quit.message", p.getDisplayName());
             });
+            users.remove(getUser(p));
         }
     }
 
@@ -145,7 +146,7 @@ public class LobbyListener implements Listener {
                     if (ab.getType().equals(Material.GOLD_BLOCK)) {
                         int schnitzel = 1000;
                         dsp.send(p, "jumpnrun.finished", "" + schnitzel);
-                        MySQL_User.addSchnitzel(UUIDFetcher.getUUID(p.getName()), schnitzel);
+                        de.Iclipse.IMAPI.Database.User.addSchnitzel(UUIDFetcher.getUUID(p.getName()), schnitzel);
                     }
                 }
             }

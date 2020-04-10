@@ -1,10 +1,10 @@
-package de.Iclipse.BARO.Functions.MySQL;
+package de.Iclipse.BARO.Database;
 
-import de.Iclipse.IMAPI.Functions.MySQL.MySQL;
+import de.Iclipse.IMAPI.Database.MySQL;
 
 import java.util.UUID;
 
-public class MySQL_BAROStats {
+public class BAROStats {
 
     public static void createBAROStatsTable() {
         MySQL.update("CREATE TABLE IF NOT EXISTS baro_stats (id MEDIUMINT NOT NULL AUTO_INCREMENT, uuid VARCHAR(64), game INT(10), kills INT(10), deaths INT(10), damageDealt INT(5), damageReceived INT(5), blocksPlaced INT(6), blocksDestroyed(5), place INT(6), playedtime BIGINT, PRIMARY KEY (id)))");

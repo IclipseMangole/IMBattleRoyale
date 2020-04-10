@@ -1,10 +1,9 @@
 package de.Iclipse.BARO;
 
 import de.Iclipse.BARO.Functions.GameState;
-import de.Iclipse.BARO.Functions.Listener.GameListener;
-import de.Iclipse.BARO.Functions.Listener.LobbyListener;
 import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.Tablist;
+import de.Iclipse.BARO.Listener.LobbyListener;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,8 +17,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import static de.Iclipse.BARO.Data.*;
-import static de.Iclipse.BARO.Functions.MySQL.MySQL_BAROGames.createBAROGamesTable;
-import static de.Iclipse.BARO.Functions.MySQL.MySQL_BAROStats.createBAROStatsTable;
+import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
+import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.TeamManager.createTeams;
 import static de.Iclipse.IMAPI.IMAPI.copyFilesInDirectory;
 
@@ -52,7 +51,6 @@ public class BARO extends JavaPlugin {
 
     public void registerListener() {
         IMAPI.register(new LobbyListener(), this);
-        IMAPI.register(new GameListener(), this);
     }
 
     public void registerCommands() {

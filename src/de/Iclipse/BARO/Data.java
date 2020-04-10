@@ -15,7 +15,8 @@ public class Data {
     public static Plugin instance;
     public static GameState state;
     public static Tablist tablist;
-    public static int defaultcountdown = 200;
+    public static int defaultcountdown = 100;
+    public static int countdown = defaultcountdown;
     public static int minplayers = 3;
     public static int teamsize = 2;
     public static Dispatcher dsp;
@@ -23,5 +24,6 @@ public class Data {
     public static ResourceBundle langEN;
     public static ArrayList<Team> teams;
     public static ArrayList<User> users;
+    public static int duration = 0;
 
 }

@@ -28,6 +28,7 @@ public class Tablist {
         footer = "§7Server: §e" + Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getName();
         ranks = "§4Admin §cMod \n §3User";
 
+        //Serverranks
         this.a = scoreboard.getTeam("1a") == null ? scoreboard.registerNewTeam("1a") : scoreboard.getTeam("1a");
         this.b = scoreboard.getTeam("2b") == null ? scoreboard.registerNewTeam("2b") : scoreboard.getTeam("2b");
         this.c = scoreboard.getTeam("3c") == null ? scoreboard.registerNewTeam("3c") : scoreboard.getTeam("3c");
@@ -45,7 +46,6 @@ public class Tablist {
 
 
     public void setTablist(Player p) {
-
             p.setPlayerListHeader(header);
             p.setPlayerListFooter(ranks);
     }
