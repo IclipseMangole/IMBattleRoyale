@@ -6,6 +6,7 @@ import de.Iclipse.BARO.Functions.Tablist;
 import de.Iclipse.BARO.Functions.Team;
 import de.Iclipse.BARO.Functions.User;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ public class Data {
     public static Dispatcher dsp;
     public static ResourceBundle langDE;
     public static ResourceBundle langEN;
-    public static ArrayList<Team> teams;
-    public static ArrayList<User> users;
-    public static int duration = 0;
+    public static ArrayList<Team> teams = new ArrayList<>();
+    public static ArrayList<User> users = new ArrayList<>();
+    public static ArrayList<Player> spawningPlayers = new ArrayList<>();
+    public static int timer = 0;
 
 }
