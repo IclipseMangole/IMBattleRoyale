@@ -27,7 +27,7 @@ public class Scheduler {
                 } else if (Data.state == GameState.Finished) {
 
                 } else if (Data.state == GameState.Running) {
-                    Duration.duration();
+                    Timer.duration();
                 }
             }
         }, 20, 20);
