@@ -28,6 +28,7 @@ public class Scheduler {
 
                 } else if (Data.state == GameState.Running) {
                     Timer.timer();
+                    PlayerSpawns.teleport();
                 }
             }
         }, 20, 20);

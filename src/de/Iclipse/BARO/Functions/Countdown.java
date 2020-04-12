@@ -50,7 +50,6 @@ public class Countdown {
                         dsp.get("countdown.countdown", entry);
                     });
                     dsp.send(Bukkit.getConsoleSender(), "countdown.countdown");
-
                 }
 
                 Data.countdown--;

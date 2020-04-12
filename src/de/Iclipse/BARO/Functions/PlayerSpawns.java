@@ -7,12 +7,13 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.Random;
 
-import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.BARO.Data.*;
 
 public class PlayerSpawns implements Listener {
 
@@ -47,15 +48,35 @@ public class PlayerSpawns implements Listener {
     public void onSneak(PlayerToggleSneakEvent e) {
         Player p = e.getPlayer();
         if (Data.spawningPlayers.contains(p)) {
+            flyingPlayers.add(p);
             Data.spawningPlayers.remove(p);
             dsp.send(p, "teleport.left");
         }
     }
 
     @EventHandler
-    public void onDamage(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player) {
+    public void onMove(PlayerMoveEvent e) {
+        Player p = e.getPlayer();
+        if (flyingPlayers.contains(p)) {
+            if (p.getLocation().getBlockY() < 115) {
+                fallingPlayers.add(p);
+                flyingPlayers.remove(p);
+            }
+        }
+        if (fallingPlayers.contains(p)) {
+            if (p.isOnGround()) {
+                fallingPlayers.remove(p);
+            }
+        }
+    }
 
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Player) {
+            Player p = (Player) e.getDamager();
+            if (spawningPlayers.contains(p) || flyingPlayers.contains(p) || fallingPlayers.contains(p)) {
+                e.setCancelled(true);
+            }
         }
     }
 }

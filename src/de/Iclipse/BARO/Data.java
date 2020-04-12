@@ -26,6 +26,10 @@ public class Data {
     public static ArrayList<Team> teams = new ArrayList<>();
     public static ArrayList<User> users = new ArrayList<>();
     public static ArrayList<Player> spawningPlayers = new ArrayList<>();
+    //Elytra
+    public static ArrayList<Player> flyingPlayers = new ArrayList<>();
+    //Slow Fall
+    public static ArrayList<Player> fallingPlayers = new ArrayList<>();
     public static int timer = 0;
 
 }
