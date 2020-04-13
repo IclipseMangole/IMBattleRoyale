@@ -3,6 +3,8 @@ package de.Iclipse.BARO.Functions;
 import de.Iclipse.BARO.Data;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class User {
     private Player player;
     private int kills;
@@ -24,6 +26,7 @@ public class User {
         blocksDestroyed = 0;
         place = 0;
         finished = 0;
+        Data.users.add(this);
     }
 
     public static User getUser(Player player) {
@@ -104,7 +107,9 @@ public class User {
     }
 
     public Team getTeam() {
-        for (Team team : Data.teams) {
+        ArrayList<Team> teams = Data.teams;
+        for (int i = 0; i < teams.size(); i++) {
+            Team team = teams.get(i);
             if (team.isMember(this)) {
                 return team;
             }

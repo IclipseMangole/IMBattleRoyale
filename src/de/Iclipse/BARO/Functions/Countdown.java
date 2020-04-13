@@ -9,7 +9,7 @@ import static de.Iclipse.BARO.Data.*;
 
 public class Countdown {
 
-    public static void countdown() {
+    public static void countdown(int seconds) {
         if ((Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size()) >= Data.minplayers) {
             if (Data.countdown >= 0) {
                 if (Data.countdown >= 30 * 60 && Data.countdown <= 90 * 60) {
@@ -47,9 +47,10 @@ public class Countdown {
                     dsp.send(Bukkit.getConsoleSender(), "countdown.message", "" + Data.countdown, dsp.get("unit.minutes", Bukkit.getConsoleSender()));
                 } else {
                     Bukkit.getOnlinePlayers().forEach(entry -> {
-                        dsp.get("countdown.countdown", entry);
+                        dsp.get("countdown.finished", entry);
                     });
-                    dsp.send(Bukkit.getConsoleSender(), "countdown.countdown");
+                    dsp.send(Bukkit.getConsoleSender(), "countdown.finished");
+                    GameStart.startGame();
                 }
 
                 Data.countdown--;
@@ -59,6 +60,13 @@ public class Countdown {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     dsp.send(entry, "countdown.reset");
                 });
+                countdown = defaultcountdown;
+            } else {
+                if (seconds % 20 == 0) {
+                    Bukkit.getOnlinePlayers().forEach(entry -> {
+                        dsp.send(entry, "countdown.missing", "" + (Data.minplayers - (Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size())));
+                    });
+                }
             }
         }
     }

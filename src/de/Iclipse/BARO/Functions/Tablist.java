@@ -46,8 +46,8 @@ public class Tablist {
 
 
     public void setTablist(Player p) {
-            p.setPlayerListHeader(header);
-            p.setPlayerListFooter(ranks);
+        p.setPlayerListHeader(header);
+        p.setPlayerListFooter(ranks);
     }
 
 
@@ -60,8 +60,13 @@ public class Tablist {
         } else {
             team = "3c";
         }
-        if (!scoreboard.getTeam(team).hasPlayer(Bukkit.getOfflinePlayer(p.getUniqueId())))
-            scoreboard.getTeam(team).addPlayer(Bukkit.getOfflinePlayer(p.getUniqueId()));
+        scoreboard.getTeams().forEach(entry -> {
+            if (entry.hasEntry(p.getName())) {
+                entry.removeEntry(p.getName());
+            }
+        });
+        if (!scoreboard.getTeam(team).hasEntry(p.getName()))
+            scoreboard.getTeam(team).addEntry(p.getName());
         if (!scoreboard.getTeam(team).hasEntry(p.getName())) scoreboard.getTeam(team).addEntry(p.getName());
         rankColor.put(p, scoreboard.getTeam(team).getPrefix());
 
@@ -79,4 +84,20 @@ public class Tablist {
             Bukkit.getOnlinePlayers().forEach(pl -> pl.setScoreboard(scoreboard));
         }, 10, 10);
     }
+
+    public void updatePlayer(Player p) {
+        String name = "";
+        name = User.getUser(p).getTeam().getTeam().getPrefix() + p.getName();
+        ChatColor.translateAlternateColorCodes('§', name);
+
+        p.setPlayerListName(name);
+        p.setDisplayName(name);
+        p.setCustomName(name);
+        p.setCustomNameVisible(true);
+        p.setScoreboard(scoreboard);
+        Bukkit.getScheduler().runTaskTimer(Data.instance, () -> {
+            Bukkit.getOnlinePlayers().forEach(pl -> pl.setScoreboard(scoreboard));
+        }, 10, 10);
+    }
+
 }

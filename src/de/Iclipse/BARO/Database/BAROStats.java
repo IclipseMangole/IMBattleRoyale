@@ -7,7 +7,7 @@ import java.util.UUID;
 public class BAROStats {
 
     public static void createBAROStatsTable() {
-        MySQL.update("CREATE TABLE IF NOT EXISTS baro_stats (id MEDIUMINT NOT NULL AUTO_INCREMENT, uuid VARCHAR(64), game INT(10), kills INT(10), deaths INT(10), damageDealt INT(5), damageReceived INT(5), blocksPlaced INT(6), blocksDestroyed(5), place INT(6), playedtime BIGINT, PRIMARY KEY (id)))");
+        MySQL.update("CREATE TABLE IF NOT EXISTS baro_stats (id MEDIUMINT NOT NULL AUTO_INCREMENT, uuid VARCHAR(64), game INT(10), kills INT(10), deaths INT(10), damageDealt INT(5), damageReceived INT(5), blocksPlaced INT(6), blocksDestroyed(5), place INT(6), playedtime BIGINT, PRIMARY KEY (id))");
     }
 
     public void insertStats(UUID uuid, int game, int kills, int deaths, int damageDealt, int damageReceived, int blocksPlaced, int blocksDestroyed, int place, long playedtime) {

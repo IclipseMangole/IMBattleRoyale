@@ -1,11 +1,15 @@
 package de.Iclipse.BARO;
 
+import de.Iclipse.BARO.Commands.cmd_start;
+import de.Iclipse.BARO.Commands.cmd_teamsize;
 import de.Iclipse.BARO.Functions.GameState;
+import de.Iclipse.BARO.Functions.PlayerSpawns;
 import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.Tablist;
 import de.Iclipse.BARO.Listener.LobbyListener;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -51,9 +55,12 @@ public class BARO extends JavaPlugin {
 
     public void registerListener() {
         IMAPI.register(new LobbyListener(), this);
+        IMAPI.register(new PlayerSpawns(), this);
     }
 
     public void registerCommands() {
+        IMAPI.register(new cmd_start(), this);
+        IMAPI.register(new cmd_teamsize(), this);
     }
 
     public void createTables() {
@@ -63,6 +70,9 @@ public class BARO extends JavaPlugin {
 
 
     public void loadMap() {
+        if (new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world").exists()) {
+            new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world").delete();
+        }
         File from = new File("/home/IMNetzwerk/BuildServer/BAROMap_world/region");
         File to = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/region");
         if (to.exists()) {

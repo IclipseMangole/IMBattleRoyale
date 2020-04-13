@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class Scheduler {
     private static BukkitTask task;
+    private static int seconds = 0;
 
     public static void startScheduler() {
         task = Bukkit.getScheduler().runTaskTimer(Data.instance, new Runnable() {
@@ -15,13 +16,15 @@ public class Scheduler {
             public void run() {
                 if (Data.state == GameState.Lobby) {
                     //Changes the "Teamitem" for every Player without a team
-                    Data.users.forEach(entry -> {
-                        if (!entry.isInATeam()) {
-                            entry.getPlayer().getInventory().setItem(0, Data.teams.get(new Random().nextInt(Data.teams.size())).getTeamItem(entry.getPlayer()));
-                        }
-                    });
+                    if (Data.users.size() != 0) {
+                        Data.users.forEach(entry -> {
+                            if (!entry.isInATeam()) {
+                                entry.getPlayer().getInventory().setItem(0, Data.teams.get(new Random().nextInt(Data.teams.size())).getTeamItem(entry.getPlayer()));
+                            }
+                        });
+                    }
 
-                    Countdown.countdown();
+                    Countdown.countdown(seconds);
 
 
                 } else if (Data.state == GameState.Finished) {
@@ -30,6 +33,7 @@ public class Scheduler {
                     Timer.timer();
                     PlayerSpawns.teleport();
                 }
+                seconds = (seconds + 1) % 59;
             }
         }, 20, 20);
     }

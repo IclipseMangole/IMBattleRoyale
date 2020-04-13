@@ -3,13 +3,19 @@ package de.Iclipse.BARO.Functions;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 
@@ -50,6 +56,7 @@ public class PlayerSpawns implements Listener {
         if (Data.spawningPlayers.contains(p)) {
             flyingPlayers.add(p);
             Data.spawningPlayers.remove(p);
+            p.getInventory().setChestplate(getElytra(p));
             dsp.send(p, "teleport.left");
         }
     }
@@ -61,6 +68,8 @@ public class PlayerSpawns implements Listener {
             if (p.getLocation().getBlockY() < 115) {
                 fallingPlayers.add(p);
                 flyingPlayers.remove(p);
+                p.getInventory().setChestplate(new ItemStack(Material.AIR));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1, 1, false, false));
             }
         }
         if (fallingPlayers.contains(p)) {
@@ -78,5 +87,15 @@ public class PlayerSpawns implements Listener {
                 e.setCancelled(true);
             }
         }
+    }
+
+    public static ItemStack getElytra(Player p) {
+        ItemStack item = new ItemStack(Material.ELYTRA);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(dsp.get("parachute.name", p));
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.BINDING_CURSE, 1, false);
+        item.setItemMeta(meta);
+        return item;
     }
 }

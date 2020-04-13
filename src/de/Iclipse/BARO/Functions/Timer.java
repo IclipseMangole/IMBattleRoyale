@@ -13,10 +13,10 @@ public class Timer {
         Data.timer++;
         DecimalFormat format = new DecimalFormat("00");
         int t = Data.timer;
-        int hours = (int) t / (60 * 60);
-        t = t % (60 * 60 * 20);
-        int minutes = (int) t / 60;
-        t = t % (60 * 20);
+        int hours = t / (60 * 60);
+        t = t % (60 * 60);
+        int minutes = t / 60;
+        t = t % 60;
         int seconds = t;
         Bukkit.getOnlinePlayers().forEach(entry -> {
             if (!Data.spawningPlayers.contains(entry)) {
