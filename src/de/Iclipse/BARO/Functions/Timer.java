@@ -19,7 +19,7 @@ public class Timer {
         t = t % 60;
         int seconds = t;
         Bukkit.getOnlinePlayers().forEach(entry -> {
-            if (!Data.spawningPlayers.contains(entry)) {
+            if (!Data.spawningPlayers.contains(entry) && !BorderManager.outOfBorder.contains(entry)) {
                 Actionbar.send(entry, "§7§l" + dsp.get("timer.timer", entry) + ": §2§l" + format.format(hours) + ":" + format.format(minutes) + ":" + format.format(seconds));
             }
         });

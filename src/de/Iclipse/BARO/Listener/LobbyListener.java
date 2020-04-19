@@ -18,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -42,12 +43,15 @@ public class LobbyListener implements Listener {
             if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
                 e.setJoinMessage(null);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
-                    dsp.send(entry, "join.message", p.getDisplayName());
+                    if (!entry.equals(p)) {
+                        dsp.send(entry, "join.message", p.getDisplayName());
+                    }
                 });
+                dsp.send(Bukkit.getConsoleSender(), "join.message", p.getDisplayName());
                 setLobbyInventory(p);
                 new User(p);
             }
-            p.teleport(spawn(p));
+            p.teleport(spawn(p.getWorld()));
             p.setAllowFlight(false);
             p.setFlying(false);
             p.setGravity(true);
@@ -62,10 +66,10 @@ public class LobbyListener implements Listener {
             p.resetPlayerTime();
             switch (new Random().nextInt(2)) {
                 case 0:
-                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 1, 1);
+                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 1, 1.3f);
                     break;
                 case 1:
-                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_FAR, 1, 1);
+                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_FAR, 1, 1.3f);
                     break;
             }
 
@@ -88,6 +92,7 @@ public class LobbyListener implements Listener {
             Bukkit.getOnlinePlayers().forEach(entry -> {
                 dsp.send(entry, "quit.message", p.getDisplayName());
             });
+            dsp.send(Bukkit.getConsoleSender(), "quit.message", p.getDisplayName());
             if (getUser(p) != null) {
                 User u = getUser(p);
                 if (u.getTeam() != null) {
@@ -109,6 +114,8 @@ public class LobbyListener implements Listener {
             }
             if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 if (e.getClickedBlock().getType().equals(Material.STONE_BUTTON)) {
+
+
                     BlockFace bf = e.getBlockFace();
                     Block ab = e.getClickedBlock().getRelative(bf);
                     if (ab.getType().equals(Material.GOLD_BLOCK)) {
@@ -165,10 +172,8 @@ public class LobbyListener implements Listener {
                         } else {
                             if (team.getUsers().size() < teamsize) {
                                 team.addUser(u);
-                                dsp.send(p, "team.changed");
                                 teamInv.closeMenu(p);
                                 teamInv.updateMenu();
-                                tablist.updatePlayer(p);
                                 p.getInventory().setItem(0, u.getTeam().getTeamItem(p));
                             } else {
                                 dsp.send(p, "team.full");
@@ -177,10 +182,8 @@ public class LobbyListener implements Listener {
                     } else {
                         if (team.getUsers().size() < teamsize) {
                             team.addUser(u);
-                            dsp.send(p, "team.changed");
                             teamInv.closeMenu(p);
                             teamInv.updateMenu();
-                            tablist.updatePlayer(p);
                             p.getInventory().setItem(0, u.getTeam().getTeamItem(p));
                         } else {
                             dsp.send(p, "team.full");
@@ -223,28 +226,52 @@ public class LobbyListener implements Listener {
 
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent e) {
-        if (e.getTo().getBlock().getType().equals(Material.WATER)) {
-            e.getPlayer().teleport(e.getPlayer().getWorld().getSpawnLocation());
+        if (state != GameState.Running) {
+            Player p = e.getPlayer();
+            if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
+                if (p.getLocation().distance(spawn(p.getWorld())) < 70) {
+                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(1.7));
+                } else {
+                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).setY(2));
+                }
+            }
         }
     }
 
     @EventHandler
     public void InventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory().equals(e.getWhoClicked().getInventory())) {
-            e.setCancelled(true);
+        if (state != GameState.Running) {
+            if (e.getClickedInventory() != null) {
+                if (e.getClickedInventory().equals(e.getWhoClicked().getInventory())) {
+                    e.setCancelled(true);
+                }
+            }
         }
     }
 
     @EventHandler
     public void InventoryClick(InventoryDragEvent e) {
-        if (e.getInventory().equals(e.getWhoClicked().getInventory())) {
-            e.setCancelled(true);
+        if (state != GameState.Running) {
+            if (e.getInventory().equals(e.getWhoClicked().getInventory())) {
+                e.setCancelled(true);
+            }
         }
     }
 
     @EventHandler
     public void ItemDrop(PlayerDropItemEvent e) {
-        e.setCancelled(true);
+        if (state != GameState.Running) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void CreatureSpawn(CreatureSpawnEvent e) {
+        if (state != GameState.Running) {
+            if (e.getLocation().distance(spawn(e.getLocation().getWorld())) < 60) {
+                e.setCancelled(true);
+            }
+        }
     }
 
 }

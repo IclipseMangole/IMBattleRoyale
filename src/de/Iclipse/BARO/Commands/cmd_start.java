@@ -21,8 +21,8 @@ public class cmd_start {
     public void start(CommandSender sender) {
         if (Data.state == GameState.Lobby) {
             if ((Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size()) >= Data.minplayers) {
-                if (Data.countdown > 15) {
-                    Data.countdown = 15;
+                if (Data.countdown > 10) {
+                    Data.countdown = 10;
                 } else {
                     dsp.send(sender, "start.already");
                 }

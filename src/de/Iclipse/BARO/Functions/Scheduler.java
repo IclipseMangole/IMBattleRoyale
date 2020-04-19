@@ -30,8 +30,11 @@ public class Scheduler {
                 } else if (Data.state == GameState.Finished) {
 
                 } else if (Data.state == GameState.Running) {
-                    Timer.timer();
                     PlayerSpawns.teleport();
+                    Timer.timer();
+                    BorderManager.border();
+                    Scoreboard.scoreboard();
+                    Map.map();
                 }
                 seconds = (seconds + 1) % 59;
             }

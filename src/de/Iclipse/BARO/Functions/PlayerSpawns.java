@@ -25,22 +25,41 @@ public class PlayerSpawns implements Listener {
 
     public static void teleport() {
         //Middle X: 0 Z: 0 Radius: 450
-        if (Data.timer % 10 == 0 && Data.timer < 80) {
-            Data.spawningPlayers.forEach(entry -> {
-                teleportRandom(entry);
-            });
-        } else {
-            Data.spawningPlayers.forEach(entry -> {
-                Actionbar.send(entry, dsp.get("teleport.time", entry, Data.timer % 10 + ""));
-            });
+        if (Data.timer < 80) {
+            if (Data.timer % 10 == 0) {
+                if (spawningPlayers.size() > 0) {
+                    Data.spawningPlayers.forEach(entry -> {
+                        teleportRandom(entry);
+                        dsp.send(entry, "teleport.remove", "" + (80 - timer));
+                    });
+                }
+            } else {
+                if (spawningPlayers.size() > 0) {
+                    Data.spawningPlayers.forEach(entry -> {
+                        Actionbar.send(entry, dsp.get("teleport.time", entry, 10 - Data.timer % 10 + ""));
+                    });
+                }
+            }
+        } else if (timer == 80) {
+            if (spawningPlayers.size() > 0) {
+                spawningPlayers.forEach(p -> {
+                    flyingPlayers.add(p);
+                    p.getInventory().setChestplate(getElytra(p));
+                    p.setGliding(true);
+                    p.setGravity(true);
+                    p.setAllowFlight(false);
+                    dsp.send(p, "teleport.left");
+                });
+                spawningPlayers.clear();
+            }
         }
     }
 
     public static void teleportRandom(Player p) {
         //Middle X: 0 Z: 0 Radius: 450
-        Location loc = new Location(p.getWorld(), new Random().nextInt(900) - 450.0, 175.0, new Random().nextInt(900) - 450.0);
+        Location loc = new Location(p.getWorld(), new Random().nextInt(800) - 400.0, 175.0, new Random().nextInt(800) - 400.0);
         //Tests if new Location is near to old Location to spread Spawnpoints
-        if (p.getLocation().distance(loc) > 100) {
+        if (p.getLocation().distance(loc) > 100 && loc.distance(BorderManager.border.getCurrentMiddle()) < BorderManager.border.getCurrentRadius()) {
             p.teleport(loc);
             p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
             Actionbar.send(p, dsp.get("teleport.teleport", p));
@@ -53,28 +72,45 @@ public class PlayerSpawns implements Listener {
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
         Player p = e.getPlayer();
-        if (Data.spawningPlayers.contains(p)) {
-            flyingPlayers.add(p);
-            Data.spawningPlayers.remove(p);
-            p.getInventory().setChestplate(getElytra(p));
-            dsp.send(p, "teleport.left");
+        if (state == GameState.Running) {
+            if (!e.isSneaking()) {
+                if (Data.spawningPlayers.contains(p)) {
+                    flyingPlayers.add(p);
+                    Data.spawningPlayers.remove(p);
+                    p.getInventory().setChestplate(getElytra(p));
+                    p.setGliding(true);
+                    p.setGravity(true);
+                    p.setAllowFlight(false);
+                    dsp.send(p, "teleport.left");
+                }
+            }
         }
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
-        if (flyingPlayers.contains(p)) {
-            if (p.getLocation().getBlockY() < 115) {
-                fallingPlayers.add(p);
-                flyingPlayers.remove(p);
-                p.getInventory().setChestplate(new ItemStack(Material.AIR));
-                p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 1, 1, false, false));
+        if (state == GameState.Running) {
+            if (flyingPlayers.contains(p)) {
+                if (p.getLocation().getBlockY() < 130) {
+                    fallingPlayers.add(p);
+                    flyingPlayers.remove(p);
+                    p.getInventory().setChestplate(new ItemStack(Material.AIR));
+                    p.setVelocity(p.getVelocity().setY(0));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 10000, 3, false, false));
+                }
             }
-        }
-        if (fallingPlayers.contains(p)) {
-            if (p.isOnGround()) {
-                fallingPlayers.remove(p);
+            if (fallingPlayers.contains(p)) {
+                if (p.isOnGround()) {
+                    fallingPlayers.remove(p);
+                    p.removePotionEffect(PotionEffectType.SLOW_FALLING);
+                } else {
+                    Material m = p.getWorld().getBlockAt(p.getLocation().subtract(0, 1, 0)).getType();
+                    if (m.equals(Material.WATER) || m.equals(Material.KELP_PLANT)) {
+                        fallingPlayers.remove(p);
+                        p.removePotionEffect(PotionEffectType.SLOW_FALLING);
+                    }
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import de.Iclipse.BARO.Functions.Team;
 import de.Iclipse.BARO.Functions.User;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -33,8 +34,8 @@ public class Data {
     public static ArrayList<Player> fallingPlayers = new ArrayList<>();
     public static int timer = 0;
 
-    public static Location spawn(Player p) {
-        Location loc = new Location(p.getWorld(), 145.5, 69.5, -447.5, -90.0f, 0.0f);
+    public static Location spawn(World w) {
+        Location loc = new Location(w, 145.5, 69.5, -447.5, -90.0f, 0.0f);
         return loc;
     }
 

@@ -11,8 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.teamsize;
+import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.Tablist.scoreboard;
 
 public class Team {
@@ -76,6 +75,8 @@ public class Team {
             entry.removeEntry(u.getPlayer().getName());
         });
         team.addEntry(u.getPlayer().getName());
+        tablist.updatePlayer(u.getPlayer());
+        dsp.send(u.getPlayer(), "team.changed", this.getColor() + "Team " + dsp.get("color." + this.getColor().asBungee().getName(), u.getPlayer()));
     }
 
     public boolean isMember(User u) {
