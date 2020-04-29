@@ -1,4 +1,4 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.Border;
 
 import org.bukkit.Location;
 

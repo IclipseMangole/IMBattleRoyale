@@ -1,6 +1,8 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.Border.BorderManager;
+import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -91,12 +93,15 @@ public class PlayerSpawns implements Listener {
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
         if (state == GameState.Running) {
+            if (spawningPlayers.contains(p)) {
+                e.setTo(new Location(p.getWorld(), e.getFrom().getX(), e.getFrom().getY(), e.getFrom().getX(), e.getTo().getYaw(), e.getTo().getPitch()));
+            }
             if (flyingPlayers.contains(p)) {
                 if (p.getLocation().getBlockY() < 130) {
                     fallingPlayers.add(p);
                     flyingPlayers.remove(p);
                     p.getInventory().setChestplate(new ItemStack(Material.AIR));
-                    p.setVelocity(p.getVelocity().setY(0));
+                    p.setVelocity(p.getVelocity().setY(p.getVelocity().getY() / 4));
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 10000, 3, false, false));
                 }
             }

@@ -1,6 +1,8 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.Border;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
+import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import net.minecraft.server.v1_15_R1.PacketPlayOutWorldBorder;
 import net.minecraft.server.v1_15_R1.WorldBorder;
@@ -11,8 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
@@ -23,10 +28,10 @@ public class BorderManager implements Listener {
 
     public static void border() {
         if (border.getProgress() <= 1.5) {
-            border.setProgress(border.getProgress() + 0.005);
+            border.setProgress(border.getProgress() + 0.0025);
             if (border.getProgress() == 1) {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
-                    entry.playSound(entry.getLocation(), Sound.AMBIENT_CAVE, 1, 1);
+                    entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                 });
             }
         } else {
@@ -40,7 +45,7 @@ public class BorderManager implements Listener {
             border.setMiddleNew(newMiddle());
             border.setProgress(0.0);
             Bukkit.getOnlinePlayers().forEach(entry -> {
-                entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+                entry.playSound(entry.getLocation(), Sound.ENTITY_ENDERMAN_STARE, 1, 1);
             });
         }
         Data.users.forEach(u -> {
@@ -50,23 +55,56 @@ public class BorderManager implements Listener {
                 if (!outOfBorder.contains(p)) {
                     sendBorderEffect(p);
                     p.setPlayerWeather(WeatherType.DOWNFALL);
-                    Actionbar.send(p, dsp.get("border.left", p));
                     outOfBorder.add(p);
+                    boolean contains = false;
+                    for (Map.Entry<ArrayList<User>, Integer> e : Data.reviving.entrySet()) {
+                        ArrayList<User> list = e.getKey();
+                        if (list.contains(u)) {
+                            contains = true;
+                        }
+                    }
+                    if (!contains) {
+                        Actionbar.send(p, dsp.get("border.left", p));
+                    }
                 } else {
-                    Actionbar.send(p, dsp.get("border.out", p));
+                    boolean contains = false;
+                    for (Map.Entry<ArrayList<User>, Integer> e : Data.reviving.entrySet()) {
+                        ArrayList<User> list = e.getKey();
+                        if (list.contains(u)) {
+                            contains = true;
+                        }
+                    }
+                    if (!contains) {
+                        Actionbar.send(p, dsp.get("border.out", p));
+                    }
                 }
-                if (border.getCurrentRadius() > 200) {
-                    p.damage(0.25);
-                } else if (border.getCurrentRadius() > 100) {
-                    p.damage(0.5);
-                } else if (border.getCurrentRadius() > 30) {
-                    p.damage(1);
-                } else {
-                    p.damage(1.5);
+                if (!Data.spectators.contains(p) && p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) {
+                    if (border.getCurrentRadius() > 200) {
+                        p.damage(0.5);
+                    } else if (border.getCurrentRadius() > 100) {
+                        p.damage(1);
+                    } else if (border.getCurrentRadius() > 30) {
+                        p.damage(1.75);
+                    } else {
+                        p.damage(2.5);
+                    }
+                }
+                p.playEffect(EntityEffect.HURT_DROWN);
+                if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 1, 10));
                 }
             } else {
                 if (outOfBorder.contains(p)) {
-                    Actionbar.send(p, dsp.get("border.join", p));
+                    boolean contains = false;
+                    for (Map.Entry<ArrayList<User>, Integer> e : Data.reviving.entrySet()) {
+                        ArrayList<User> list = e.getKey();
+                        if (list.contains(p)) {
+                            contains = true;
+                        }
+                    }
+                    if (!contains) {
+                        Actionbar.send(p, dsp.get("border.join", p));
+                    }
                     p.resetPlayerWeather();
                     removeBorderEffect(p);
                     outOfBorder.remove(p);
@@ -86,7 +124,11 @@ public class BorderManager implements Listener {
 
     private static double randomXZ() {
         Random random = new Random();
-        return random.nextInt(2 * border.getRadiusNew()) - border.getRadiusNew();
+        if (border.getRadiusNew() > 0) {
+            return random.nextInt(2 * border.getRadiusNew()) - border.getRadiusNew();
+        } else {
+            return random.nextInt(2 * 3) - 3;
+        }
     }
 
     private static double randomY() {
@@ -107,13 +149,13 @@ public class BorderManager implements Listener {
     }
 
     public static void showBorder(Player p) {
-        if (p.getLocation().distance(border.getCurrentMiddle()) > (border.getCurrentRadius() - 10) && p.getLocation().distance(border.getCurrentMiddle()) < (border.getCurrentRadius() + 10)) {
-            for (int x = 0; x < 20; x++) {
-                for (int y = 0; y < 20; y++) {
-                    for (int z = 0; z < 20; z++) {
-                        Location loc = new Location(p.getWorld(), p.getLocation().getX() + (x - 10), p.getLocation().getY() + (y - 10), p.getLocation().getZ() + (z - 10));
+        if (p.getLocation().distance(border.getCurrentMiddle()) > (border.getCurrentRadius() - 15) && p.getLocation().distance(border.getCurrentMiddle()) < (border.getCurrentRadius() + 15)) {
+            for (int x = 0; x < 30; x++) {
+                for (int y = 0; y < 30; y++) {
+                    for (int z = 0; z < 30; z++) {
+                        Location loc = new Location(p.getWorld(), p.getLocation().getX() + (x - 15), p.getLocation().getY() + (y - 15), p.getLocation().getZ() + (z - 15));
                         if (border.getCurrentMiddle().distance(loc) > border.getCurrentRadius() - 0.75 && border.getCurrentMiddle().distance(loc) < border.getCurrentRadius() + 0.75) {
-                            p.spawnParticle(Particle.SPELL_WITCH, loc, 1);
+                            p.spawnParticle(Particle.SPELL_WITCH, loc, 2);
                         }
                     }
                 }

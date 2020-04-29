@@ -1,6 +1,7 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -71,7 +72,6 @@ public class Tablist {
         rankColor.put(p, scoreboard.getTeam(team).getPrefix());
 
         String name = "";
-        System.out.println("DisplayName: " + p.getDisplayName());
         name = scoreboard.getTeam(team).getPrefix() + p.getName();
         ChatColor.translateAlternateColorCodes('§', name);
 

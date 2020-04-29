@@ -1,6 +1,8 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.PlayerManagement;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Database.BAROStats;
+import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -9,12 +11,17 @@ public class User {
     private Player player;
     private int kills;
     private int deaths;
-    private int damageDealt;
-    private int damageReceived;
+    private double damageDealt;
+    private double damageReceived;
     private int blocksPlaced;
     private int blocksDestroyed;
+    private int itemsCrafted;
+    private int lootedChests;
+    private int lootedDrops;
     private int place;
     private long finished;
+    private boolean knocked;
+    private Player knockedBy;
 
     public User(Player player) {
         this.player = player;
@@ -24,8 +31,12 @@ public class User {
         damageReceived = 0;
         blocksPlaced = 0;
         blocksDestroyed = 0;
+        itemsCrafted = 0;
+        lootedChests = 0;
+        lootedDrops = 0;
         place = 0;
         finished = 0;
+        knocked = false;
         Data.users.add(this);
     }
 
@@ -43,6 +54,7 @@ public class User {
     }
 
     public void setKills(int kills) {
+        System.out.println("setKills");
         this.kills = kills;
     }
 
@@ -54,19 +66,19 @@ public class User {
         this.deaths = deaths;
     }
 
-    public int getDamageDealt() {
+    public double getDamageDealt() {
         return damageDealt;
     }
 
-    public void setDamageDealt(int damageDealt) {
+    public void setDamageDealt(double damageDealt) {
         this.damageDealt = damageDealt;
     }
 
-    public int getDamageReceived() {
+    public double getDamageReceived() {
         return damageReceived;
     }
 
-    public void setDamageReceived(int damageReceived) {
+    public void setDamageReceived(double damageReceived) {
         this.damageReceived = damageReceived;
     }
 
@@ -86,6 +98,30 @@ public class User {
         this.blocksDestroyed = blocksDestroyed;
     }
 
+    public int getItemsCrafted() {
+        return itemsCrafted;
+    }
+
+    public void setItemsCrafted(int itemsCrafted) {
+        this.itemsCrafted = itemsCrafted;
+    }
+
+    public int getLootedChests() {
+        return lootedChests;
+    }
+
+    public void setLootedChests(int lootedChests) {
+        this.lootedChests = lootedChests;
+    }
+
+    public int getLootedDrops() {
+        return lootedDrops;
+    }
+
+    public void setLootedDrops(int lootedDrops) {
+        this.lootedDrops = lootedDrops;
+    }
+
     public int getPlace() {
         return place;
     }
@@ -100,6 +136,24 @@ public class User {
 
     public long getFinished() {
         return finished;
+    }
+
+    public boolean isKnocked() {
+        return knocked;
+    }
+
+    public void setKnocked(boolean knocked, Player knockedBy) {
+        this.knocked = knocked;
+        this.knockedBy = knockedBy;
+    }
+
+    public Player getKnockedBy() {
+        return knockedBy;
+    }
+
+
+    public boolean isAlive() {
+        return finished == 0;
     }
 
     public void setFinished(long finished) {
@@ -125,4 +179,9 @@ public class User {
         }
         return false;
     }
+
+    public void save(int gameId) {
+        BAROStats.insertStats(UUIDFetcher.getUUID(player.getName()), gameId, kills, deaths, damageDealt, damageReceived, blocksPlaced, blocksDestroyed, itemsCrafted, lootedChests, lootedDrops, place, finished);
+    }
+
 }

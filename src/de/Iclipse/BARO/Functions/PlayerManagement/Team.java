@@ -1,4 +1,4 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.PlayerManagement;
 
 import de.Iclipse.BARO.Data;
 import org.bukkit.ChatColor;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.Iclipse.BARO.Data.*;
-import static de.Iclipse.BARO.Functions.Tablist.scoreboard;
+import static de.Iclipse.BARO.Functions.HUD.Tablist.scoreboard;
 
 public class Team {
 
@@ -28,6 +28,8 @@ public class Team {
         team.setColor(color);
         team.setPrefix(color + "");
         team.setColor(color);
+        team.setAllowFriendlyFire(false);
+        team.setOption(org.bukkit.scoreboard.Team.Option.NAME_TAG_VISIBILITY, org.bukkit.scoreboard.Team.OptionStatus.FOR_OTHER_TEAMS);
         this.color = color;
         this.users = new ArrayList<>();
         this.material = material;
@@ -77,6 +79,16 @@ public class Team {
         team.addEntry(u.getPlayer().getName());
         tablist.updatePlayer(u.getPlayer());
         dsp.send(u.getPlayer(), "team.changed", this.getColor() + "Team " + dsp.get("color." + this.getColor().asBungee().getName(), u.getPlayer()));
+    }
+
+    public int getAlive() {
+        final int[] alive = {0};
+        users.forEach(user -> {
+            if (user.isAlive()) {
+                alive[0]++;
+            }
+        });
+        return alive[0];
     }
 
     public boolean isMember(User u) {

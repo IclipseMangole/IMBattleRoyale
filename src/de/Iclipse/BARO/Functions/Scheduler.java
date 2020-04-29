@@ -1,6 +1,13 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.Border.BorderManager;
+import de.Iclipse.BARO.Functions.Border.Map;
+import de.Iclipse.BARO.Functions.Chests.LootDrops;
+import de.Iclipse.BARO.Functions.HUD.BossBar;
+import de.Iclipse.BARO.Functions.HUD.Scoreboard;
+import de.Iclipse.BARO.Functions.States.Finish;
+import de.Iclipse.BARO.Functions.States.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -28,13 +35,16 @@ public class Scheduler {
 
 
                 } else if (Data.state == GameState.Finished) {
-
+                    Finish.firework();
                 } else if (Data.state == GameState.Running) {
                     PlayerSpawns.teleport();
                     Timer.timer();
                     BorderManager.border();
                     Scoreboard.scoreboard();
+                    BossBar.bossbar();
                     Map.map();
+                    Knocked.reviving();
+                    LootDrops.lootDrop();
                 }
                 seconds = (seconds + 1) % 59;
             }

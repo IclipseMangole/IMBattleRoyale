@@ -1,6 +1,7 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.States.Start;
 import de.Iclipse.IMAPI.Functions.Vanish;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -74,7 +75,7 @@ public class Countdown {
                     Bukkit.getOnlinePlayers().forEach(entry -> {
                         entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1);
                     });
-                    GameStart.startGame();
+                    Start.startGame();
                 }
 
                 Bukkit.getOnlinePlayers().forEach(entry -> {
@@ -95,6 +96,8 @@ public class Countdown {
             if (countdown < defaultcountdown) {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     dsp.send(entry, "countdown.reset");
+                    entry.setLevel(0);
+                    entry.setExp(0.0f);
                 });
                 countdown = defaultcountdown;
             } else {

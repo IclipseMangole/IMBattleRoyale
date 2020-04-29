@@ -1,17 +1,17 @@
-package de.Iclipse.BARO.Listener;
+package de.Iclipse.BARO.Functions.States;
 
-import de.Iclipse.BARO.Functions.GameState;
-import de.Iclipse.BARO.Functions.User;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
+import de.Iclipse.BARO.Functions.Settings;
 import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardObjective;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Switch;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,17 +25,23 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
-import static de.Iclipse.BARO.Functions.User.getUser;
+import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
+import static de.Iclipse.IMAPI.Util.ScoreboardSign.setField;
 
-public class LobbyListener implements Listener {
+public class Lobby implements Listener {
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        PacketPlayOutScoreboardObjective packet = new PacketPlayOutScoreboardObjective();
+        setField(packet, "a", e.getPlayer().getName());
+        setField(packet, "d", 1);
+        ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
         if (state != GameState.Running) {
             Player p = e.getPlayer();
             tablist.setTablist(p);
@@ -44,10 +50,10 @@ public class LobbyListener implements Listener {
                 e.setJoinMessage(null);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     if (!entry.equals(p)) {
-                        dsp.send(entry, "join.message", p.getDisplayName());
+                        dsp.send(entry, "lobby.join", p.getDisplayName());
                     }
                 });
-                dsp.send(Bukkit.getConsoleSender(), "join.message", p.getDisplayName());
+                dsp.send(Bukkit.getConsoleSender(), "lobby.join", p.getDisplayName());
                 setLobbyInventory(p);
                 new User(p);
             }
@@ -55,6 +61,9 @@ public class LobbyListener implements Listener {
             p.setAllowFlight(false);
             p.setFlying(false);
             p.setGravity(true);
+            p.setCanPickupItems(false);
+            p.setCollidable(false);
+            p.setBedSpawnLocation(new Location(Bukkit.getWorld("world"), 0, 81, 0));
             if (p.getActivePotionEffects().size() != 0) {
                 p.getActivePotionEffects().forEach(entry -> {
                     p.removePotionEffect(entry.getType());
@@ -64,6 +73,7 @@ public class LobbyListener implements Listener {
             p.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
             p.getWorld().setStorm(false);
             p.resetPlayerTime();
+            p.setWalkSpeed(0.2f);
             switch (new Random().nextInt(2)) {
                 case 0:
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 1, 1.3f);
@@ -82,7 +92,17 @@ public class LobbyListener implements Listener {
         p.setHealth(20.0);
         p.setFoodLevel(20);
         p.setLevel(0);
+        p.getInventory().setItem(8, getSettingsItem(p));
     }
+
+    public ItemStack getSettingsItem(Player p) {
+        ItemStack item = heads.get("settings");
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setDisplayName(dsp.get("settings.item", p));
+        item.setItemMeta(meta);
+        return item;
+    }
+
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
@@ -90,9 +110,9 @@ public class LobbyListener implements Listener {
             Player p = e.getPlayer();
             e.setQuitMessage(null);
             Bukkit.getOnlinePlayers().forEach(entry -> {
-                dsp.send(entry, "quit.message", p.getDisplayName());
+                dsp.send(entry, "lobby.quit", p.getDisplayName());
             });
-            dsp.send(Bukkit.getConsoleSender(), "quit.message", p.getDisplayName());
+            dsp.send(Bukkit.getConsoleSender(), "lobby.quit", p.getDisplayName());
             if (getUser(p) != null) {
                 User u = getUser(p);
                 if (u.getTeam() != null) {
@@ -110,15 +130,24 @@ public class LobbyListener implements Listener {
             if (e.hasItem()) {
                 if (e.getItem().getType().toString().contains("CONCRETE")) {
                     openTeamMenu(p);
+                } else if (e.getItem().getItemMeta().getDisplayName().equals(getSettingsItem(p).getItemMeta().getDisplayName())) {
+                    Settings.openSettingsInventory(p);
                 }
             }
             if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 if (e.getClickedBlock().getType().equals(Material.STONE_BUTTON)) {
-
-
-                    BlockFace bf = e.getBlockFace();
-                    Block ab = e.getClickedBlock().getRelative(bf);
-                    if (ab.getType().equals(Material.GOLD_BLOCK)) {
+                    Switch button = (Switch) e.getClickedBlock().getBlockData();
+                    BlockFace face = button.getFacing();
+                    switch (button.getFace()) {
+                        case FLOOR:
+                            face = BlockFace.UP;
+                            break;
+                        case CEILING:
+                            face = BlockFace.DOWN;
+                            break;
+                    }
+                    Block behind = e.getClickedBlock().getRelative(face.getOppositeFace());
+                    if (behind.getType().equals(Material.GOLD_BLOCK)) {
                         int schnitzel = 1000;
                         dsp.send(p, "jumpnrun.finished", "" + schnitzel);
                         de.Iclipse.IMAPI.Database.User.addSchnitzel(UUIDFetcher.getUUID(p.getName()), schnitzel);
@@ -127,6 +156,7 @@ public class LobbyListener implements Listener {
             }
         }
     }
+
 
     public static void openTeamMenu(Player p) {
         PopupMenu teamInv = new PopupMenu(dsp.get("team.title", p), 5);
@@ -163,9 +193,7 @@ public class LobbyListener implements Listener {
                 @Override
                 public void onClick(Player p) {
                     User u = getUser(p);
-                    System.out.println(u.getTeam());
                     if (u.getTeam() != null) {
-                        System.out.println("Teamitem clicked: " + team.toString() + ", Users Team: " + u.getTeam());
                         if (u.getTeam().equals(team)) {
                             dsp.send(p, "team.already");
                             teamInv.closeMenu(p);

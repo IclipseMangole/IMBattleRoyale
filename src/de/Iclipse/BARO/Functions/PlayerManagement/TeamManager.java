@@ -1,4 +1,4 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.PlayerManagement;
 
 
 import de.Iclipse.BARO.Data;

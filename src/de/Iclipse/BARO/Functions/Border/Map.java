@@ -1,6 +1,9 @@
-package de.Iclipse.BARO.Functions;
+package de.Iclipse.BARO.Functions.Border;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.Chests.LootDrops;
+import de.Iclipse.BARO.Functions.States.GameState;
+import net.minecraft.server.v1_15_R1.MapIcon;
 import net.minecraft.server.v1_15_R1.PacketPlayOutMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static de.Iclipse.BARO.Data.dsp;
@@ -78,10 +82,15 @@ public class Map implements Listener {
         removing.forEach(((MapMeta) item.getItemMeta()).getMapView()::removeRenderer);
         */
 
-        /*
+
         Collection<MapIcon> list = new ArrayList<>();
         list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) p.getLocation().getBlockX(), (byte) p.getLocation().getBlockZ(), (byte) 0, null));
-         */
+        LootDrops.drops.forEach((loc, looted) -> {
+            if (!looted) {
+                list.add(new MapIcon(MapIcon.Type.BANNER_MAGENTA, (byte) loc.getBlockX(), (byte) loc.getBlockZ(), (byte) 0, null));
+            }
+        });
+
 
         /*
         MapRender render = new MapRender(p.getLocation(), scale);
@@ -105,15 +114,15 @@ public class Map implements Listener {
         if (!middle.equals(BorderManager.border.getCurrentMiddle()) && BorderManager.border.getRadiusNew() != BorderManager.border.getCurrentRadius()) {
             byte mapMiddleX = (byte) Math.floor((middle.getX() + 512) / 8);
             byte mapMiddleZ = (byte) Math.floor((middle.getZ() + 512) / 8);
-            byte mapRadius = (byte) Math.ceil(BorderManager.border.getRadiusNew() / 8);
+            byte mapRadius = (byte) Math.ceil(BorderManager.border.getRadiusNew() / 8 + 1);
             double radius = BorderManager.border.getRadiusNew();
             for (byte z = 0; z <= mapRadius; z++) {
                 byte mapZ = (byte) (mapMiddleZ - mapRadius + z);
-                for (byte x = 0; x <= mapRadius; x++) {
+                for (byte x = 0; x < mapRadius; x++) {
                     byte mapX = (byte) (mapMiddleX - mapRadius + x);
                     Location loc1 = new Location(Bukkit.getWorld("world"), (mapX * 8) - 512, middle.getY(), (mapZ * 8) - 512);
                     Location loc2 = new Location(Bukkit.getWorld("world"), (mapX * 8 + 7) - 512, middle.getY(), (mapZ * 8 + 7) - 512);
-                    if (loc1.distance(middle) + 0.5 >= radius && loc2.distance(middle) - 0.5 <= radius) {
+                    if (loc1.distance(middle) + 1 >= radius && loc2.distance(middle) - 1 <= radius) {
                         setColors(mapX, mapZ, mapMiddleX, mapMiddleZ, (byte) (14 * 4));
                     }
                 }

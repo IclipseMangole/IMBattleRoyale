@@ -1,7 +1,7 @@
 package de.Iclipse.BARO.Commands;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.GameState;
+import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Functions.Vanish;
 import de.Iclipse.IMAPI.Util.Command.IMCommand;
 import org.bukkit.Bukkit;
