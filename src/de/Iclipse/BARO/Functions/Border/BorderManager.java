@@ -88,8 +88,8 @@ public class BorderManager implements Listener {
                     } else {
                         p.damage(2.5);
                     }
+                    p.playEffect(EntityEffect.HURT_DROWN);
                 }
-                p.playEffect(EntityEffect.HURT_DROWN);
                 if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
                     p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 1, 10));
                 }
@@ -166,8 +166,9 @@ public class BorderManager implements Listener {
     public static void sendBorderEffect(Player p) {
         WorldBorder w = new WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
-        w.setSize(1);
-        w.setCenter(p.getLocation().getX() + 10_000, p.getLocation().getZ() + 10_000);
+        w.setSize(30_000_000);
+        w.setWarningDistance(30_000_005);
+        w.setCenter(p.getLocation().getX(), p.getLocation().getZ());
         ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutWorldBorder(w, PacketPlayOutWorldBorder.EnumWorldBorderAction.INITIALIZE));
     }
 
@@ -175,6 +176,7 @@ public class BorderManager implements Listener {
         WorldBorder w = new WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);
+        w.setWarningDistance(1);
         w.setCenter(p.getLocation().getX(), p.getLocation().getZ());
         ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutWorldBorder(w, PacketPlayOutWorldBorder.EnumWorldBorderAction.INITIALIZE));
     }

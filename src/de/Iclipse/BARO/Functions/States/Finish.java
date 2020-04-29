@@ -33,7 +33,7 @@ public class Finish implements Listener {
             });
             entry.getInventory().clear();
             BorderManager.removeBorderEffect(entry);
-            entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 1, 1);
+            entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.6f, 1f);
             BossBar.clearBars(entry);
             Scoreboard.boards.get(entry).destroy();
         });

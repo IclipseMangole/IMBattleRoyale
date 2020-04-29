@@ -6,12 +6,10 @@ import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
-import net.minecraft.server.v1_15_R1.PacketPlayOutScoreboardObjective;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Switch;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,17 +29,12 @@ import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
-import static de.Iclipse.IMAPI.Util.ScoreboardSign.setField;
 
 public class Lobby implements Listener {
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        PacketPlayOutScoreboardObjective packet = new PacketPlayOutScoreboardObjective();
-        setField(packet, "a", e.getPlayer().getName());
-        setField(packet, "d", 1);
-        ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
         if (state != GameState.Running) {
             Player p = e.getPlayer();
             tablist.setTablist(p);

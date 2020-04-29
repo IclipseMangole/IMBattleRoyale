@@ -45,6 +45,7 @@ public class Scheduler {
                     Map.map();
                     Knocked.reviving();
                     LootDrops.lootDrop();
+                    Watcher.watcher();
                 }
                 seconds = (seconds + 1) % 59;
             }

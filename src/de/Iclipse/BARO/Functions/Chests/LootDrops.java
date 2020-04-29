@@ -35,7 +35,7 @@ public class LootDrops implements Listener {
                 Location change = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
                 System.out.println("Loc: " + loc);
                 System.out.println("Changed: " + change);
-                if (loc.getWorld().getHighestBlockAt(loc).getY() < loc.getY()) {
+                if (change.getBlock().getType() == Material.AIR) {
                     loc.getBlock().setType(Material.AIR);
                     change.getBlock().setType(Material.CHEST);
                     drops.remove(loc);

@@ -180,6 +180,17 @@ public class User {
         return false;
     }
 
+    public boolean hasLivingMates() {
+        if (getTeam() != null) {
+            if (!isAlive()) {
+                return getTeam().getAlive() > 0;
+            } else {
+                return getTeam().getAlive() > 1;
+            }
+        }
+        return false;
+    }
+
     public void save(int gameId) {
         BAROStats.insertStats(UUIDFetcher.getUUID(player.getName()), gameId, kills, deaths, damageDealt, damageReceived, blocksPlaced, blocksDestroyed, itemsCrafted, lootedChests, lootedDrops, place, finished);
     }

@@ -58,7 +58,7 @@ public class Scoreboard implements Listener {
             if (User.getUser(p) != null) {
                 User u = User.getUser(p);
                 if (u.getTeam() != null) {
-                    if (hasLivingMates(u)) {
+                    if (u.hasLivingMates()) {
                         if (matesShowedOnScoreboard(u)) {
                             final int[] i = {0};
                             u.getTeam().getUsers().forEach(entry -> {
@@ -105,13 +105,6 @@ public class Scoreboard implements Listener {
         }
     }
 
-    public static boolean hasLivingMates(User u) {
-        if (!u.isAlive()) {
-            return u.getTeam().getAlive() > 0;
-        } else {
-            return u.getTeam().getAlive() > 1;
-        }
-    }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {

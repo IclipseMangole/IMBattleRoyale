@@ -52,6 +52,16 @@ public class Team {
         return users;
     }
 
+    public ArrayList<User> getAlives() {
+        ArrayList<User> list = new ArrayList<>();
+        users.forEach(entry -> {
+            if (entry.isAlive()) {
+                list.add(entry);
+            }
+        });
+        return list;
+    }
+
     public Material getMaterial() {
         return material;
     }

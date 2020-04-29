@@ -44,6 +44,8 @@ public class Data {
     public static ArrayList<Player> flyingPlayers = new ArrayList<>();
     //Slow Fall
     public static ArrayList<Player> fallingPlayers = new ArrayList<>();
+    public static ArrayList<User> watchers = new ArrayList<>();
+    public static HashMap<Player, Player> cameras = new HashMap<>();
     public static HashMap<ArrayList<User>, Integer> reviving = new HashMap<>();
     public static HashMap<Player, BossBar> playerBossBars = new HashMap<>();
     public static int timer = 0;

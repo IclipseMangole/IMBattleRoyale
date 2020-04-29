@@ -1,6 +1,7 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.SkullUtils;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
@@ -17,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -27,16 +29,21 @@ import org.bukkit.potion.PotionEffectType;
 import static de.Iclipse.BARO.Data.dsp;
 
 public class Spectator implements Listener {
+
+
     public static void setSpectator(Player p) {
-        /*
-        if(User.getUser(p) != null){
+        if (User.getUser(p) != null) {
             User u = User.getUser(p);
-            if(u.getTeam() != null){
-                Packet packet = new PacketPlayOutCamera((Entity) u.getTeam().getUsers().get(new Random().nextInt(u.getTeam().getAlive())).getPlayer());
-                ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+            if (u.hasLivingMates()) {
+                Watcher.setWatcher(u);
+                return;
             }
         }
-         */
+        setRealSpectator(p);
+    }
+
+
+    public static void setRealSpectator(Player p) {
         Data.spectators.add(p);
         p.setCollidable(false);
         p.setAllowFlight(true);
@@ -72,6 +79,17 @@ public class Spectator implements Listener {
             }
         });
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1, true, false));
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractAtEntityEvent e) {
+        if (Data.state == GameState.Running) {
+            if (e.getRightClicked() instanceof Player) {
+                if (Data.spectators.contains(e.getPlayer())) {
+
+                }
+            }
+        }
     }
 
     @EventHandler

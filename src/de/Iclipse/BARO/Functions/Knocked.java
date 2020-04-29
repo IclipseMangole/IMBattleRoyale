@@ -27,7 +27,8 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static de.Iclipse.IMAPI.Data.dsp;
+import static de.Iclipse.BARO.Data.dsp;
+
 
 public class Knocked implements Listener {
 
@@ -128,7 +129,7 @@ public class Knocked implements Listener {
     public static void setKnocked(User u, Player knockedBy) {
         if (knockedBy == null) {
             Bukkit.getOnlinePlayers().forEach(entry -> {
-                dsp.send(u.getPlayer(), "knocked.noplayer", u.getPlayer().getDisplayName());
+                dsp.send(entry, "knocked.noplayer", u.getPlayer().getDisplayName());
             });
             dsp.send(Bukkit.getConsoleSender(), "knocked.noplayer", u.getPlayer().getDisplayName());
         } else {
