@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,13 +29,12 @@ public class LootDrops implements Listener {
         if (random.nextInt(300) == 0) {
             spawnDrop();
         }
-        for (Map.Entry<Location, Boolean> entry : drops.entrySet()) {
+        for (Iterator<Map.Entry<Location, Boolean>> iterator = drops.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Location, Boolean> entry = iterator.next();
             Location loc = entry.getKey();
             Boolean looted = entry.getValue();
             if (!looted) {
                 Location change = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
-                System.out.println("Loc: " + loc);
-                System.out.println("Changed: " + change);
                 if (change.getBlock().getType() == Material.AIR) {
                     loc.getBlock().setType(Material.AIR);
                     change.getBlock().setType(Material.CHEST);

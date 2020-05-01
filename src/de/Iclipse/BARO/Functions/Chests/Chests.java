@@ -34,6 +34,7 @@ public class Chests implements Listener {
                 chestInventorys.get(e.getInventory().getLocation()).forEach((slot, item) -> {
                     e.getInventory().setItem(slot, item);
                 });
+                chests.replace(e.getInventory().getLocation(), true);
             }
         }
     }

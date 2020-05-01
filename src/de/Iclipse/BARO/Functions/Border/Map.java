@@ -99,7 +99,7 @@ public class Map implements Listener {
         }
          */
 
-        PacketPlayOutMap packet = new PacketPlayOutMap(id, (byte) 3, true, true, new ArrayList<>(), map, 0, 0, 128, 128);
+        PacketPlayOutMap packet = new PacketPlayOutMap(id, (byte) 3, true, true, list, map, 0, 0, 128, 128);
         ((CraftPlayer) p).getHandle().playerConnection.networkManager.sendPacket(packet);
     }
 

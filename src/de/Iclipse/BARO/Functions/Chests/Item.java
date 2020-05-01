@@ -64,7 +64,7 @@ public class Item {
     public static void loadItems() {
         new Item(new ItemStack(Material.IRON_SWORD), 0, 0, 1, 1);
         new Item(new ItemStack(Material.COOKED_BEEF), 7, 3, 10, 5);
-        new Item(new ItemStack(Material.POTATO), 9, 7, 11, 9);
+        new Item(new ItemStack(Material.BAKED_POTATO), 9, 7, 11, 9);
         new Item(new ItemStack(Material.DIAMOND_SWORD), 0, 0, 1, 1);
         new Item(new ItemStack(Material.WOODEN_SWORD), 1, 1, 0, 0);
         new Item(new ItemStack(Material.WOODEN_AXE), 1, 1, 0, 0);

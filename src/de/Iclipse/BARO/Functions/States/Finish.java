@@ -7,7 +7,10 @@ import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.Spectator;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
+import net.minecraft.server.v1_15_R1.Entity;
+import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.event.Listener;
 
 import java.time.Instant;
@@ -22,6 +25,10 @@ public class Finish implements Listener {
         Data.state = GameState.Finished;
         de.Iclipse.IMAPI.Data.restart = 30;
         Bukkit.getOnlinePlayers().forEach(entry -> {
+            if (Data.cameras.containsKey(entry)) {
+                PacketPlayOutCamera packet = new PacketPlayOutCamera((Entity) entry);
+                ((CraftPlayer) entry).getHandle().playerConnection.sendPacket(packet);
+            }
             if (Data.spectators.contains(entry)) {
                 Spectator.removeSpectator(entry);
             }
@@ -33,7 +40,7 @@ public class Finish implements Listener {
             });
             entry.getInventory().clear();
             BorderManager.removeBorderEffect(entry);
-            entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.6f, 1f);
+            entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.6f, 1.1f);
             BossBar.clearBars(entry);
             Scoreboard.boards.get(entry).destroy();
         });

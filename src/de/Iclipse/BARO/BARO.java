@@ -87,6 +87,7 @@ public class BARO extends JavaPlugin {
         IMAPI.register(new Chests(), this);
         IMAPI.register(new BossBar(), this);
         IMAPI.register(new LastDamage(), this);
+        IMAPI.register(new Watcher(), this);
     }
 
     public void registerCommands() {

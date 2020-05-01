@@ -37,7 +37,7 @@ public class Knocked implements Listener {
         if (Data.reviving.size() > 0) {
             ArrayList<ArrayList> toRemove = new ArrayList<>();
             Data.reviving.forEach((list, cd) -> {
-                if (isWatching(list.get(0).getPlayer(), list.get(1).getPlayer())) {
+                if (isWatching(list.get(0).getPlayer(), list.get(1).getPlayer()) && !list.get(0).isKnocked()) {
                     if (cd < 10) {
                         cd++;
                         for (User user : list) {
@@ -147,7 +147,6 @@ public class Knocked implements Listener {
         u.getPlayer().setSneaking(true);
         //Bukkit.getOnlinePlayers().forEach(o -> sendSwimmPacket(o, u.getPlayer()));
         u.getPlayer().setWalkSpeed(0.05f);
-        u.getPlayer().setGlowing(true);
         if (Data.playerBossBars.containsKey(u.getPlayer())) {
             org.bukkit.boss.BossBar bar = Data.playerBossBars.get(u.getPlayer());
             if (!bar.getColor().equals(BarColor.RED)) {
@@ -164,7 +163,6 @@ public class Knocked implements Listener {
         u.getPlayer().setCanPickupItems(true);
         u.getPlayer().setSneaking(false);
         u.getPlayer().setWalkSpeed(0.2f);
-        u.getPlayer().setGlowing(false);
         u.getPlayer().setSneaking(false);
         //Bukkit.getOnlinePlayers().forEach(o -> sendStandPacket(o, u.getPlayer()));
         u.getPlayer().getActivePotionEffects().forEach(effect -> u.getPlayer().removePotionEffect(effect.getType()));

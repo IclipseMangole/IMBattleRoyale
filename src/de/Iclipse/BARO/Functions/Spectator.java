@@ -6,9 +6,12 @@ import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.SkullUtils;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
+import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,10 +20,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -86,9 +86,18 @@ public class Spectator implements Listener {
         if (Data.state == GameState.Running) {
             if (e.getRightClicked() instanceof Player) {
                 if (Data.spectators.contains(e.getPlayer())) {
-
+                    PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) e.getRightClicked()).getHandle());
+                    ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
+                    Data.cameras.put(e.getPlayer(), (Player) e.getRightClicked());
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent e) {
+        if (Data.cameras.containsKey(e.getPlayer())) {
+            Data.cameras.remove(e.getPlayer());
         }
     }
 
