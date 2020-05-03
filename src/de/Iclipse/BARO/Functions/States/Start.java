@@ -7,7 +7,6 @@ import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import java.time.Instant;
 import java.util.Date;
@@ -15,7 +14,7 @@ import java.util.Date;
 import static de.Iclipse.BARO.Data.dsp;
 
 
-public class Start implements Listener {
+public class Start {
     public static void startGame() {
         Data.users.forEach(user -> {
             TeamManager.autoFill();

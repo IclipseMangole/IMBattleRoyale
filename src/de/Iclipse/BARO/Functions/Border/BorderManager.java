@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.BARO.Data.spawn;
 
 public class BorderManager implements Listener {
     public static Border border = new Border(new Location(Bukkit.getWorld("world"), 0, 81, 0), 450);
@@ -31,7 +32,7 @@ public class BorderManager implements Listener {
             border.setProgress(border.getProgress() + 0.0025);
             if (border.getProgress() == 1) {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
-                    entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+                    entry.playSound(entry.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1, 1);
                 });
             }
         } else {
@@ -45,7 +46,7 @@ public class BorderManager implements Listener {
             border.setMiddleNew(newMiddle());
             border.setProgress(0.0);
             Bukkit.getOnlinePlayers().forEach(entry -> {
-                entry.playSound(entry.getLocation(), Sound.ENTITY_ENDERMAN_STARE, 1, 1);
+                entry.playSound(entry.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
             });
         }
         Data.users.forEach(u -> {
@@ -143,7 +144,11 @@ public class BorderManager implements Listener {
         if (Data.state == GameState.Running) {
             Player p = e.getPlayer();
             if (e.getTo().distance(new Location(e.getTo().getWorld(), 0, e.getTo().getY(), 0)) > 450) {
-                e.setCancelled(true);
+                if (!Data.flyingPlayers.contains(p) || !Data.fallingPlayers.contains(p)) {
+                    p.setVelocity(new Location(p.getWorld(), 0, 81, 0).toVector().subtract(p.getLocation().toVector()).normalize());
+                } else {
+                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(-0.5));
+                }
             }
         }
     }
@@ -164,6 +169,7 @@ public class BorderManager implements Listener {
     }
 
     public static void sendBorderEffect(Player p) {
+        p.playSound(p.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1, 1);
         WorldBorder w = new WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);

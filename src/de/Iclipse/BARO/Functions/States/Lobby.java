@@ -251,7 +251,7 @@ public class Lobby implements Listener {
             Player p = e.getPlayer();
             if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
                 if (p.getLocation().distance(spawn(p.getWorld())) < 70) {
-                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(1.7));
+                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
                 } else {
                     p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).setY(2));
                 }

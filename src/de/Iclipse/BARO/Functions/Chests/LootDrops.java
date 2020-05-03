@@ -3,10 +3,7 @@ package de.Iclipse.BARO.Functions.Chests;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,6 +60,9 @@ public class LootDrops implements Listener {
                 sendParticlesAround(e.getInventory().getLocation());
                 Bukkit.getOnlinePlayers().forEach(p -> dsp.send(p, "drop.looted", e.getInventory().getLocation().getBlockX() + "", e.getInventory().getLocation().getBlockZ() + ""));
                 drops.remove(e.getInventory().getLocation());
+                Bukkit.getOnlinePlayers().forEach(entry -> {
+                    entry.playSound(entry.getLocation(), Sound.BLOCK_BELL_RESONATE, 1, 1.0f);
+                });
             }
         }
     }
@@ -75,6 +75,9 @@ public class LootDrops implements Listener {
         });
         sendBeacon(loc);
         drops.put(loc, false);
+        Bukkit.getOnlinePlayers().forEach(entry -> {
+            entry.playSound(entry.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1, 1.0f);
+        });
     }
 
     public static void sendBeacon(Location loc) {
@@ -139,7 +142,10 @@ public class LootDrops implements Listener {
     }
 
     public static void sendBlockChange(Location loc, BlockData data) {
-        System.out.println(loc + ", " + data.getMaterial().toString());
+        //System.out.println(loc + ", " + data.getMaterial().toString());
+        if (!loc.getChunk().isLoaded()) {
+            loc.getChunk().load();
+        }
         Bukkit.getOnlinePlayers().forEach(p -> p.sendBlockChange(loc, data));
     }
 
@@ -182,10 +188,10 @@ public class LootDrops implements Listener {
             }
             Item item = Item.getDropItems().get(random.nextInt(Item.getDropItems().size()));
             ItemStack itemStack = item.getItem();
-            if (item.getChestMinAmount() != item.getChestMaxAmount()) {
-                itemStack.setAmount(random.nextInt(item.getChestMaxAmount() - item.getChestMinAmount()) + item.getChestMinAmount());
+            if (item.getDropMinAmount() != item.getDropMaxAmount()) {
+                itemStack.setAmount(random.nextInt(item.getDropMaxAmount() - item.getDropMinAmount()) + item.getDropMinAmount());
             } else {
-                itemStack.setAmount(item.getChestMaxAmount());
+                itemStack.setAmount(item.getDropMaxAmount());
             }
             inv.put(slot, itemStack);
         }

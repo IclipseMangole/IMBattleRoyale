@@ -35,7 +35,7 @@ public class Countdown {
                         });
                         dsp.send(Bukkit.getConsoleSender(), "countdown.message", "" + Data.countdown, dsp.get("unit.minutes", Bukkit.getConsoleSender()));
                         Bukkit.getOnlinePlayers().forEach(entry -> {
-                            entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
+                            entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1.0f);
                         });
                     }
                 } else if (Data.countdown > 5) {
@@ -46,7 +46,7 @@ public class Countdown {
                         dsp.send(Bukkit.getConsoleSender(), "countdown.message", "" + Data.countdown, dsp.get("unit.minutes", Bukkit.getConsoleSender()));
                         if (countdown == 15) {
                             Bukkit.getOnlinePlayers().forEach(entry -> {
-                                entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
+                                entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1.0f);
                             });
                         }
                     } else if (countdown == 10) {
@@ -55,7 +55,7 @@ public class Countdown {
                         });
                         dsp.send(Bukkit.getConsoleSender(), "countdown.message", "" + Data.countdown, dsp.get("unit.minutes", Bukkit.getConsoleSender()));
                         Bukkit.getOnlinePlayers().forEach(entry -> {
-                            entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
+                            entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1.0f);
                         });
 
                     }
@@ -65,7 +65,7 @@ public class Countdown {
                     });
                     dsp.send(Bukkit.getConsoleSender(), "countdown.message", "" + Data.countdown, dsp.get("unit.minutes", Bukkit.getConsoleSender()));
                     Bukkit.getOnlinePlayers().forEach(entry -> {
-                        entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1);
+                        entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 1.0f);
                     });
                 } else {
                     Bukkit.getOnlinePlayers().forEach(entry -> {
@@ -73,7 +73,7 @@ public class Countdown {
                     });
                     dsp.send(Bukkit.getConsoleSender(), "countdown.finished");
                     Bukkit.getOnlinePlayers().forEach(entry -> {
-                        entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1);
+                        entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1.0f);
                     });
                     Start.startGame();
                 }

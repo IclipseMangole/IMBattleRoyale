@@ -42,7 +42,7 @@ public class Watcher implements Listener {
 
     private static void setWatcherInventory(User u) {
         ArrayList<User> alives = u.getTeam().getAlives();
-        for (int i = 0; i < alives.size() || i < 9; i++) {
+        for (int i = 0; i < alives.size() && i < 9; i++) {
             u.getPlayer().getInventory().setItem(i, getPlayerHead(u.getPlayer(), alives.get(i).getPlayer()));
         }
     }
@@ -68,8 +68,9 @@ public class Watcher implements Listener {
                         if (u.getTeam() != null) {
                             if (e.getItem().getType().equals(Material.PLAYER_HEAD)) {
                                 SkullMeta meta = (SkullMeta) e.getItem().getItemMeta();
-                                if (u.getTeam().getAlives().size() > 0) {
-                                    u.getTeam().getAlives().forEach(a -> {
+                                ArrayList<User> alives = u.getTeam().getAlives();
+                                if (alives.size() > 0) {
+                                    alives.forEach(a -> {
                                         if (meta.getOwningPlayer().getName().equals(a.getPlayer().getName())) {
                                             PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) a.getPlayer()).getHandle());
                                             ((CraftPlayer) u.getPlayer()).getHandle().playerConnection.sendPacket(packet);

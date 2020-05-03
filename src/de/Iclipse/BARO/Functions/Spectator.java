@@ -32,6 +32,7 @@ public class Spectator implements Listener {
 
 
     public static void setSpectator(Player p) {
+        p.teleport(new Location(p.getWorld(), 0, 82, 0));
         if (User.getUser(p) != null) {
             User u = User.getUser(p);
             if (u.hasLivingMates()) {
@@ -97,7 +98,11 @@ public class Spectator implements Listener {
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent e) {
         if (Data.cameras.containsKey(e.getPlayer())) {
-            Data.cameras.remove(e.getPlayer());
+            if (!Data.watchers.contains(e.getPlayer())) {
+                PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) e.getPlayer()).getHandle());
+                ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
+                Data.cameras.remove(e.getPlayer());
+            }
         }
     }
 
@@ -175,6 +180,15 @@ public class Spectator implements Listener {
                 if (e.getItem().equals(getCompass(e.getPlayer()))) {
                     openCompassInventory(e.getPlayer());
                 }
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onCollect(PlayerPickupItemEvent e) {
+        if (Data.state == GameState.Running) {
+            if (Data.spectators.contains(e.getPlayer())) {
                 e.setCancelled(true);
             }
         }

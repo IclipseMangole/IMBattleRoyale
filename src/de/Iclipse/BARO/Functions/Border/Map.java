@@ -84,10 +84,11 @@ public class Map implements Listener {
 
 
         Collection<MapIcon> list = new ArrayList<>();
-        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) p.getLocation().getBlockX(), (byte) p.getLocation().getBlockZ(), (byte) 0, null));
+        byte direction = p.getLocation().getYaw() < 0 ? (byte) Math.round(p.getLocation().getYaw() / 16) : (byte) Math.round(((180 + p.getLocation().getYaw()) + 180) / 16);
+        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), direction, null));
         LootDrops.drops.forEach((loc, looted) -> {
             if (!looted) {
-                list.add(new MapIcon(MapIcon.Type.BANNER_MAGENTA, (byte) loc.getBlockX(), (byte) loc.getBlockZ(), (byte) 0, null));
+                list.add(new MapIcon(MapIcon.Type.BANNER_MAGENTA, (byte) (loc.getBlockX() / 4), (byte) (loc.getBlockZ() / 4), (byte) 0, null));
             }
         });
 
