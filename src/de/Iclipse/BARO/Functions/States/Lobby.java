@@ -50,7 +50,7 @@ public class Lobby implements Listener {
                 setLobbyInventory(p);
                 new User(p);
             }
-            p.teleport(spawn(p.getWorld()));
+            p.teleport(spawn);
             p.setAllowFlight(false);
             p.setFlying(false);
             p.setGravity(true);
@@ -69,10 +69,10 @@ public class Lobby implements Listener {
             p.setWalkSpeed(0.2f);
             switch (new Random().nextInt(2)) {
                 case 0:
-                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 1, 1.3f);
+                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 0.7f, 1.3f);
                     break;
                 case 1:
-                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_FAR, 1, 1.3f);
+                    p.playSound(p.getLocation(), Sound.MUSIC_DISC_FAR, 0.7f, 1.3f);
                     break;
             }
 
@@ -250,10 +250,10 @@ public class Lobby implements Listener {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
             if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
-                if (p.getLocation().distance(spawn(p.getWorld())) < 70) {
-                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
+                if (p.getLocation().distance(spawn) < 70) {
+                    p.setVelocity(spawn.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
                 } else {
-                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).setY(2));
+                    p.setVelocity(spawn.toVector().subtract(p.getLocation().toVector()).setY(2));
                 }
             }
         }
@@ -289,7 +289,7 @@ public class Lobby implements Listener {
     @EventHandler
     public void CreatureSpawn(CreatureSpawnEvent e) {
         if (state != GameState.Running) {
-            if (e.getLocation().distance(spawn(e.getLocation().getWorld())) < 60) {
+            if (e.getLocation().distance(spawn) < 60) {
                 e.setCancelled(true);
             }
         }

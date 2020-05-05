@@ -79,7 +79,7 @@ public class Spectator implements Listener {
                 entry.showPlayer(Data.instance, p);
             }
         });
-        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1, true, false));
+        p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
     }
 
     @EventHandler
@@ -101,6 +101,7 @@ public class Spectator implements Listener {
             if (!Data.watchers.contains(e.getPlayer())) {
                 PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) e.getPlayer()).getHandle());
                 ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
+                e.getPlayer().teleport(Data.cameras.get(e.getPlayer()));
                 Data.cameras.remove(e.getPlayer());
             }
         }
@@ -184,6 +185,7 @@ public class Spectator implements Listener {
             }
         }
     }
+
 
     @EventHandler
     public void onCollect(PlayerPickupItemEvent e) {

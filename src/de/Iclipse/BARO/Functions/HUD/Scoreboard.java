@@ -2,6 +2,7 @@ package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
+import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.ScoreboardSign;
@@ -72,6 +73,24 @@ public class Scoreboard implements Listener {
                                     }
                                 }
                             });
+                            for (int z = 10; z < 14; z++) {
+                                ss.removeLine(z);
+                            }
+                            if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+                                if ((Data.nextEventTime - Data.timer) <= 60) {
+                                    if (Data.nextEvent != EventState.None) {
+                                        ss.setLine(10, dsp.get("event.comingup.scoreboard", p, (int) (((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
+                                    } else {
+                                        ss.setLine(10, dsp.get("event.finished.scoreboard", p, (int) (100 - ((double) (Data.nextEventTime - Data.timer) / 60)) + ""));
+                                    }
+                                }
+                            } else {
+                                if (BorderManager.border.getProgress() > 1) {
+                                    ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
+                                } else {
+                                    ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
+                                }
+                            }
                         } else {
                             for (int i = 5; i < 10; i++) {
                                 ss.removeLine(i);
@@ -81,13 +100,46 @@ public class Scoreboard implements Listener {
                             } else {
                                 ss.setLine(5, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
                             }
+                            if (Data.nextEventTime - Data.timer < 60) {
+                                ss.setLine(6, ChatColor.DARK_BLUE + "");
+                                if (Data.nextEvent != EventState.None) {
+                                    ss.setLine(10, dsp.get("event.comingup.scoreboard", p, ((Data.nextEventTime - Data.timer) / 60) + ""));
+                                } else {
+                                    ss.setLine(10, dsp.get("event.finished.scoreboard", p, 100 - ((Data.nextEventTime - Data.timer) / 60) + ""));
+                                }
+                            }
                         }
-                        ss.setLine(10, ChatColor.DARK_BLUE + "");
+                        ss.setLine(12, ChatColor.DARK_RED + "");
+                    } else {
+                        if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+                            if ((Data.nextEventTime - Data.timer) <= 60) {
+                                if (Data.nextEvent != EventState.None) {
+                                    ss.setLine(10, dsp.get("event.comingup.scoreboard", p, dsp.get("event." + Data.nextEvent.getName(), p), (int) (((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
+                                } else {
+                                    ss.setLine(10, dsp.get("event.finished.scoreboard", p, dsp.get("event." + Data.nextEvent.getName(), p), (int) (100 - ((double) (Data.nextEventTime - Data.timer) / 60)) + ""));
+                                }
+                            }
+                        } else {
+                            if (BorderManager.border.getProgress() > 1) {
+                                ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
+                            } else {
+                                ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
+                            }
+                        }
+                        ss.setLine(12, ChatColor.DARK_RED + "");
                     }
                 }
             }
-            ss.setLine(11, dsp.get("scoreboard.distance", p, (int) (BorderManager.border.getCurrentRadius() - p.getLocation().distance(BorderManager.border.getCurrentMiddle())) + ""));
-            ss.setLine(12, ChatColor.DARK_GRAY + "");
+            String distance = (int) (BorderManager.border.getCurrentRadius() - p.getLocation().distance(BorderManager.border.getCurrentMiddle())) + "";
+            if (User.getUser(p) != null) {
+                if (User.getUser(p).isAlive()) {
+                    if (Data.estate == EventState.Confusion) {
+                        distance = "§e§k???";
+                    }
+                }
+            }
+            ss.setLine(13, dsp.get("scoreboard.distance", p, distance));
+            ss.setLine(14, ChatColor.DARK_GRAY + "");
             if (!boards.containsKey(p)) {
                 boards.put(p, ss);
             }

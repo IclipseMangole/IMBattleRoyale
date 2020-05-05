@@ -2,9 +2,13 @@ package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
-import de.Iclipse.BARO.Functions.Border.Map;
 import de.Iclipse.BARO.Functions.Chests.LootDrops;
+import de.Iclipse.BARO.Functions.Events.BurningSun;
+import de.Iclipse.BARO.Functions.Events.Endergames;
+import de.Iclipse.BARO.Functions.Events.Events;
+import de.Iclipse.BARO.Functions.Events.PoisonWater;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
+import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.States.Finish;
 import de.Iclipse.BARO.Functions.States.GameState;
@@ -39,6 +43,7 @@ public class Scheduler {
                 } else if (Data.state == GameState.Running) {
                     PlayerSpawns.teleport();
                     Timer.timer();
+                    Events.events();
                     BorderManager.border();
                     Scoreboard.scoreboard();
                     BossBar.bossbar();
@@ -46,6 +51,10 @@ public class Scheduler {
                     Knocked.reviving();
                     LootDrops.lootDrop();
                     Watcher.watcher();
+                    Finish.checkFinish();
+                    BurningSun.burn();
+                    PoisonWater.poison();
+                    Endergames.endergames();
                 }
                 seconds = (seconds + 1) % 59;
             }

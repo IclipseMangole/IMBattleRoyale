@@ -32,6 +32,7 @@ public class Start {
             p.getActivePotionEffects().forEach(potionEffect -> p.removePotionEffect(potionEffect.getType()));
             p.setGravity(false);
             p.setAllowFlight(true);
+            p.setSneaking(false);
             Data.spawningPlayers.add(p);
             p.sendTitle(dsp.get("teleport.title", p), dsp.get("teleport.subtitle", p), 10, 80, 10);
         });

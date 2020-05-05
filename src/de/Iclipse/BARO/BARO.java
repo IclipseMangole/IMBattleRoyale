@@ -5,11 +5,12 @@ import de.Iclipse.BARO.Commands.cmd_pause;
 import de.Iclipse.BARO.Commands.cmd_start;
 import de.Iclipse.BARO.Commands.cmd_teamsize;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
-import de.Iclipse.BARO.Functions.Border.Map;
 import de.Iclipse.BARO.Functions.Chests.Chests;
 import de.Iclipse.BARO.Functions.Chests.Item;
 import de.Iclipse.BARO.Functions.Chests.LootDrops;
+import de.Iclipse.BARO.Functions.Events.*;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
+import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.HUD.Tablist;
 import de.Iclipse.BARO.Functions.*;
@@ -37,23 +38,28 @@ import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
 import static de.Iclipse.IMAPI.IMAPI.copyFilesInDirectory;
+import static de.Iclipse.IMAPI.IMAPI.deleteFile;
 
 public class BARO extends JavaPlugin {
     @Override
     public void onLoad() {
         super.onLoad();
         Data.instance = this;
+        Config.setStandardConfig();
+        Config.readConfig();
         loadMap();
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
+        Config.correctLocations();
         registerListener();
         registerCommands();
         createTables();
         loadResourceBundles();
         Data.state = GameState.Lobby;
+        Data.estate = EventState.None;
         tablist = new Tablist();
         Map.loadMap();
         createTeams();
@@ -63,6 +69,7 @@ public class BARO extends JavaPlugin {
         loadCustomHeads();
         Item.loadItems();
         Chests.loadChests();
+        Events.registerEvents();
     }
 
     @Override
@@ -88,6 +95,13 @@ public class BARO extends JavaPlugin {
         IMAPI.register(new BossBar(), this);
         IMAPI.register(new LastDamage(), this);
         IMAPI.register(new Watcher(), this);
+        IMAPI.register(new Nether(), this);
+        IMAPI.register(new BurningSun(), this);
+        IMAPI.register(new Confusion(), this);
+        IMAPI.register(new Endergames(), this);
+        IMAPI.register(new Glowing(), this);
+        IMAPI.register(new Lostness(), this);
+        IMAPI.register(new PoisonWater(), this);
     }
 
     public void registerCommands() {
@@ -118,35 +132,23 @@ public class BARO extends JavaPlugin {
 
     public void loadMap() {
         if (new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world").exists()) {
-            deleteFolder(new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world"));
+            deleteFile(new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world"));
         }
-        File from = new File("/home/IMNetzwerk/BuildServer/BAROMap_world/region");
+        File from = new File(worldFile + "/region");
         File to = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/region");
         if (to.exists()) {
             to.delete();
         }
         try {
             copyFilesInDirectory(from, to);
-            Files.copy(new File("/home/IMNetzwerk/BuildServer/BAROMap_world/level.dat").toPath(), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/level.dat").toPath(), StandardCopyOption.REPLACE_EXISTING);
-            copyFilesInDirectory(new File("/home/IMNetzwerk/BuildServer/BAROMap_world/maps"), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/maps"));
+            Files.copy(new File(Data.worldFile + "/level.dat").toPath(), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/level.dat").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            copyFilesInDirectory(new File(Data.worldFile + "/maps"), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/maps"));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void deleteFolder(File file) {
-        if (file.listFiles().length > 0) {
-            for (File listFile : file.listFiles()) {
-                if (listFile.isDirectory()) {
-                    deleteFolder(listFile);
-                } else {
-                    listFile.delete();
-                }
-            }
-        }
-        file.delete();
-    }
 
     public void loadResourceBundles() {
         try {
@@ -173,6 +175,8 @@ public class BARO extends JavaPlugin {
         heads.put("arrowUp", SkullUtils.getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFkNmM4MWY4OTlhNzg1ZWNmMjZiZTFkYzQ4ZWFlMmJjZmU3NzdhODYyMzkwZjU3ODVlOTViZDgzYmQxNGQifX19"));
         heads.put("arrowDown", SkullUtils.getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODgyZmFmOWE1ODRjNGQ2NzZkNzMwYjIzZjg5NDJiYjk5N2ZhM2RhZDQ2ZDRmNjVlMjg4YzM5ZWI0NzFjZTcifX19"));
         heads.put("barrier", SkullUtils.getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZkMjQwMDAwMmFkOWZiYmJkMDA2Njk0MWViNWIxYTM4NGFiOWIwZTQ4YTE3OGVlOTZlNGQxMjlhNTIwODY1NCJ9fX0="));
+        heads.put("events", SkullUtils.getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE4MTJiNGUwZjAxYmIxOTM3ZGY5Mzg5ZmU2N2UyNWZhNWQ4NzYxMjQ4NTk4MzcwMTZjNDUxNTRiZWQzY2QxZSJ9fX0="));
+        heads.put("zone", SkullUtils.getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ4Zjc3NzEwN2YzMDFjMjQwZjgxNTRmZDk0ZTcyZThiMjJkYTFlZTQ4NzA1YTYxZWZiZmNmOWVlMjA3ZjkyZCJ9fX0="));
     }
 
 

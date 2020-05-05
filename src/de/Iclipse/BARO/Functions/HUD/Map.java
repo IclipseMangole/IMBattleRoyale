@@ -1,11 +1,15 @@
-package de.Iclipse.BARO.Functions.Border;
+package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
+import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.Chests.LootDrops;
+import de.Iclipse.BARO.Functions.Events.EventState;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import net.minecraft.server.v1_15_R1.MapIcon;
 import net.minecraft.server.v1_15_R1.PacketPlayOutMap;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
@@ -33,10 +37,17 @@ import static de.Iclipse.BARO.Data.timer;
 public class Map implements Listener {
 
     private static byte[] map;
+    private static byte[] lostMap;
     private static HashMap<Integer, Byte> changed = new HashMap<>();
 
     public static void loadMap() {
         map = loadData(new File(Bukkit.getWorld("world").getWorldFolder().getPath() + "/maps/map_0_0_3.txt"));
+        lostMap = new byte[128 * 128];
+        byte c = 0;
+        for (int i = 0; i < 128 * 128; i++) {
+            lostMap[i] = c;
+            c = (byte) (i % 127);
+        }
     }
 
     public static void map() {
@@ -75,8 +86,12 @@ public class Map implements Listener {
     }
 
     private static void sendMapView(Player p, ItemStack item) {
+        if (isPlayerLost(p)) {
+            ((MapMeta) item.getItemMeta()).getMapView().setTrackingPosition(false);
+        } else {
+            ((MapMeta) item.getItemMeta()).getMapView().setTrackingPosition(true);
+        }
         int id = ((MapMeta) item.getItemMeta()).getMapView().getId();
-
         /*
         List<MapRenderer> removing = new ArrayList<>(((MapMeta) item.getItemMeta()).getMapView().getRenderers());
         removing.forEach(((MapMeta) item.getItemMeta()).getMapView()::removeRenderer);
@@ -84,13 +99,36 @@ public class Map implements Listener {
 
 
         Collection<MapIcon> list = new ArrayList<>();
-        byte direction = p.getLocation().getYaw() < 0 ? (byte) Math.round(p.getLocation().getYaw() / 16) : (byte) Math.round(((180 + p.getLocation().getYaw()) + 180) / 16);
-        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), direction, null));
+        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
         LootDrops.drops.forEach((loc, looted) -> {
             if (!looted) {
-                list.add(new MapIcon(MapIcon.Type.BANNER_MAGENTA, (byte) (loc.getBlockX() / 4), (byte) (loc.getBlockZ() / 4), (byte) 0, null));
+                list.add(new MapIcon(MapIcon.Type.RED_X, (byte) (loc.getBlockX() / 4), (byte) (loc.getBlockZ() / 4), (byte) 0, null));
             }
         });
+        if (User.getUser(p) != null) {
+            User u = User.getUser(p);
+            if (u.getTeam() != null) {
+                if (u.isAlive() && u.getTeam().getAlives().size() > 1 || !u.isAlive()) {
+                    for (User alive : u.getTeam().getAlives()) {
+                        if (!u.equals(alive)) {
+                            list.add(new MapIcon(colorToIconType(u.getTeam().getColor()), (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
+                        }
+                    }
+                }
+            } else {
+                Data.teams.forEach(t -> {
+                    t.getAlives().forEach(a -> {
+                        list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / 4), (byte) (a.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
+                    });
+                });
+            }
+        } else {
+            Data.teams.forEach(t -> {
+                t.getAlives().forEach(a -> {
+                    list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / 4), (byte) (a.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
+                });
+            });
+        }
 
 
         /*
@@ -99,8 +137,12 @@ public class Map implements Listener {
         while(!render.isFinished()){
         }
          */
-
-        PacketPlayOutMap packet = new PacketPlayOutMap(id, (byte) 3, true, true, list, map, 0, 0, 128, 128);
+        PacketPlayOutMap packet;
+        if (!isPlayerLost(p)) {
+            packet = new PacketPlayOutMap(id, (byte) 3, true, true, list, map, 0, 0, 128, 128);
+        } else {
+            packet = new PacketPlayOutMap(id, (byte) 3, false, true, new ArrayList<>(), lostMap, 0, 0, 128, 128);
+        }
         ((CraftPlayer) p).getHandle().playerConnection.networkManager.sendPacket(packet);
     }
 
@@ -216,6 +258,69 @@ public class Map implements Listener {
         view.setScale(MapView.Scale.FAR);
         view.setLocked(true);
         return view;
+    }
+
+    private static byte yawToDirection(float yaw) {
+        byte direction = yaw >= 0 ? (byte) Math.round(yaw / 16.0) : (byte) Math.round((360 + yaw) / 16.0);
+
+        /*
+        System.out.println("Yaw: " + yaw);
+        if (yaw >= 0) {
+            System.out.println("Not Rounded: " + yaw / 16.0);
+        } else {
+            System.out.println("Not Rounded: " + (360 + yaw) / 16.0);
+        }
+        System.out.println("Direction: " + direction);
+         */
+        return direction;
+    }
+
+    public static MapIcon.Type colorToIconType(ChatColor c) {
+        if (c.equals(ChatColor.BLACK)) {
+            return MapIcon.Type.BANNER_BLACK;
+        } else if (c.equals(ChatColor.DARK_GRAY)) {
+            return MapIcon.Type.BANNER_GRAY;
+        } else if (c.equals(ChatColor.WHITE)) {
+            return MapIcon.Type.BANNER_WHITE;
+        } else if (c.equals(ChatColor.AQUA)) {
+            return MapIcon.Type.MONUMENT;
+        } else if (c.equals(ChatColor.DARK_AQUA)) {
+            return MapIcon.Type.BANNER_CYAN;
+        } else if (c.equals(ChatColor.BLUE)) {
+            return MapIcon.Type.BANNER_LIGHT_BLUE;
+        } else if (c.equals(ChatColor.DARK_BLUE)) {
+            return MapIcon.Type.BANNER_BLUE;
+        } else if (c.equals(ChatColor.DARK_PURPLE)) {
+            return MapIcon.Type.BANNER_PURPLE;
+        } else if (c.equals(ChatColor.LIGHT_PURPLE)) {
+            return MapIcon.Type.BANNER_MAGENTA;
+        } else if (c.equals(ChatColor.RED)) {
+            return MapIcon.Type.TARGET_POINT;
+        } else if (c.equals(ChatColor.DARK_RED)) {
+            return MapIcon.Type.BANNER_RED;
+        } else if (c.equals(ChatColor.GOLD)) {
+            return MapIcon.Type.BANNER_ORANGE;
+        } else if (c.equals(ChatColor.YELLOW)) {
+            return MapIcon.Type.BANNER_YELLOW;
+        } else if (c.equals(ChatColor.GREEN)) {
+            return MapIcon.Type.BANNER_LIME;
+        } else if (c.equals(ChatColor.DARK_GREEN)) {
+            return MapIcon.Type.BANNER_GREEN;
+        } else {
+            return MapIcon.Type.BANNER_LIGHT_GRAY;
+        }
+    }
+
+    public static boolean isPlayerLost(Player p) {
+        if (User.getUser(p) != null) {
+            User u = User.getUser(p);
+            if (u.isAlive()) {
+                if (Data.estate == EventState.Lostness) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 

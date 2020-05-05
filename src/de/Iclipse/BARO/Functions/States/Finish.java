@@ -21,6 +21,12 @@ import static de.Iclipse.BARO.Data.dsp;
 
 public class Finish implements Listener {
 
+    public static void checkFinish() {
+        if (Data.teams.size() <= 1) {
+            finish();
+        }
+    }
+
     public static void finish() {
         Data.state = GameState.Finished;
         de.Iclipse.IMAPI.Data.restart = 30;
@@ -33,7 +39,7 @@ public class Finish implements Listener {
                 Spectator.removeSpectator(entry);
             }
             dsp.send(entry, "finish.finish", Data.teams.get(0).getColor() + "Team " + dsp.get("color." + Data.teams.get(0).getColor().asBungee().getName(), entry));
-            entry.teleport(Data.spawn(entry.getWorld()));
+            entry.teleport(Data.spawn);
             entry.resetPlayerWeather();
             entry.getActivePotionEffects().forEach(effect -> {
                 entry.removePotionEffect(effect.getType());
@@ -64,9 +70,9 @@ public class Finish implements Listener {
 
         for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 4); i++) {
             Location spawn = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-            spawn.setX(Data.spawn(Bukkit.getWorld("world")).getX() + (random.nextInt(11) - 5));
-            spawn.setZ(Data.spawn(Bukkit.getWorld("world")).getZ() + (random.nextInt(11) - 5));
-            spawn.setY(Data.spawn(Bukkit.getWorld("world")).getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
+            spawn.setX(Data.spawn.getX() + (random.nextInt(11) - 5));
+            spawn.setZ(Data.spawn.getZ() + (random.nextInt(11) - 5));
+            spawn.setY(Data.spawn.getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
 
 
             Fireworkgenerator fireworkgenerator = new Fireworkgenerator(Data.instance);

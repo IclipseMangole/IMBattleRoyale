@@ -5,7 +5,6 @@ import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import net.minecraft.server.v1_15_R1.PacketPlayOutWorldBorder;
-import net.minecraft.server.v1_15_R1.WorldBorder;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.spawn;
 
 public class BorderManager implements Listener {
     public static Border border = new Border(new Location(Bukkit.getWorld("world"), 0, 81, 0), 450);
@@ -29,7 +27,7 @@ public class BorderManager implements Listener {
 
     public static void border() {
         if (border.getProgress() <= 1.5) {
-            border.setProgress(border.getProgress() + 0.0025);
+            border.setProgress(border.getProgress() + Data.progressPerSecond);
             if (border.getProgress() == 1) {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     entry.playSound(entry.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1, 1);
@@ -90,9 +88,9 @@ public class BorderManager implements Listener {
                         p.damage(2.5);
                     }
                     p.playEffect(EntityEffect.HURT_DROWN);
-                }
-                if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 1, 10));
+                    if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
+                    }
                 }
             } else {
                 if (outOfBorder.contains(p)) {
@@ -147,7 +145,7 @@ public class BorderManager implements Listener {
                 if (!Data.flyingPlayers.contains(p) || !Data.fallingPlayers.contains(p)) {
                     p.setVelocity(new Location(p.getWorld(), 0, 81, 0).toVector().subtract(p.getLocation().toVector()).normalize());
                 } else {
-                    p.setVelocity(spawn(p.getWorld()).toVector().subtract(p.getLocation().toVector()).normalize().setY(-0.5));
+                    p.setVelocity(new Location(p.getWorld(), 0, 81, 0).subtract(p.getLocation()).toVector().normalize().setY(-0.5));
                 }
             }
         }
@@ -170,7 +168,7 @@ public class BorderManager implements Listener {
 
     public static void sendBorderEffect(Player p) {
         p.playSound(p.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1, 1);
-        WorldBorder w = new WorldBorder();
+        net.minecraft.server.v1_15_R1.WorldBorder w = new net.minecraft.server.v1_15_R1.WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);
         w.setWarningDistance(30_000_005);
@@ -179,7 +177,7 @@ public class BorderManager implements Listener {
     }
 
     public static void removeBorderEffect(Player p) {
-        WorldBorder w = new WorldBorder();
+        net.minecraft.server.v1_15_R1.WorldBorder w = new net.minecraft.server.v1_15_R1.WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);
         w.setWarningDistance(1);

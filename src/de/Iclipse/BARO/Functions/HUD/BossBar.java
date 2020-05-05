@@ -2,6 +2,7 @@ package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
+import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Database.UserSettings;
@@ -15,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.BARO.Data.*;
 
 public class BossBar implements Listener {
     public static void createBars() {
@@ -26,6 +27,8 @@ public class BossBar implements Listener {
         });
         Data.borderBossBarDE = Bukkit.createBossBar(dsp.get("border.nextZone", dsp.getLanguages().get("DE"), false), BarColor.PURPLE, BarStyle.SOLID);
         Data.borderBossBarEN = Bukkit.createBossBar(dsp.get("border.nextZone", dsp.getLanguages().get("EN"), false), BarColor.PURPLE, BarStyle.SOLID);
+        Data.eventBossBarDE = Bukkit.createBossBar(dsp.get("event.comingup", dsp.getLanguages().get("DE"), false), BarColor.RED, BarStyle.SOLID);
+        Data.eventBossBarEN = Bukkit.createBossBar(dsp.get("event.comingup", dsp.getLanguages().get("EN"), false), BarColor.RED, BarStyle.SOLID);
     }
 
     public static void bossbar() {
@@ -68,6 +71,36 @@ public class BossBar implements Listener {
                     bar.removePlayer(p);
                 }
             });
+            if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+                if (nextEventTime - timer <= 60) {
+                    if (Data.borderBossBarEN.getPlayers().contains(p)) {
+                        Data.borderBossBarEN.removePlayer(p);
+                    }
+                    if (Data.borderBossBarDE.getPlayers().contains(p)) {
+                        Data.borderBossBarDE.removePlayer(p);
+                    }
+                    if (de.Iclipse.IMAPI.Database.User.getLanguage(UUIDFetcher.getUUID(p.getName())).equalsIgnoreCase("DE")) {
+                        Data.eventBossBarDE.addPlayer(p);
+                        if (Data.eventBossBarEN.getPlayers().contains(p)) {
+                            Data.eventBossBarEN.removePlayer(p);
+                        }
+                    } else {
+                        Data.borderBossBarEN.addPlayer(p);
+                        if (Data.borderBossBarDE.getPlayers().contains(p)) {
+                            Data.borderBossBarDE.removePlayer(p);
+                        }
+                    }
+                    return;
+                }
+            }
+
+
+            if (eventBossBarDE.getPlayers().contains(p)) {
+                eventBossBarDE.removePlayer(p);
+            }
+            if (eventBossBarEN.getPlayers().contains(p)) {
+                eventBossBarEN.removePlayer(p);
+            }
             if (de.Iclipse.IMAPI.Database.User.getLanguage(UUIDFetcher.getUUID(p.getName())).equalsIgnoreCase("DE")) {
                 Data.borderBossBarDE.addPlayer(p);
                 if (Data.borderBossBarEN.getPlayers().contains(p)) {
@@ -79,6 +112,7 @@ public class BossBar implements Listener {
                     Data.borderBossBarDE.removePlayer(p);
                 }
             }
+
         });
     }
 
@@ -101,6 +135,20 @@ public class BossBar implements Listener {
             }
         });
          */
+        if (Data.nextEventTime - Data.timer < 60) {
+            if (Data.estate == EventState.None) {
+                eventBossBarDE.setTitle(dsp.get("event.comingup.bossbar", dsp.getLanguages().get("DE"), false, dsp.get("event." + nextEvent.getName(), dsp.getLanguages().get("DE"))));
+                eventBossBarEN.setTitle(dsp.get("event.comingup.bossbar", dsp.getLanguages().get("EN"), false, dsp.get("event." + nextEvent.getName(), dsp.getLanguages().get("EN"))));
+                eventBossBarDE.setProgress(1.0 - ((double) (nextEventTime - timer) / 60));
+                eventBossBarEN.setProgress(1.0 - ((double) (nextEventTime - timer) / 60));
+            } else {
+                eventBossBarDE.setTitle(dsp.get("event.finished.bossbar", dsp.getLanguages().get("DE"), false, dsp.get("event." + estate.getName(), dsp.getLanguages().get("DE"))));
+                eventBossBarEN.setTitle(dsp.get("event.finished.bossbar", dsp.getLanguages().get("EN"), false, dsp.get("event." + estate.getName(), dsp.getLanguages().get("DE"))));
+                eventBossBarDE.setProgress((double) (nextEventTime - timer) / 60);
+                eventBossBarEN.setProgress((double) (nextEventTime - timer) / 60);
+            }
+        }
+
         if (BorderManager.border.getProgress() >= 1) {
             if (!Data.borderBossBarDE.getTitle().equals(dsp.get("border.nextZone", dsp.getLanguages().get("DE"), false))) {
                 Data.borderBossBarDE.setTitle(dsp.get("border.nextZone", dsp.getLanguages().get("DE"), false));

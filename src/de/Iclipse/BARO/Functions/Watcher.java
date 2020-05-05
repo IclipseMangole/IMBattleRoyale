@@ -38,6 +38,7 @@ public class Watcher implements Listener {
         Data.cameras.put(u.getPlayer(), alives.get(0).getPlayer());
         Data.watchers.add(u);
         setWatcherInventory(u);
+        u.getPlayer().setCollidable(false);
     }
 
     private static void setWatcherInventory(User u) {
@@ -70,13 +71,15 @@ public class Watcher implements Listener {
                                 SkullMeta meta = (SkullMeta) e.getItem().getItemMeta();
                                 ArrayList<User> alives = u.getTeam().getAlives();
                                 if (alives.size() > 0) {
-                                    alives.forEach(a -> {
+                                    System.out.println("Alives Size: " + alives.size());
+                                    for (User a : alives) {
+                                        System.out.println("User: " + a.getPlayer().getName());
                                         if (meta.getOwningPlayer().getName().equals(a.getPlayer().getName())) {
                                             PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) a.getPlayer()).getHandle());
                                             ((CraftPlayer) u.getPlayer()).getHandle().playerConnection.sendPacket(packet);
                                             Data.cameras.replace(e.getPlayer(), a.getPlayer());
                                         }
-                                    });
+                                    }
                                 }
                             }
                         }

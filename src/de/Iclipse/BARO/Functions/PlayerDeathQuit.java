@@ -33,8 +33,10 @@ public class PlayerDeathQuit implements Listener {
                     if (u.isKnocked()) {
                         killer = u.getKnockedBy();
                     } else {
-                        if (System.currentTimeMillis() < Data.lastDamager.get(u.getPlayer()).getLastDamageTime() + 10000) {
-                            killer = Data.lastDamager.get(u.getPlayer()).getLastDamager();
+                        if (Data.lastDamager.containsKey(u.getPlayer())) {
+                            if (System.currentTimeMillis() < Data.lastDamager.get(u.getPlayer()).getLastDamageTime() + 10000) {
+                                killer = Data.lastDamager.get(u.getPlayer()).getLastDamager();
+                            }
                         }
                     }
 
@@ -50,6 +52,7 @@ public class PlayerDeathQuit implements Listener {
                         dsp.send(Bukkit.getConsoleSender(), "game.kill", e.getEntity().getDisplayName(), killer.getDisplayName());
                     }
                     ArrayList<ItemStack> toRemove = new ArrayList<>();
+                    e.getDrops().add(new ItemStack(Material.DIAMOND));
                     e.getDrops().forEach(item -> {
                         if (item.getType().equals(Material.FILLED_MAP)) {
                             toRemove.add(item);
@@ -72,6 +75,7 @@ public class PlayerDeathQuit implements Listener {
                         });
                         Data.teams.remove(u.getTeam());
                         if (Data.teams.size() == 1) {
+                            u.getPlayer().spigot().respawn();
                             Finish.finish();
                         }
                     }
@@ -98,8 +102,10 @@ public class PlayerDeathQuit implements Listener {
                     if (u.isKnocked()) {
                         killer = u.getKnockedBy();
                     } else {
-                        if (System.currentTimeMillis() < Data.lastDamager.get(u.getPlayer()).getLastDamageTime() + 10000) {
-                            killer = Data.lastDamager.get(u.getPlayer()).getLastDamager();
+                        if (Data.lastDamager.containsKey(u.getPlayer())) {
+                            if (System.currentTimeMillis() < Data.lastDamager.get(u.getPlayer()).getLastDamageTime() + 10000) {
+                                killer = Data.lastDamager.get(u.getPlayer()).getLastDamager();
+                            }
                         }
                     }
 
@@ -116,7 +122,9 @@ public class PlayerDeathQuit implements Listener {
                     }
                     e.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
                     for (int i = 0; i < e.getPlayer().getInventory().getStorageContents().length; i++) {
-                        e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), e.getPlayer().getInventory().getStorageContents()[i]);
+                        if (e.getPlayer().getInventory().getStorageContents()[i] != null) {
+                            e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), e.getPlayer().getInventory().getStorageContents()[i]);
+                        }
                     }
                     u.setFinished(Data.timer);
                     e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 10, (float) ((new Random().nextInt(7) / 10) + 0.2));

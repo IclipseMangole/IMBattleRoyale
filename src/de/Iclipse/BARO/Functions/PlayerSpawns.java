@@ -61,7 +61,7 @@ public class PlayerSpawns implements Listener {
         //Middle X: 0 Z: 0 Radius: 450
         Location loc = new Location(p.getWorld(), new Random().nextInt(800) - 400.0, 175.0, new Random().nextInt(800) - 400.0);
         //Tests if new Location is near to old Location to spread Spawnpoints
-        if (p.getLocation().distance(loc) > 100 && loc.distance(BorderManager.border.getCurrentMiddle()) < BorderManager.border.getCurrentRadius()) {
+        if (p.getLocation().distance(loc) > 100 && loc.distance(BorderManager.border.getCurrentMiddle()) < BorderManager.border.getCurrentRadius() + 1) {
             p.teleport(loc);
             p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
             Actionbar.send(p, dsp.get("teleport.teleport", p));
@@ -75,15 +75,17 @@ public class PlayerSpawns implements Listener {
     public void onSneak(PlayerToggleSneakEvent e) {
         Player p = e.getPlayer();
         if (state == GameState.Running) {
-            if (!e.isSneaking()) {
-                if (Data.spawningPlayers.contains(p)) {
-                    flyingPlayers.add(p);
-                    Data.spawningPlayers.remove(p);
-                    p.getInventory().setChestplate(getElytra(p));
-                    p.setGliding(true);
-                    p.setGravity(true);
-                    p.setAllowFlight(false);
-                    dsp.send(p, "teleport.left");
+            if (timer > 3) {
+                if (!e.isSneaking()) {
+                    if (Data.spawningPlayers.contains(p)) {
+                        flyingPlayers.add(p);
+                        Data.spawningPlayers.remove(p);
+                        p.getInventory().setChestplate(getElytra(p));
+                        p.setGliding(true);
+                        p.setGravity(true);
+                        p.setAllowFlight(false);
+                        dsp.send(p, "teleport.left");
+                    }
                 }
             }
         }

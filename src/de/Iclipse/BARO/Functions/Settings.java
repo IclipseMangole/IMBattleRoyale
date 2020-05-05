@@ -22,7 +22,14 @@ public class Settings {
             public void onClick(Player player) {
                 openMaxPlayerBarsInventory(p);
             }
-        }, 13);
+        }, 12);
+        settingsInv.addMenuItem(new MenuItem(getBarSettingZoneItem(p)) {
+            @Override
+            public void onClick(Player player) {
+                UserSettings.setBoolean(UUIDFetcher.getUUID(player.getName()), "baro_barSettingZone", !UserSettings.getBoolean(UUIDFetcher.getUUID(player.getName()), "baro_barSettingZone"));
+                openSettingsInventory(player);
+            }
+        }, 14);
         settingsInv.fill(Material.LIGHT_GRAY_STAINED_GLASS);
         settingsInv.openMenu(p);
     }
@@ -92,5 +99,22 @@ public class Settings {
             item.setItemMeta(meta);
             return item;
         }
+    }
+
+    public static ItemStack getBarSettingZoneItem(Player p) {
+        ItemStack item;
+        //-> Zone
+        if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+            item = heads.get("zone");
+            SkullMeta meta = (SkullMeta) item.getItemMeta();
+            meta.setDisplayName(dsp.get("settings.barSetting.zone.item", p));
+            item.setItemMeta(meta);
+        } else {
+            item = heads.get("events");
+            SkullMeta meta = (SkullMeta) item.getItemMeta();
+            meta.setDisplayName(dsp.get("settings.barSetting.events.item", p));
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 }

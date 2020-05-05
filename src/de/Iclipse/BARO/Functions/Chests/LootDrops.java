@@ -11,9 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
@@ -23,13 +22,15 @@ public class LootDrops implements Listener {
 
     public static void lootDrop() {
         Random random = new Random();
-        if (random.nextInt(300) == 0) {
+        if (random.nextInt(150) == 0) {
             spawnDrop();
         }
-        for (Iterator<Map.Entry<Location, Boolean>> iterator = drops.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry<Location, Boolean> entry = iterator.next();
-            Location loc = entry.getKey();
-            Boolean looted = entry.getValue();
+        ArrayList<Location> locs = new ArrayList<>();
+        drops.entrySet().forEach(entry -> {
+            locs.add(entry.getKey());
+        });
+        locs.forEach(loc -> {
+            Boolean looted = drops.get(loc);
             if (!looted) {
                 Location change = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
                 if (change.getBlock().getType() == Material.AIR) {
@@ -41,7 +42,7 @@ public class LootDrops implements Listener {
             } else {
                 drops.remove(loc);
             }
-        }
+        });
     }
 
     @EventHandler
