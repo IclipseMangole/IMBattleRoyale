@@ -27,7 +27,6 @@ public class FishMutation implements Listener {
     @EventHandler
     public void onBreath(EntityAirChangeEvent event){
         if(event.getEntity() instanceof Player){
-            Player player = (Player) event.getEntity();
             if(Data.estate == EventState.FishMutation){
                 event.setCancelled(true);
             }
