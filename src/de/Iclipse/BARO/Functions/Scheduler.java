@@ -3,16 +3,16 @@ package de.Iclipse.BARO.Functions;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.Chests.LootDrops;
-import de.Iclipse.BARO.Functions.Events.BurningSun;
-import de.Iclipse.BARO.Functions.Events.Endergames;
-import de.Iclipse.BARO.Functions.Events.Events;
-import de.Iclipse.BARO.Functions.Events.PoisonWater;
+import de.Iclipse.BARO.Functions.Events.*;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.States.Finish;
 import de.Iclipse.BARO.Functions.States.GameState;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
@@ -59,6 +59,35 @@ public class Scheduler {
                 seconds = (seconds + 1) % 59;
             }
         }, 20, 20);
+    }
+
+    public static void onFish(){
+        Bukkit.getScheduler().runTaskLater(Data.instance, new Runnable() {
+            @Override
+            public void run() {
+                if (Data.estate == EventState.FishMutation) {
+                    Data.fishmutation.forEach(user -> {
+                        if (user.isAlive()) {
+                            Player player = user.getPlayer();
+                            Location playerhead = player.getLocation();
+                            playerhead.setY(playerhead.getY()+1);
+                            if(!playerhead.getBlock().getType().equals(Material.WATER)){
+                                if(player.getRemainingAir()>0){
+                                    player.setRemainingAir(player.getRemainingAir()-1);
+                                }
+                            }else{
+                                if(player.getRemainingAir()<player.getMaximumAir()){
+                                    player.setRemainingAir(player.getRemainingAir()+1);
+                                }
+                            }
+                        } else {
+                            Data.fishmutation.remove(user);
+                        }
+                    });
+                    onFish();
+                }
+            }
+        },20);
     }
 
     public static void stopScheduler() {

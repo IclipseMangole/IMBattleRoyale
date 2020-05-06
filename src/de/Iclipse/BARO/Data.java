@@ -56,6 +56,8 @@ public class Data {
     public static HashMap<Player, BossBar> playerBossBars = new HashMap<>();
     public static int timer = 0;
     public static int nextEventTime = -1;
+    //Events
+    public static ArrayList<User> fishmutation = new ArrayList<>();
 
     public static Location spawn;
     public static double progressPerSecond;

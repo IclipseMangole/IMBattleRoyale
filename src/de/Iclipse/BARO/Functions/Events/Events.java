@@ -71,5 +71,6 @@ public class Events {
         Data.events.add(EventState.Confusion);
         Data.events.add(EventState.Lostness);
         Data.events.add(EventState.Endergames);
+        Data.events.add(EventState.FishMutation);
     }
 }
