@@ -3,6 +3,7 @@ package de.Iclipse.BARO.Functions.Events;
 import de.Iclipse.BARO.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.yaml.snakeyaml.events.Event;
 
 import java.util.Random;
 

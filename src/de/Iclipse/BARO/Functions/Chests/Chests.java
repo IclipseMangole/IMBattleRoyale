@@ -108,6 +108,38 @@ public class Chests implements Listener {
         chestlist.put(new Location(Bukkit.getWorld("world"), -154, 83, -83), BlockFace.WEST);
         chestlist.put(new Location(Bukkit.getWorld("world"), -158, 83, -86), BlockFace.SOUTH);
         chestlist.put(new Location(Bukkit.getWorld("world"), -168, 82, -90), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 337, 65 , 34), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 296, 69 , -65), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 298 , 65 , -63), BlockFace.WEST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 211 , 74 , -145), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 212 , 71 , -145), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 226 , 70 , -151 ), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 199 , 70 , -166), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 199 , 74 , -157), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 216 , 70 , -165), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 211 , 73 , -165), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 178 , 64 , -342), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 178 , 62 , -339), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 193 , 53 , -371), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -5 , 63 , -35 ), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -10 , 70 , -41 ), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -56 , 81 , -108 ), BlockFace.WEST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -51, 92 , -124 ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -58 , 77  , -120  ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -306 , 78  , -124 ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 16 , 64  , 331   ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 234 , 70  , 112  ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 297 , 64  , 157  ), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 86 , 99  , -32  ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 89, 88  , -33  ), BlockFace.WEST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -17 , 80  , 47  ), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -22 , 80  , 49  ), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 14 , 125  , 176  ), BlockFace.WEST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 13 , 96  , 197  ), BlockFace.NORTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 1, 109  , 165  ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), 29 , 88  , 181  ), BlockFace.EAST);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -211 , 81  , 45  ), BlockFace.SOUTH);
+        chestlist.put(new Location(Bukkit.getWorld("world"), -205  , 79   , 50   ), BlockFace.WEST);
 
         return chestlist;
     }
