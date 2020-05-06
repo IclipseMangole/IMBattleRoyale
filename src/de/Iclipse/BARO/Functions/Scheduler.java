@@ -55,6 +55,7 @@ public class Scheduler {
                     BurningSun.burn();
                     PoisonWater.poison();
                     Endergames.endergames();
+                    Levitation.onLevitate();
                 }
                 seconds = (seconds + 1) % 59;
             }

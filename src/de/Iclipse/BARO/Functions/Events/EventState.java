@@ -2,7 +2,7 @@ package de.Iclipse.BARO.Functions.Events;
 
 public enum EventState {
     None("none"), PoisonWater("poisonwater"), Glowing("glowing"), BurningSun("burningsun"), Confusion("confusion"), Lostness("lostness"), Endergames("endergames"),
-    FishMutation("fishmutation");
+    FishMutation("fishmutation"), Levitation("levitation");
 
     private String name;
 
