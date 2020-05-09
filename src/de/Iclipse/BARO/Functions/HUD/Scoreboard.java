@@ -54,105 +54,92 @@ public class Scoreboard implements Listener {
                 ss.setLine(3, dsp.get("scoreboard.teamalive", p, useralive[0] + "", Data.teams.size() + ""));
             }
             ss.setLine(4, ChatColor.DARK_AQUA + "");
-            if (User.getUser(p) != null) {
-                User u = User.getUser(p);
-                if (u.getTeam() != null) {
-                    if (u.hasLivingMates()) {
-                        if (matesShowedOnScoreboard(u)) {
-                            final int[] i = {0};
-                            u.getTeam().getUsers().forEach(entry -> {
-                                if (entry.isAlive()) {
-                                    if (!entry.equals(u)) {
-                                        if (entry.isKnocked()) {
-                                            ss.setLine(5 + i[0], u.getTeam().getColor() + entry.getPlayer().getDisplayName() + "§7(§4" + ((double) ((int) entry.getPlayer().getHealth()) / 2) + "❤§7)");
-                                            i[0]++;
-                                        } else {
-                                            ss.setLine(5 + i[0], u.getTeam().getColor() + entry.getPlayer().getDisplayName() + "§7(" + ((double) ((int) entry.getPlayer().getHealth()) / 2) + "§c❤§7)");
-                                            i[0]++;
-                                        }
-                                    }
-                                }
-                            });
-                            for (int z = 10; z < 14; z++) {
-                                ss.removeLine(z);
-                            }
-                            if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
-                                if ((Data.nextEventTime - Data.timer) <= 60) {
-                                    if (Data.nextEvent != EventState.None) {
-                                        ss.setLine(10, dsp.get("event.comingup.scoreboard", p, (int) (((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
-                                    } else {
-                                        ss.setLine(10, dsp.get("event.finished.scoreboard", p, (int) (100 - ((double) (Data.nextEventTime - Data.timer) / 60)) + ""));
-                                    }
-                                }
-                            } else {
-                                if (BorderManager.border.getProgress() > 1) {
-                                    ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
-                                } else {
-                                    ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
-                                }
-                            }
-                        } else {
-                            for (int i = 5; i < 10; i++) {
-                                ss.removeLine(i);
-                            }
-                            if (BorderManager.border.getProgress() > 1) {
-                                ss.setLine(5, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
-                            } else {
-                                ss.setLine(5, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
-                            }
-                            if (Data.nextEventTime - Data.timer < 60) {
-                                ss.setLine(6, ChatColor.DARK_BLUE + "");
-                                if (Data.nextEvent != EventState.None) {
-                                    ss.setLine(10, dsp.get("event.comingup.scoreboard", p, ((Data.nextEventTime - Data.timer) / 60) + ""));
-                                } else {
-                                    ss.setLine(10, dsp.get("event.finished.scoreboard", p, 100 - ((Data.nextEventTime - Data.timer) / 60) + ""));
-                                }
-                            }
-                        }
-                        ss.setLine(12, ChatColor.DARK_RED + "");
-                    } else {
-                        if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
-                            if ((Data.nextEventTime - Data.timer) <= 60) {
-                                if (Data.nextEvent != EventState.None) {
-                                    ss.setLine(10, dsp.get("event.comingup.scoreboard", p, dsp.get("event." + Data.nextEvent.getName(), p), (int) (((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
-                                } else {
-                                    ss.setLine(10, dsp.get("event.finished.scoreboard", p, dsp.get("event." + Data.nextEvent.getName(), p), (int) (100 - ((double) (Data.nextEventTime - Data.timer) / 60)) + ""));
-                                }
-                            }
-                        } else {
-                            if (BorderManager.border.getProgress() > 1) {
-                                ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
-                            } else {
-                                ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
-                            }
-                        }
-                        ss.setLine(12, ChatColor.DARK_RED + "");
-                    }
-                }
-            }
+
+            showMates(ss, p);
+            showEvent(ss, p);//Mates: 5-8 + 9: Free, //Events: 10 + 11: Free //Zone: 12 + 13: Free, Distance: 14
+            showZone(ss, p);
+
             String distance = (int) (BorderManager.border.getCurrentRadius() - p.getLocation().distance(BorderManager.border.getCurrentMiddle())) + "";
             if (User.getUser(p) != null) {
                 if (User.getUser(p).isAlive()) {
-                    if (Data.estate == EventState.Confusion) {
+                    if (Data.estate == EventState.Confusion || Data.estate == EventState.Lostness) {
                         distance = "§e§k???";
                     }
                 }
             }
-            ss.setLine(13, dsp.get("scoreboard.distance", p, distance));
-            ss.setLine(14, ChatColor.DARK_GRAY + "");
+            ss.setLine(14, dsp.get("scoreboard.distance", p, distance));
             if (!boards.containsKey(p)) {
                 boards.put(p, ss);
             }
         });
     }
 
-
-    public static boolean matesShowedOnScoreboard(User u) {
-        if (!u.isAlive()) {
-            return u.getTeam().getAlive() > UserSettings.getInt(UUIDFetcher.getUUID(u.getPlayer().getName()), "baro_maxPlayerBars");
+    public static void showMates(ScoreboardSign ss, Player p) {
+        if (matesShowedOnScoreboard(p)) {
+            User u = User.getUser(p);
+            final int[] i = {0};
+            u.getTeam().getUsers().forEach(entry -> {
+                if (entry.isAlive()) {
+                    if (!entry.equals(u)) {
+                        if (i[0] < 3) {
+                            if (entry.isKnocked()) {
+                                ss.setLine(5 + i[0], u.getTeam().getColor() + entry.getPlayer().getDisplayName() + "§7(§4" + ((double) ((int) entry.getPlayer().getHealth()) / 2) + "❤§7)");
+                                i[0]++;
+                            } else {
+                                ss.setLine(5 + i[0], u.getTeam().getColor() + entry.getPlayer().getDisplayName() + "§7(" + ((double) ((int) entry.getPlayer().getHealth()) / 2) + "§c❤§7)");
+                                i[0]++;
+                            }
+                        }
+                    }
+                }
+            });
+            ss.setLine(9, ChatColor.GOLD + "");
         } else {
-            return u.getTeam().getAlive() - 1 > UserSettings.getInt(UUIDFetcher.getUUID(u.getPlayer().getName()), "baro_maxPlayerBars");
+            for (int i = 5; i < 10; i++) {
+                ss.removeLine(i);
+            }
         }
+    }
+
+    public static void showZone(ScoreboardSign ss, Player p) {
+        if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone") && !matesShowedOnScoreboard(p) || !UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+            if (BorderManager.border.getProgress() > 1) {
+                ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
+            } else {
+                ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
+            }
+            ss.setLine(11, ChatColor.DARK_BLUE + "");
+            return;
+        }
+        ss.removeLine(10);
+        ss.removeLine(11);
+    }
+
+    public static void showEvent(ScoreboardSign ss, Player p) {
+        if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone") && !matesShowedOnScoreboard(p) || UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+            if ((Data.nextEventTime - Data.timer) <= 60) {
+                if (Data.nextEvent != EventState.None) {
+                    ss.setLine(12, dsp.get("event.comingup.scoreboard", p, dsp.get("event." + Data.nextEvent.getName(), p), Math.round(((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
+                } else {
+                    ss.setLine(12, dsp.get("event.finished.scoreboard", p, dsp.get("event." + Data.estate.getName(), p), Math.round(100 - ((double) (Data.nextEventTime - Data.timer) / 60) * 100) + ""));
+                }
+                ss.setLine(13, ChatColor.DARK_RED + "");
+                return;
+            }
+        }
+        ss.removeLine(12);
+        ss.removeLine(13);
+    }
+
+
+    public static boolean matesShowedOnScoreboard(Player p) {
+        if (User.getUser(p) != null) {
+            User u = User.getUser(p);
+            if (u.hasLivingMates()) {
+                return u.getLivingTeammatesAmount() > UserSettings.getInt(UUIDFetcher.getUUID(p.getName()), "baro_maxPlayerBars");
+            }
+        }
+        return false;
     }
 
 

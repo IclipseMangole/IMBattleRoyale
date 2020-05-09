@@ -12,7 +12,7 @@ public class Lostness implements Listener {
         if (e.getAfter() == EventState.Lostness) {
             Data.users.forEach(u -> {
                 if (u.isAlive()) {
-                    u.getPlayer().setHealthScale(0.0); //TODO Hungerbalken usw.
+                    u.getPlayer().setHealthScale(20.0); //TODO Hungerbalken usw.
                     u.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 1));
                 }
             });

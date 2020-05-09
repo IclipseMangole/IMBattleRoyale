@@ -10,7 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -22,6 +24,22 @@ import java.util.Random;
 import static de.Iclipse.BARO.Data.dsp;
 
 public class PlayerDeathQuit implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onDamage(EntityDamageEvent e) {
+        if (!e.isCancelled()) {
+            if (Data.state == GameState.Running) {
+                if (e.getEntity() instanceof Player) {
+                    if (User.getUser((Player) e.getEntity()) != null) {
+                        if (((Player) e.getEntity()).getHealth() <= e.getDamage()) {
+                            ((Player) e.getEntity()).spigot().respawn();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
         if (Data.state == GameState.Running) {
@@ -71,7 +89,7 @@ public class PlayerDeathQuit implements Listener {
                             }
                         });
                         Bukkit.getOnlinePlayers().forEach(entry -> {
-                            dsp.send(entry, "team.eliminated", Data.teams.get(0).getColor() + "Team " + dsp.get("color." + u.getTeam().getColor().asBungee().getName(), entry));
+                            dsp.send(entry, "team.eliminated", u.getTeam().getColor() + "Team " + dsp.get("color." + u.getTeam().getColor().asBungee().getName(), entry));
                         });
                         Data.teams.remove(u.getTeam());
                         if (Data.teams.size() == 1) {
@@ -89,6 +107,7 @@ public class PlayerDeathQuit implements Listener {
     public void onRespawn(PlayerRespawnEvent e) {
         e.setRespawnLocation(new Location(e.getPlayer().getWorld(), 0, 82, 0));
         Spectator.setSpectator(e.getPlayer());
+        e.getPlayer().getInventory().clear();
     }
 
     @EventHandler

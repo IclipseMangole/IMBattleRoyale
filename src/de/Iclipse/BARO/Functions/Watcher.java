@@ -5,6 +5,7 @@ import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.SkullUtils;
 import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
@@ -33,6 +34,7 @@ public class Watcher implements Listener {
 
     public static void setWatcher(User u) {
         ArrayList<User> alives = u.getTeam().getAlives();
+        u.getPlayer().setGameMode(GameMode.SPECTATOR);
         PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) alives.get(0).getPlayer()).getHandle());
         ((CraftPlayer) u.getPlayer()).getHandle().playerConnection.sendPacket(packet);
         Data.cameras.put(u.getPlayer(), alives.get(0).getPlayer());
@@ -44,7 +46,13 @@ public class Watcher implements Listener {
     private static void setWatcherInventory(User u) {
         ArrayList<User> alives = u.getTeam().getAlives();
         for (int i = 0; i < alives.size() && i < 9; i++) {
-            u.getPlayer().getInventory().setItem(i, getPlayerHead(u.getPlayer(), alives.get(i).getPlayer()));
+            if (u.getPlayer().getInventory().getItem(i) != null) {
+                if (!u.getPlayer().getInventory().getItem(i).equals(getPlayerHead(u.getPlayer(), alives.get(i).getPlayer()))) {
+                    u.getPlayer().getInventory().setItem(i, getPlayerHead(u.getPlayer(), alives.get(i).getPlayer()));
+                }
+            } else {
+                u.getPlayer().getInventory().setItem(i, getPlayerHead(u.getPlayer(), alives.get(i).getPlayer()));
+            }
         }
     }
 
@@ -75,8 +83,7 @@ public class Watcher implements Listener {
                                     for (User a : alives) {
                                         System.out.println("User: " + a.getPlayer().getName());
                                         if (meta.getOwningPlayer().getName().equals(a.getPlayer().getName())) {
-                                            PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) a.getPlayer()).getHandle());
-                                            ((CraftPlayer) u.getPlayer()).getHandle().playerConnection.sendPacket(packet);
+                                            e.getPlayer().setSpectatorTarget(a.getPlayer());
                                             Data.cameras.replace(e.getPlayer(), a.getPlayer());
                                         }
                                     }

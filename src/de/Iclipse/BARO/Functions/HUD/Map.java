@@ -111,7 +111,7 @@ public class Map implements Listener {
                 if (u.isAlive() && u.getTeam().getAlives().size() > 1 || !u.isAlive()) {
                     for (User alive : u.getTeam().getAlives()) {
                         if (!u.equals(alive)) {
-                            list.add(new MapIcon(colorToIconType(u.getTeam().getColor()), (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
+                            list.add(new MapIcon(colorToIconType(u.getTeam().getColor()), (byte) (alive.getPlayer().getLocation().getBlockX() / 4), (byte) (alive.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(alive.getPlayer().getLocation().getYaw()), null));
                         }
                     }
                 }

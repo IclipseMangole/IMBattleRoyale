@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Commands;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import de.Iclipse.IMAPI.Util.Command.IMCommand;
@@ -18,13 +17,13 @@ public class cmd_pause {
     public void pause(CommandSender sender) {
         if (Data.state != GameState.Pause) {
             Data.state = GameState.Pause;
-            Scheduler.stopScheduler();
+            Data.scheduler.stopScheduler();
             Bukkit.getOnlinePlayers().forEach(entry -> {
                 Actionbar.send(entry, "Spiel wird pausiert!");
             });
         } else {
             Data.state = GameState.Running;
-            Scheduler.startScheduler();
+            Data.scheduler.startScheduler();
             Bukkit.getOnlinePlayers().forEach(entry -> {
                 Actionbar.send(entry, "Spiel wird fortgesetzt!");
             });

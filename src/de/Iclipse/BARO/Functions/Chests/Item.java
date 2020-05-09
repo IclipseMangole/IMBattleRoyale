@@ -12,8 +12,6 @@ import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 
-import static de.Iclipse.BARO.Data.dsp;
-
 public class Item {
 
 
@@ -117,25 +115,26 @@ public class Item {
         new Item(new ItemStack(Material.BOW), 1, 1, 0, 0);
         new Item(getEnderdragonKiller(), 0, 0, 1, 1);
         new Item(new ItemStack(Material.ARROW), 5, 5, 10, 10);
-        new Item(new ItemStack(Material.DIAMOND_SWORD),0,0,1,1);
-        new Item(getUltimativerAbschlachter(),0,0,1,1);
-        new Item(new ItemStack(Material.CHAINMAIL_BOOTS),1,1,0,0);
-        new Item(new ItemStack(Material.CHAINMAIL_LEGGINGS),1,1,0,0);
-        new Item(new ItemStack(Material.CHAINMAIL_CHESTPLATE),1,1,0,0);
-        new Item(new ItemStack(Material.CHAINMAIL_HELMET),1,1,0,0);
-        new Item(new ItemStack(Material.IRON_BOOTS),0,0,1,1);
-        new Item(new ItemStack(Material.IRON_LEGGINGS),0,0,1,1);
-        new Item(new ItemStack(Material.IRON_CHESTPLATE),0,0,1,1);
-        new Item(new ItemStack(Material.IRON_HELMET),0,0,1,1);
-        new Item(new ItemStack(Material.DIAMOND_CHESTPLATE),0,0,1,1);
-        new Item(getPuhlisPulli(),0,0,1,1);
-        new Item(getPoisonArrow(),0,0,3,3);
-        new Item(new ItemStack(Material.SHIELD),0,0,1,1);
-        new Item(new ItemStack(Material.CROSSBOW),1,1,0,0);
-        new Item(getFranksBier(),0,0,1,1);
-        new Item(getHealPotion(),1,1,1,1);
-        new Item(getWeaknessPotion(),0,0,1,1);
-        new Item(getSlownessPotion(),0,0,1,1);
+        new Item(new ItemStack(Material.DIAMOND_SWORD), 0, 0, 1, 1);
+        new Item(getUltimativerAbschlachter(), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.CHAINMAIL_BOOTS), 1, 1, 0, 0);
+        new Item(new ItemStack(Material.CHAINMAIL_LEGGINGS), 1, 1, 0, 0);
+        new Item(new ItemStack(Material.CHAINMAIL_CHESTPLATE), 1, 1, 0, 0);
+        new Item(new ItemStack(Material.CHAINMAIL_HELMET), 1, 1, 0, 0);
+        new Item(new ItemStack(Material.IRON_BOOTS), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.IRON_LEGGINGS), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.IRON_CHESTPLATE), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.IRON_HELMET), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.DIAMOND_CHESTPLATE), 0, 0, 1, 1);
+        new Item(getPuhlisPulli(), 0, 0, 1, 1);
+        new Item(getPoisonArrow(), 0, 0, 3, 3);
+        new Item(new ItemStack(Material.SHIELD), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.CROSSBOW), 1, 1, 0, 0);
+        new Item(getFranksBier(), 0, 0, 1, 1);
+        new Item(getHealPotion(), 1, 1, 1, 1);
+        new Item(getWeaknessPotion(), 0, 0, 1, 1);
+        new Item(getSlownessPotion(), 0, 0, 1, 1);
+        new Item(new ItemStack(Material.MILK_BUCKET), 1, 1, 0, 0);
 
 
     }

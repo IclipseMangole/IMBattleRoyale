@@ -1,5 +1,8 @@
 package de.Iclipse.BARO.Functions;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
@@ -24,10 +27,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.IMAPI.Data.protocolManager;
 
 
 public class Knocked implements Listener {
@@ -45,7 +50,7 @@ public class Knocked implements Listener {
                         }
                         Data.reviving.replace(list, cd);
                     } else {
-                        revive(list.get(1));
+                        Bukkit.getScheduler().runTask(Data.instance, () -> revive(list.get(1)));
                         toRemove.add(list);
                     }
                 } else {
@@ -96,15 +101,23 @@ public class Knocked implements Listener {
                         if (!u.isKnocked()) {
                             if (u.getTeam() != null) {
                                 if (u.getTeam().getAlive() > 1) {
-                                    e.setCancelled(true);
-                                    if (Data.lastDamager.get(e.getEntity()) != null) {
-                                        if (System.currentTimeMillis() < Data.lastDamager.get(e.getEntity()).getLastDamageTime() + 10000) {
-                                            setKnocked(u, Data.lastDamager.get(u.getPlayer()).getLastDamager());
+                                    boolean allKnocked = true;
+                                    for (User entry : u.getTeam().getAlives()) {
+                                        if (!entry.isKnocked()) {
+                                            allKnocked = false;
+                                        }
+                                    }
+                                    if (!allKnocked) {
+                                        e.setCancelled(true);
+                                        if (Data.lastDamager.get(e.getEntity()) != null) {
+                                            if (System.currentTimeMillis() < Data.lastDamager.get(e.getEntity()).getLastDamageTime() + 10000) {
+                                                setKnocked(u, Data.lastDamager.get(u.getPlayer()).getLastDamager());
+                                            } else {
+                                                setKnocked(u, null);
+                                            }
                                         } else {
                                             setKnocked(u, null);
                                         }
-                                    } else {
-                                        setKnocked(u, null);
                                     }
                                 }
                             }
@@ -145,7 +158,7 @@ public class Knocked implements Listener {
         u.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 99999, 1, true, true, false));
         u.getPlayer().setCanPickupItems(false);
         u.getPlayer().setSneaking(true);
-        //Bukkit.getOnlinePlayers().forEach(o -> sendSwimmPacket(o, u.getPlayer()));
+        u.getTeam().getAlives().forEach(p -> sendGlowingPacket(p.getPlayer(), u.getPlayer()));
         u.getPlayer().setWalkSpeed(0.05f);
         if (Data.playerBossBars.containsKey(u.getPlayer())) {
             org.bukkit.boss.BossBar bar = Data.playerBossBars.get(u.getPlayer());
@@ -164,6 +177,7 @@ public class Knocked implements Listener {
         u.getPlayer().setSneaking(false);
         u.getPlayer().setWalkSpeed(0.2f);
         u.getPlayer().setSneaking(false);
+        u.getTeam().getAlives().forEach(p -> sendGlowingPacket(p.getPlayer(), u.getPlayer()));
         //Bukkit.getOnlinePlayers().forEach(o -> sendStandPacket(o, u.getPlayer()));
         u.getPlayer().getActivePotionEffects().forEach(effect -> u.getPlayer().removePotionEffect(effect.getType()));
         if (Data.playerBossBars.containsKey(u.getPlayer())) {
@@ -172,6 +186,20 @@ public class Knocked implements Listener {
                 bar.setColor(BarColor.GREEN);
             }
             bar.setProgress(u.getPlayer().getHealth() / 20);
+        }
+    }
+
+    public static void sendGlowingPacket(Player receiver, Player p) {
+        PacketContainer glowPacket = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+        glowPacket.getIntegers().write(0, p.getEntityId());
+        WrappedDataWatcher watcher = new WrappedDataWatcher(p);
+        WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(Byte.class);
+        watcher.setObject(0, serializer, (byte) (0x40));
+        glowPacket.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+        try {
+            protocolManager.sendServerPacket(receiver, glowPacket);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 

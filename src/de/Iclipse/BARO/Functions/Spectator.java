@@ -8,6 +8,7 @@ import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
 import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
@@ -19,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +29,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
 public class Spectator implements Listener {
 
@@ -38,28 +41,24 @@ public class Spectator implements Listener {
             if (u.hasLivingMates()) {
                 Watcher.setWatcher(u);
                 return;
+            } else {
+                setRealSpectator(p);
             }
+        } else {
+            setRealSpectator(p);
         }
-        setRealSpectator(p);
     }
 
 
     public static void setRealSpectator(Player p) {
         Data.spectators.add(p);
+        p.setGameMode(GameMode.SURVIVAL);
+        resetPlayer(p);
         p.setCollidable(false);
         p.setAllowFlight(true);
         p.setCanPickupItems(false);
         p.teleport(new Location(p.getWorld(), 0, 82, 0));
-        p.setExp(0);
-        p.setHealth(20.0);
-        p.setFoodLevel(20);
-        p.setLevel(0);
-        p.getInventory().clear();
         p.getInventory().setItem(0, getCompass(p));
-        p.setWalkSpeed(0.2f);
-        p.setGlowing(false);
-        p.setSneaking(false);
-        p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
         Data.users.forEach(entry -> {
             if (entry.isAlive()) {
                 entry.getPlayer().hidePlayer(Data.instance, p);
@@ -70,16 +69,12 @@ public class Spectator implements Listener {
 
     public static void removeSpectator(Player p) {
         Data.spectators.remove(p);
-        p.setCollidable(true);
-        p.setAllowFlight(false);
-        p.setCanPickupItems(true);
-        p.getInventory().clear();
+        resetPlayer(p);
         Bukkit.getOnlinePlayers().forEach(entry -> {
             if (!entry.canSee(p)) {
                 entry.showPlayer(Data.instance, p);
             }
         });
-        p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
     }
 
     @EventHandler
@@ -87,9 +82,21 @@ public class Spectator implements Listener {
         if (Data.state == GameState.Running) {
             if (e.getRightClicked() instanceof Player) {
                 if (Data.spectators.contains(e.getPlayer())) {
+                    e.getPlayer().setGameMode(GameMode.SPECTATOR);
                     PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) e.getRightClicked()).getHandle());
                     ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
                     Data.cameras.put(e.getPlayer(), (Player) e.getRightClicked());
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onFoodLevel(FoodLevelChangeEvent e) {
+        if (Data.state == GameState.Running) {
+            if (e.getEntity() instanceof Player) {
+                if (Data.spectators.contains(e.getEntity())) {
+                    e.setCancelled(true);
                 }
             }
         }
@@ -101,8 +108,9 @@ public class Spectator implements Listener {
             if (!Data.watchers.contains(e.getPlayer())) {
                 PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) e.getPlayer()).getHandle());
                 ((CraftPlayer) e.getPlayer()).getHandle().playerConnection.sendPacket(packet);
-                e.getPlayer().teleport(Data.cameras.get(e.getPlayer()));
+                e.getPlayer().setGameMode(GameMode.SURVIVAL);
                 Data.cameras.remove(e.getPlayer());
+                e.getPlayer().setAllowFlight(true);
             }
         }
     }
@@ -178,10 +186,21 @@ public class Spectator implements Listener {
     public void onInteract(PlayerInteractEvent e) {
         if (Data.state == GameState.Running) {
             if (Data.spectators.contains(e.getPlayer())) {
-                if (e.getItem().equals(getCompass(e.getPlayer()))) {
-                    openCompassInventory(e.getPlayer());
+                if (e.hasItem()) {
+                    if (e.getItem().equals(getCompass(e.getPlayer()))) {
+                        openCompassInventory(e.getPlayer());
+                    }
                 }
                 e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        if (Data.state == GameState.Running) {
+            if (Data.spectators.contains(e.getPlayer())) {
+                e.setQuitMessage("");
             }
         }
     }

@@ -12,12 +12,16 @@ import java.util.Random;
 public class Endergames implements Listener {
     public static void endergames() {
         if (Data.estate == EventState.Endergames) {
-            if (Data.nextEventTime - Data.timer % 20 == 0) {
+            System.out.println((Data.nextEventTime - Data.timer) % 20);
+            if ((Data.nextEventTime - Data.timer) % 20 == 0) {
+                System.out.println("Teleporting...");
                 ArrayList<Team> toTeleport = new ArrayList<>();
                 Data.teams.forEach(t -> {
                     toTeleport.add(t);
                 });
+                int i = 0;
                 while (toTeleport.size() > 1) {
+                    System.out.println("Teleport " + i);
                     Team t1 = randomTeam(toTeleport);
                     Team t2 = randomTeam(toTeleport);
                     while (t1.equals(t2)) {

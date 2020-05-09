@@ -191,6 +191,17 @@ public class User {
         return false;
     }
 
+    public int getLivingTeammatesAmount() {
+        if (getTeam() != null) {
+            if (!isAlive()) {
+                return getTeam().getAlive();
+            } else {
+                return getTeam().getAlive() - 1;
+            }
+        }
+        return -1;
+    }
+
     public void save(int gameId) {
         BAROStats.insertStats(UUIDFetcher.getUUID(player.getName()), gameId, kills, deaths, damageDealt, damageReceived, blocksPlaced, blocksDestroyed, itemsCrafted, lootedChests, lootedDrops, place, finished);
     }
