@@ -144,8 +144,8 @@ public class Item {
         ItemStack item = new ItemStack(Material.BOW);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§4§lEnderDragon-Killer");
-        meta.addEnchant(Enchantment.ARROW_DAMAGE, 2, false);
-        meta.addEnchant(Enchantment.ARROW_KNOCKBACK, 1, false);
+        meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, false);
+        meta.addEnchant(Enchantment.ARROW_KNOCKBACK, 0, false);
         item.setItemMeta(meta);
         return item;
     }
@@ -154,8 +154,8 @@ public class Item {
         ItemStack item = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§4§lUltimativer-Abschlachter");
-        meta.addEnchant(Enchantment.FIRE_ASPECT, 1, false);
-        meta.addEnchant(Enchantment.DAMAGE_ALL, 2, false);
+        meta.addEnchant(Enchantment.FIRE_ASPECT, 0, false);
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 1, false);
         item.setItemMeta(meta);
         return item;
     }
@@ -164,7 +164,7 @@ public class Item {
         ItemStack item = new ItemStack(Material.DIAMOND_CHESTPLATE);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName("§4§lPuhli's Pulli");
-        meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 2, false);
+        meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, false);
         item.setItemMeta(meta);
         return item;
     }
@@ -172,7 +172,7 @@ public class Item {
     public static ItemStack getFranksBier() {
         ItemStack item = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 2);
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1);
         meta.addCustomEffect(potionEffect, false);
         meta.setDisplayName("§4§lFrank's Bier");
         item.setItemMeta(meta);
@@ -190,7 +190,7 @@ public class Item {
     public static ItemStack getHealPotion() {
         ItemStack item = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.HEAL, 0, 2);
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.HEAL, 0, 0);
         meta.addCustomEffect(potionEffect, false);
         meta.setDisplayName("§fPotion of Healing");
         item.setItemMeta(meta);
@@ -200,7 +200,7 @@ public class Item {
     public static ItemStack getSlownessPotion() {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.SLOW, 600, 1);
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.SLOW, 600, 0);
         meta.addCustomEffect(potionEffect, false);
         meta.setDisplayName("§fPotion of Slowness");
         item.setItemMeta(meta);
@@ -210,7 +210,7 @@ public class Item {
     public static ItemStack getWeaknessPotion() {
         ItemStack item = new ItemStack(Material.SPLASH_POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.WEAKNESS, 600, 1);
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.WEAKNESS, 600, 0);
         meta.addCustomEffect(potionEffect, false);
         meta.setDisplayName("§fPotion of Weakness");
         item.setItemMeta(meta);
