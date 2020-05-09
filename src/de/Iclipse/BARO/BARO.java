@@ -1,10 +1,8 @@
 package de.Iclipse.BARO;
 
-import de.Iclipse.BARO.Commands.cmd_maxPlayerBars;
-import de.Iclipse.BARO.Commands.cmd_pause;
-import de.Iclipse.BARO.Commands.cmd_start;
-import de.Iclipse.BARO.Commands.cmd_teamsize;
+import de.Iclipse.BARO.Commands.*;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
+import de.Iclipse.BARO.Functions.*;
 import de.Iclipse.BARO.Functions.Chests.Chests;
 import de.Iclipse.BARO.Functions.Chests.Item;
 import de.Iclipse.BARO.Functions.Chests.LootDrops;
@@ -13,7 +11,6 @@ import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.HUD.Tablist;
-import de.Iclipse.BARO.Functions.*;
 import de.Iclipse.BARO.Functions.PlayerManagement.UserStats;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.BARO.Functions.States.Lobby;
@@ -63,7 +60,9 @@ public class BARO extends JavaPlugin {
         tablist = new Tablist();
         Map.loadMap();
         createTeams();
-        Scheduler.startScheduler();
+        scheduler = new Scheduler();
+        scheduler.startAsyncScheduler();
+        scheduler.startScheduler();
         Bukkit.getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         Bukkit.getWorld("world").setDifficulty(Difficulty.HARD);
         loadCustomHeads();
@@ -74,7 +73,8 @@ public class BARO extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Scheduler.stopScheduler();
+        scheduler.stopScheduler();
+        scheduler.stopAsyncScheduler();
         super.onDisable();
     }
 
@@ -102,6 +102,10 @@ public class BARO extends JavaPlugin {
         IMAPI.register(new Glowing(), this);
         IMAPI.register(new Lostness(), this);
         IMAPI.register(new PoisonWater(), this);
+        IMAPI.register(new LavaEvent(), this);
+        IMAPI.register(new Chat(), this);
+        IMAPI.register(new Levitation(), this);
+        IMAPI.register(new FishMutation(), this);
     }
 
     public void registerCommands() {
@@ -109,6 +113,8 @@ public class BARO extends JavaPlugin {
         IMAPI.register(new cmd_teamsize(), this);
         IMAPI.register(new cmd_pause(), this);
         IMAPI.register(new cmd_maxPlayerBars(), this);
+        IMAPI.register(new cmd_barSettingZone(), this);
+        IMAPI.register(new cmd_forceEvent(), this);
     }
 
     /*

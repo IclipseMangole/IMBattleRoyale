@@ -20,11 +20,7 @@ import static de.Iclipse.BARO.Data.dsp;
 public class LootDrops implements Listener {
     public static HashMap<Location, Boolean> drops = new HashMap<>();
 
-    public static void lootDrop() {
-        Random random = new Random();
-        if (random.nextInt(150) == 0) {
-            spawnDrop();
-        }
+    public static void lootDropMovement() {
         ArrayList<Location> locs = new ArrayList<>();
         drops.entrySet().forEach(entry -> {
             locs.add(entry.getKey());
@@ -45,6 +41,13 @@ public class LootDrops implements Listener {
         });
     }
 
+    public static void newDrops() {
+        Random random = new Random();
+        if (random.nextInt(150) == 0) {
+            spawnDrop();
+        }
+    }
+
     @EventHandler
     public void onChestOpen(InventoryOpenEvent e) {
         if (drops.containsKey(e.getInventory().getLocation())) {
@@ -59,7 +62,7 @@ public class LootDrops implements Listener {
                 });
                 unsendBeacon(e.getInventory().getLocation());
                 sendParticlesAround(e.getInventory().getLocation());
-                Bukkit.getOnlinePlayers().forEach(p -> dsp.send(p, "drop.looted", e.getInventory().getLocation().getBlockX() + "", e.getInventory().getLocation().getBlockZ() + ""));
+                Bukkit.getOnlinePlayers().forEach(p -> dsp.send(p, "drop.looted"));
                 drops.remove(e.getInventory().getLocation());
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     entry.playSound(entry.getLocation(), Sound.BLOCK_BELL_RESONATE, 1, 1.0f);
@@ -72,7 +75,7 @@ public class LootDrops implements Listener {
     public static void spawnDrop() {
         Location loc = randomLocationInZone();
         Bukkit.getOnlinePlayers().forEach(o -> {
-            dsp.send(o, "drop.spawned", loc.getBlockX() + "", loc.getBlockZ() + "");
+            dsp.send(o, "drop.spawned");
         });
         sendBeacon(loc);
         drops.put(loc, false);
@@ -156,25 +159,11 @@ public class LootDrops implements Listener {
 
     public static Location randomLocationInZone() {
         Random random = new Random();
-        int x;
-        if (BorderManager.border.getCurrentRadius() > 15) {
-            x = BorderManager.border.getCurrentMiddle().getBlockX() + random.nextInt(2 * (int) (BorderManager.border.getCurrentRadius() - 10)) - (int) (BorderManager.border.getCurrentRadius() - 10);
-        } else {
-            x = BorderManager.border.getCurrentMiddle().getBlockX() + random.nextInt(2 * (int) (BorderManager.border.getCurrentRadius())) - (int) (BorderManager.border.getCurrentRadius());
-        }
-        int y = 160;
-        int z;
-        if (BorderManager.border.getCurrentRadius() > 15) {
-            z = BorderManager.border.getCurrentMiddle().getBlockZ() + random.nextInt(2 * (int) (BorderManager.border.getCurrentRadius() - 10)) - (int) (BorderManager.border.getCurrentRadius() - 10);
-        } else {
-            z = BorderManager.border.getCurrentMiddle().getBlockZ() + random.nextInt(2 * (int) (BorderManager.border.getCurrentRadius())) - (int) (BorderManager.border.getCurrentRadius());
-        }
-        Location loc = new Location(Bukkit.getWorld("world"), x, y, z);
-        if (!drops.containsKey(loc)) {
-            return loc;
-        } else {
-            return randomLocationInZone();
-        }
+        int radius = random.nextInt((int) BorderManager.border.getCurrentRadius());
+        int angle = random.nextInt(360);
+        int x = (int) Math.sin(angle) * radius;
+        int z = (int) Math.cos(angle) * radius;
+        return new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + 50, z);
     }
 
 

@@ -135,7 +135,7 @@ public class BossBar implements Listener {
             }
         });
          */
-        if (Data.nextEventTime - Data.timer < 60) {
+        if (Data.nextEventTime - Data.timer <= 60) {
             if (Data.estate == EventState.None) {
                 eventBossBarDE.setTitle(dsp.get("event.comingup.bossbar", dsp.getLanguages().get("DE"), false, dsp.get("event." + nextEvent.getName(), dsp.getLanguages().get("DE"))));
                 eventBossBarEN.setTitle(dsp.get("event.comingup.bossbar", dsp.getLanguages().get("EN"), false, dsp.get("event." + nextEvent.getName(), dsp.getLanguages().get("EN"))));

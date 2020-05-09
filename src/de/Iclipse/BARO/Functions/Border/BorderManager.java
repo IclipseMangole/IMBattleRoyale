@@ -25,7 +25,7 @@ public class BorderManager implements Listener {
     public static Border border = new Border(new Location(Bukkit.getWorld("world"), 0, 81, 0), 450);
     public static ArrayList<Player> outOfBorder = new ArrayList<>();
 
-    public static void border() {
+    public static void borderMovement() {
         if (border.getProgress() <= 1.5) {
             border.setProgress(border.getProgress() + Data.progressPerSecond);
             if (border.getProgress() == 1) {
@@ -47,6 +47,9 @@ public class BorderManager implements Listener {
                 entry.playSound(entry.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 1);
             });
         }
+    }
+
+    public static void borderEffectsAsync() {
         Data.users.forEach(u -> {
             Player p = u.getPlayer();
             showBorder(p);
@@ -77,21 +80,6 @@ public class BorderManager implements Listener {
                         Actionbar.send(p, dsp.get("border.out", p));
                     }
                 }
-                if (!Data.spectators.contains(p) && p.getGameMode() != GameMode.CREATIVE && p.getGameMode() != GameMode.SPECTATOR) {
-                    if (border.getCurrentRadius() > 200) {
-                        p.damage(0.5);
-                    } else if (border.getCurrentRadius() > 100) {
-                        p.damage(1);
-                    } else if (border.getCurrentRadius() > 30) {
-                        p.damage(1.75);
-                    } else {
-                        p.damage(2.5);
-                    }
-                    p.playEffect(EntityEffect.HURT_DROWN);
-                    if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
-                    }
-                }
             } else {
                 if (outOfBorder.contains(p)) {
                     boolean contains = false;
@@ -107,6 +95,27 @@ public class BorderManager implements Listener {
                     p.resetPlayerWeather();
                     removeBorderEffect(p);
                     outOfBorder.remove(p);
+                }
+            }
+        });
+    }
+
+    public static void borderEffectsSync() {
+        Data.users.forEach(u -> {
+            Player p = u.getPlayer();
+            if (!u.isAlive()) {
+                if (border.getCurrentRadius() > 200) {
+                    p.damage(0.5);
+                } else if (border.getCurrentRadius() > 100) {
+                    p.damage(1);
+                } else if (border.getCurrentRadius() > 30) {
+                    p.damage(1.75);
+                } else {
+                    p.damage(2.5);
+                }
+                p.playEffect(EntityEffect.HURT_DROWN);
+                if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
                 }
             }
         });

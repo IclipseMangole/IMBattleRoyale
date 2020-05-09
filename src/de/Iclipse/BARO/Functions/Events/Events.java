@@ -3,7 +3,6 @@ package de.Iclipse.BARO.Functions.Events;
 import de.Iclipse.BARO.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.yaml.snakeyaml.events.Event;
 
 import java.util.Random;
 
@@ -71,6 +70,18 @@ public class Events {
         Data.events.add(EventState.Confusion);
         Data.events.add(EventState.Lostness);
         Data.events.add(EventState.Endergames);
+        Data.events.add(EventState.LavaEvent);
         Data.events.add(EventState.FishMutation);
+        Data.events.add(EventState.Levitation);
+
+        Data.allEvents.add(EventState.PoisonWater);
+        Data.allEvents.add(EventState.Glowing);
+        Data.allEvents.add(EventState.BurningSun);
+        Data.allEvents.add(EventState.Confusion);
+        Data.allEvents.add(EventState.Lostness);
+        Data.allEvents.add(EventState.Endergames);
+        Data.allEvents.add(EventState.LavaEvent);
+        Data.allEvents.add(EventState.FishMutation);
+        Data.allEvents.add(EventState.Levitation);
     }
 }

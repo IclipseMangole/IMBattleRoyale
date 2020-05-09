@@ -6,7 +6,9 @@ import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Switch;
@@ -29,6 +31,7 @@ import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
+import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
 public class Lobby implements Listener {
 
@@ -51,22 +54,7 @@ public class Lobby implements Listener {
                 new User(p);
             }
             p.teleport(spawn);
-            p.setAllowFlight(false);
-            p.setFlying(false);
-            p.setGravity(true);
-            p.setCanPickupItems(false);
-            p.setCollidable(false);
-            p.setBedSpawnLocation(new Location(Bukkit.getWorld("world"), 0, 81, 0));
-            if (p.getActivePotionEffects().size() != 0) {
-                p.getActivePotionEffects().forEach(entry -> {
-                    p.removePotionEffect(entry.getType());
-                });
-            }
-            p.getWorld().setFullTime(6000);
-            p.getWorld().setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            p.getWorld().setStorm(false);
-            p.resetPlayerTime();
-            p.setWalkSpeed(0.2f);
+            resetPlayer(p);
             switch (new Random().nextInt(2)) {
                 case 0:
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 0.7f, 1.3f);

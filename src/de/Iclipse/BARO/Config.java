@@ -23,7 +23,7 @@ public class Config {
         cfg.addDefault("teamsize", 1);
         cfg.addDefault("spawn", new Location(Bukkit.getWorld("world"), 145.5, 69.5, -447.5, -90.0f, 0.0f));
         cfg.addDefault("defaultcountdown", 100);
-        cfg.addDefault("chests", 40);
+        cfg.addDefault("chests", 60);
         cfg.addDefault("progressPerSecond", 0.0025);
         cfg.addDefault("newRadius", 0.6);
         cfg.addDefault("worldFile", "/home/IMNetzwerk/BuildServer/BAROMap_world");

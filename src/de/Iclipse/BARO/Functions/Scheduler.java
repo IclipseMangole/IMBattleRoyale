@@ -10,21 +10,55 @@ import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.States.Finish;
 import de.Iclipse.BARO.Functions.States.GameState;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
 
-public class Scheduler {
-    private static BukkitTask task;
-    private static int seconds = 0;
 
-    public static void startScheduler() {
+public class Scheduler {
+    private BukkitTask task;
+    private BukkitTask asyncTask;
+    private int seconds = 0;
+
+    public Scheduler() {
+    }
+
+    public void startScheduler() {
         task = Bukkit.getScheduler().runTaskTimer(Data.instance, new Runnable() {
             @Override
             public void run() {
+
+                if (Data.state == GameState.Finished) {
+                    Finish.firework();
+                } else if (Data.state == GameState.Running) {
+                    PlayerSpawns.teleport();
+                    LootDrops.lootDropMovement();
+                    BorderManager.borderEffectsSync();
+                    if (Data.estate != EventState.None) {
+                        BurningSun.burn();
+                        PoisonWater.poison();
+                        Endergames.endergames();
+                        LavaEvent.lava();
+                        FishMutation.fish();
+                    }
+                }
+                seconds = (seconds + 1) % 59;
+
+            }
+        }, 25, 20);
+    }
+
+
+    public void stopScheduler() {
+        task.cancel();
+    }
+
+    public void startAsyncScheduler() {
+        asyncTask = Bukkit.getScheduler().runTaskTimerAsynchronously(Data.instance, new Runnable() {
+
+            @Override
+            public void run() {
+
                 if (Data.state == GameState.Lobby) {
                     //Changes the "Teamitem" for every Player without a team
                     if (Data.users.size() != 0) {
@@ -36,62 +70,29 @@ public class Scheduler {
                     }
 
                     Countdown.countdown(seconds);
-
-
-                } else if (Data.state == GameState.Finished) {
-                    Finish.firework();
                 } else if (Data.state == GameState.Running) {
-                    PlayerSpawns.teleport();
                     Timer.timer();
                     Events.events();
-                    BorderManager.border();
+                    BorderManager.borderMovement();
                     Scoreboard.scoreboard();
                     BossBar.bossbar();
                     Map.map();
+
+                    BorderManager.borderEffectsAsync();
                     Knocked.reviving();
-                    LootDrops.lootDrop();
+                    LootDrops.newDrops();
                     Watcher.watcher();
                     Finish.checkFinish();
-                    BurningSun.burn();
-                    PoisonWater.poison();
-                    Endergames.endergames();
-                    Levitation.onLevitate();
                 }
                 seconds = (seconds + 1) % 59;
+
+
+                //LootDrops.newDrops();
             }
         }, 20, 20);
     }
 
-    public static void onFish(){
-        Bukkit.getScheduler().runTaskLater(Data.instance, new Runnable() {
-            @Override
-            public void run() {
-                if (Data.estate == EventState.FishMutation) {
-                    Data.fishmutation.forEach(user -> {
-                        if (user.isAlive()) {
-                            Player player = user.getPlayer();
-                            Location playerhead = player.getLocation();
-                            playerhead.setY(playerhead.getY()+1);
-                            if(!playerhead.getBlock().getType().equals(Material.WATER)){
-                                if(player.getRemainingAir()>0){
-                                    player.setRemainingAir(player.getRemainingAir()-1);
-                                }
-                            }else{
-                                if(player.getRemainingAir()<player.getMaximumAir()){
-                                    player.setRemainingAir(player.getRemainingAir()+1);
-                                }
-                            }
-                        } else {
-                            Data.fishmutation.remove(user);
-                        }
-                    });
-                    onFish();
-                }
-            }
-        },20);
-    }
-
-    public static void stopScheduler() {
-        task.cancel();
+    public void stopAsyncScheduler() {
+        asyncTask.cancel();
     }
 }

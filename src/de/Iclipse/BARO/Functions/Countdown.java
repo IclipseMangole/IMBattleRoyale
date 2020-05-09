@@ -75,7 +75,7 @@ public class Countdown {
                     Bukkit.getOnlinePlayers().forEach(entry -> {
                         entry.playSound(entry.getLocation(), Sound.BLOCK_NOTE_BLOCK_FLUTE, 1, 1.0f);
                     });
-                    Start.startGame();
+                    Bukkit.getScheduler().runTask(Data.instance, () -> Start.startGame());
                 }
 
                 Bukkit.getOnlinePlayers().forEach(entry -> {

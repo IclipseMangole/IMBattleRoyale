@@ -6,6 +6,7 @@ import de.Iclipse.BARO.Functions.HUD.Tablist;
 import de.Iclipse.BARO.Functions.LastDamage;
 import de.Iclipse.BARO.Functions.PlayerManagement.Team;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
+import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import org.bukkit.Location;
@@ -21,6 +22,10 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class Data {
+    private Data() {
+    }
+
+    public static Scheduler scheduler;
     public static Plugin instance;
     public static GameState state;
     public static EventState estate;
@@ -44,6 +49,8 @@ public class Data {
     public static ArrayList<Player> spectators = new ArrayList<>();
     public static ArrayList<Player> spawningPlayers = new ArrayList<>();
     public static ArrayList<EventState> events = new ArrayList<>();
+    public static ArrayList<EventState> allEvents = new ArrayList<>();
+    public static HashMap<Player, ItemStack> jumppads = new HashMap<>();
     public static HashMap<String, ItemStack> heads = new HashMap<>();
     public static HashMap<Player, LastDamage.LastDamager> lastDamager = new HashMap<>();
     //Elytra

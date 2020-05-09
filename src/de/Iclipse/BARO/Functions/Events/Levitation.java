@@ -2,19 +2,22 @@ package de.Iclipse.BARO.Functions.Events;
 
 import de.Iclipse.BARO.Data;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Levitation {
+public class Levitation implements Listener {
 
-    public static void onLevitate() {
-        if (Data.estate == EventState.Levitation) {
+    @EventHandler
+    public void onEventChange(EventChangeEvent e) {
+        if (e.getAfter() == EventState.Levitation) {
             Data.users.forEach(user -> {
-                if(user.isAlive()){
-                    user.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,20,1));
+                if (user.isAlive()) {
+                    user.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 9999999, 1));
                 }
             });
-        }else{
+        }
+        if (e.getBefore() == EventState.Levitation) {
             Data.users.forEach(user -> {
                 user.getPlayer().removePotionEffect(PotionEffectType.LEVITATION);
             });

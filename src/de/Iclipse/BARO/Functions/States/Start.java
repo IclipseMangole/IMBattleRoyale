@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.Date;
 
 import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
 
 public class Start {
@@ -20,24 +21,13 @@ public class Start {
             TeamManager.autoFill();
             TeamManager.autoDelete();
             Player p = user.getPlayer();
-            p.setLevel(0);
-            p.setExp(0);
-            p.setInvulnerable(false);
-            p.getInventory().clear();
-            p.setFoodLevel(20);
-            p.setHealth(20);
-            p.setFireTicks(0);
-            p.setCanPickupItems(true);
-            p.setCollidable(true);
-            p.getActivePotionEffects().forEach(potionEffect -> p.removePotionEffect(potionEffect.getType()));
-            p.setGravity(false);
+            resetPlayer(p);
             p.setAllowFlight(true);
-            p.setSneaking(false);
+            p.setGravity(false);
             Data.spawningPlayers.add(p);
             p.sendTitle(dsp.get("teleport.title", p), dsp.get("teleport.subtitle", p), 10, 80, 10);
         });
         Bukkit.getOnlinePlayers().forEach(entry -> {
-            System.out.println(entry.getName());
             if (!Data.users.contains(User.getUser(entry))) {
                 Spectator.setSpectator(entry);
             }

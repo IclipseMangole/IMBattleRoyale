@@ -18,12 +18,13 @@ import java.util.Date;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
 public class Finish implements Listener {
 
     public static void checkFinish() {
         if (Data.teams.size() <= 1) {
-            finish();
+            Bukkit.getScheduler().runTask(Data.instance, () -> finish());
         }
     }
 
@@ -40,11 +41,7 @@ public class Finish implements Listener {
             }
             dsp.send(entry, "finish.finish", Data.teams.get(0).getColor() + "Team " + dsp.get("color." + Data.teams.get(0).getColor().asBungee().getName(), entry));
             entry.teleport(Data.spawn);
-            entry.resetPlayerWeather();
-            entry.getActivePotionEffects().forEach(effect -> {
-                entry.removePotionEffect(effect.getType());
-            });
-            entry.getInventory().clear();
+            resetPlayer(entry);
             BorderManager.removeBorderEffect(entry);
             entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.6f, 1.1f);
             BossBar.clearBars(entry);
