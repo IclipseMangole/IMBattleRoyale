@@ -28,6 +28,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import static de.Iclipse.BARO.Data.cameras;
 import static de.Iclipse.BARO.Data.dsp;
 import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
@@ -170,6 +171,16 @@ public class Spectator implements Listener {
             if (Data.spectators.contains(e.getPlayer())) {
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent e) {
+        if (Data.cameras.containsValue(e.getPlayer())) {
+            cameras.forEach((p, camera) -> {
+                PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) camera).getHandle());
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+            });
         }
     }
 

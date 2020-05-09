@@ -83,7 +83,8 @@ public class Watcher implements Listener {
                                     for (User a : alives) {
                                         System.out.println("User: " + a.getPlayer().getName());
                                         if (meta.getOwningPlayer().getName().equals(a.getPlayer().getName())) {
-                                            e.getPlayer().setSpectatorTarget(a.getPlayer());
+                                            PacketPlayOutCamera packet = new PacketPlayOutCamera(((CraftEntity) alives.get(0).getPlayer()).getHandle());
+                                            ((CraftPlayer) u.getPlayer()).getHandle().playerConnection.sendPacket(packet);
                                             Data.cameras.replace(e.getPlayer(), a.getPlayer());
                                         }
                                     }

@@ -60,14 +60,14 @@ public class PlayerDeathQuit implements Listener {
 
                     if (killer == null) {
                         Bukkit.getOnlinePlayers().forEach(entry -> {
-                            dsp.send(entry, "game.death", e.getEntity().getDisplayName());
+                            dsp.send(entry, "game.death", u.getTeam().getColor() + e.getEntity().getDisplayName());
                         });
                         dsp.send(Bukkit.getConsoleSender(), "game.death", e.getEntity().getDisplayName());
                     } else {
                         for (Player entry : Bukkit.getOnlinePlayers()) {
                             dsp.send(entry, "game.kill", e.getEntity().getDisplayName(), killer.getDisplayName());
                         }
-                        dsp.send(Bukkit.getConsoleSender(), "game.kill", e.getEntity().getDisplayName(), killer.getDisplayName());
+                        dsp.send(Bukkit.getConsoleSender(), "game.kill", u.getTeam().getColor() + e.getEntity().getDisplayName(), User.getUser(killer).getTeam().getColor() + killer.getDisplayName());
                     }
                     ArrayList<ItemStack> toRemove = new ArrayList<>();
                     e.getDrops().add(new ItemStack(Material.DIAMOND));

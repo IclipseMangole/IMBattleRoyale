@@ -1,5 +1,6 @@
 package de.Iclipse.BARO.Functions.Chests;
 
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -173,6 +174,7 @@ public class Item {
         PotionMeta meta = (PotionMeta) item.getItemMeta();
         PotionEffect potionEffect = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1);
         meta.addCustomEffect(potionEffect, false);
+        meta.setColor(Color.MAROON);
         meta.setDisplayName("§4§lFrank's Bier");
         item.setItemMeta(meta);
         return item;

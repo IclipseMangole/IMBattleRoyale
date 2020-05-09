@@ -11,8 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
@@ -21,24 +22,21 @@ public class LootDrops implements Listener {
     public static HashMap<Location, Boolean> drops = new HashMap<>();
 
     public static void lootDropMovement() {
-        ArrayList<Location> locs = new ArrayList<>();
-        drops.entrySet().forEach(entry -> {
-            locs.add(entry.getKey());
-        });
-        locs.forEach(loc -> {
-            Boolean looted = drops.get(loc);
+        Iterator it = drops.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry item = (Map.Entry) it.next();
+            boolean looted = (boolean) item.getValue();
+            Location loc = (Location) item.getKey();
             if (!looted) {
-                Location change = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ());
-                if (change.getBlock().getType() == Material.AIR) {
+                if (loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.AIR) {
                     loc.getBlock().setType(Material.AIR);
-                    change.getBlock().setType(Material.CHEST);
-                    drops.remove(loc);
-                    drops.put(change, looted);
+                    loc.subtract(0, 1, 0);
+                    loc.getBlock().setType(Material.CHEST);
                 }
             } else {
-                drops.remove(loc);
+                it.remove();
             }
-        });
+        }
     }
 
     public static void newDrops() {
@@ -160,10 +158,17 @@ public class LootDrops implements Listener {
     public static Location randomLocationInZone() {
         Random random = new Random();
         int radius = random.nextInt((int) BorderManager.border.getCurrentRadius());
+        System.out.println(radius);
         int angle = random.nextInt(360);
-        int x = (int) Math.sin(angle) * radius;
-        int z = (int) Math.cos(angle) * radius;
-        return new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + 50, z);
+        System.out.println(angle);
+        int x = (int) (Math.sin(angle) * radius);
+        int z = (int) (Math.cos(angle) * radius);
+        Location loc = new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + 50, z);
+        if (!drops.containsKey(loc)) {
+            return loc;
+        } else {
+            return randomLocationInZone();
+        }
     }
 
 

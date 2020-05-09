@@ -57,10 +57,10 @@ public class PlayerSpawns implements Listener {
         //Middle X: 0 Z: 0 Radius: 450
         Random random = new Random();
         int radius = (int) Math.round(Math.sqrt(Math.pow(BorderManager.border.getCurrentRadius(), 2) - Math.pow(175, 2)));
-        int r = (int) Math.round(radius * Math.pow((double) random.nextInt(100) / 100, 2));
+        int r = (int) Math.round(radius * Math.pow((double) random.nextInt(100) / 100.0, 2));
         int angle = random.nextInt(360);
-        int x = (int) Math.sin(angle) * r;
-        int z = (int) Math.cos(angle) * r;
+        int x = (int) (Math.sin(angle) * r);
+        int z = (int) (Math.cos(angle) * r);
         int y = 175;
         Location loc = new Location(p.getWorld(), x, y, z);
         //Tests if new Location is near to old Location to spread Spawnpoints

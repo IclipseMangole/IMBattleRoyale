@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -272,6 +273,17 @@ public class Knocked implements Listener {
 
     @EventHandler
     public void onToggleSneak(PlayerToggleSneakEvent e) {
+        if (Data.state == GameState.Running) {
+            if (User.getUser(e.getPlayer()) != null) {
+                if (User.getUser(e.getPlayer()).isKnocked()) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onConsume(PlayerInteractEvent e) {
         if (Data.state == GameState.Running) {
             if (User.getUser(e.getPlayer()) != null) {
                 if (User.getUser(e.getPlayer()).isKnocked()) {

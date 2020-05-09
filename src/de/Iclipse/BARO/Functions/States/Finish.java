@@ -5,6 +5,7 @@ import de.Iclipse.BARO.Database.BAROGames;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
+import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
 import net.minecraft.server.v1_15_R1.Entity;
@@ -43,7 +44,11 @@ public class Finish implements Listener {
             entry.teleport(Data.spawn);
             resetPlayer(entry);
             BorderManager.removeBorderEffect(entry);
-            entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.6f, 1.1f);
+            if (User.getUser(entry) != null && User.getUser(entry).isAlive()) {
+                entry.playSound(entry.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.9f);
+            } else {
+                entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.2f, 1f);
+            }
             BossBar.clearBars(entry);
             Scoreboard.boards.get(entry).destroy();
         });
