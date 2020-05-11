@@ -33,7 +33,7 @@ import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
 import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
-public class Lobby implements Listener {
+public class  Lobby implements Listener {
 
 
     @EventHandler
