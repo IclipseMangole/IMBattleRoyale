@@ -14,6 +14,8 @@ import de.Iclipse.BARO.Functions.HUD.Tablist;
 import de.Iclipse.BARO.Functions.PlayerManagement.UserStats;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.BARO.Functions.States.Lobby;
+import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import de.Iclipse.IMAPI.Util.SkullUtils;
@@ -34,8 +36,7 @@ import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
-import static de.Iclipse.IMAPI.IMAPI.copyFilesInDirectory;
-import static de.Iclipse.IMAPI.IMAPI.deleteFile;
+import static de.Iclipse.IMAPI.IMAPI.*;
 
 public class BARO extends JavaPlugin {
     @Override
@@ -69,6 +70,8 @@ public class BARO extends JavaPlugin {
         Item.loadItems();
         Chests.loadChests();
         Events.registerEvents();
+        Server.setMaxPlayers(getServerName(), 16);
+        Server.setState(getServerName(), State.Lobby);
     }
 
     @Override

@@ -7,6 +7,8 @@ import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
+import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
 import net.minecraft.server.v1_15_R1.Entity;
 import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
@@ -20,6 +22,7 @@ import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
 import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
+import static de.Iclipse.IMAPI.IMAPI.getServerName;
 
 public class Finish implements Listener {
 
@@ -30,6 +33,7 @@ public class Finish implements Listener {
     }
 
     public static void finish() {
+        Server.setState(getServerName(), State.Finished);
         Data.state = GameState.Finished;
         de.Iclipse.IMAPI.Data.restart = 30;
         Bukkit.getOnlinePlayers().forEach(entry -> {

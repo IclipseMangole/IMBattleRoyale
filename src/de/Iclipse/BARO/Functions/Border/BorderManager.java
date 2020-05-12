@@ -103,19 +103,21 @@ public class BorderManager implements Listener {
     public static void borderEffectsSync() {
         Data.users.forEach(u -> {
             Player p = u.getPlayer();
-            if (!u.isAlive()) {
-                if (border.getCurrentRadius() > 200) {
-                    p.damage(0.5);
-                } else if (border.getCurrentRadius() > 100) {
-                    p.damage(1);
-                } else if (border.getCurrentRadius() > 30) {
-                    p.damage(1.75);
-                } else {
-                    p.damage(2.5);
-                }
-                p.playEffect(EntityEffect.HURT_DROWN);
-                if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
+            if (u.isAlive()) {
+                if (p.getLocation().distance(border.getCurrentMiddle()) > border.getCurrentRadius()) {
+                    if (border.getCurrentRadius() > 200) {
+                        p.damage(0.5);
+                    } else if (border.getCurrentRadius() > 100) {
+                        p.damage(1);
+                    } else if (border.getCurrentRadius() > 30) {
+                        p.damage(1.75);
+                    } else {
+                        p.damage(2.5);
+                    }
+                    p.playEffect(EntityEffect.HURT_DROWN);
+                    if (!p.hasPotionEffect(PotionEffectType.CONFUSION)) {
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
+                    }
                 }
             }
         });

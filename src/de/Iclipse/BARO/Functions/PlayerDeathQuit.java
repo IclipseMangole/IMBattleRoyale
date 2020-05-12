@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,9 +17,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dsp;
@@ -69,16 +70,14 @@ public class PlayerDeathQuit implements Listener {
                         }
                         dsp.send(Bukkit.getConsoleSender(), "game.kill", u.getTeam().getColor() + e.getEntity().getDisplayName(), User.getUser(killer).getTeam().getColor() + killer.getDisplayName());
                     }
-                    ArrayList<ItemStack> toRemove = new ArrayList<>();
-                    e.getDrops().add(new ItemStack(Material.DIAMOND));
-                    e.getDrops().forEach(item -> {
-                        if (item.getType().equals(Material.FILLED_MAP)) {
-                            toRemove.add(item);
-                        }
-                    });
-                    if (toRemove.size() > 0) {
-                        toRemove.forEach(entry -> e.getDrops().remove(entry));
-                    }
+
+
+                    e.getEntity().getLocation().getBlock().setType(Material.CHEST);
+                    Chest c = (Chest) e.getEntity().getLocation().getBlock().getState();
+                    Inventory chestInv = c.getInventory();
+                    chestInv.addItem(new ItemStack(Material.DIAMOND_SWORD, 1));
+
+
                     u.setFinished(Data.timer);
                     e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 10, (float) ((new Random().nextInt(7) / 10) + 0.2));
                     if (u.getTeam().getAlive() == 0) {
@@ -105,9 +104,8 @@ public class PlayerDeathQuit implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
-        e.setRespawnLocation(new Location(e.getPlayer().getWorld(), 0, 82, 0));
+        e.setRespawnLocation(new Location(e.getPlayer().getWorld(), 0, 100, 0));
         Spectator.setSpectator(e.getPlayer());
-        e.getPlayer().getInventory().clear();
     }
 
     @EventHandler

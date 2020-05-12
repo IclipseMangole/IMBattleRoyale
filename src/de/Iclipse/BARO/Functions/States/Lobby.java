@@ -276,11 +276,9 @@ public class Lobby implements Listener {
 
     @EventHandler
     public void CreatureSpawn(CreatureSpawnEvent e) {
-        if (state != GameState.Running) {
             if (e.getLocation().distance(spawn) < 60) {
                 e.setCancelled(true);
             }
-        }
     }
 
 }
