@@ -99,7 +99,7 @@ public class Map implements Listener {
 
 
         Collection<MapIcon> list = new ArrayList<>();
-        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) (p.getLocation().getBlockX() / 4), (byte) (p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
+        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) Math.round(p.getLocation().getBlockX() / 4), (byte) Math.round(p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
         LootDrops.drops.forEach((loc, looted) -> {
             if (!looted) {
                 list.add(new MapIcon(MapIcon.Type.RED_X, (byte) (loc.getBlockX() / 4), (byte) (loc.getBlockZ() / 4), (byte) 0, null));
@@ -261,17 +261,12 @@ public class Map implements Listener {
     }
 
     private static byte yawToDirection(float yaw) {
-        byte direction = yaw >= 0 ? (byte) Math.round(yaw / 16.0) : (byte) Math.round((360 + yaw) / 16.0);
-
-        /*
-        System.out.println("Yaw: " + yaw);
-        if (yaw >= 0) {
-            System.out.println("Not Rounded: " + yaw / 16.0);
+        byte direction;
+        if (yaw >= -8) {
+            direction = (byte) ((yaw + 8) / 22.5);
         } else {
-            System.out.println("Not Rounded: " + (360 + yaw) / 16.0);
+            direction = (byte) ((360 + (yaw + 8)) / 22.5);
         }
-        System.out.println("Direction: " + direction);
-         */
         return direction;
     }
 

@@ -24,7 +24,7 @@ public class Events {
                         });
                     }
                 } else {
-                    Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent));
+                    Bukkit.getScheduler().runTask(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
                     Data.estate = Data.nextEvent;
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         dsp.send(p, "event.enabled", dsp.get("event." + Data.estate.getName(), p));
@@ -41,7 +41,7 @@ public class Events {
                         });
                     }
                 } else {
-                    Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent));
+                    Bukkit.getScheduler().runTask(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         dsp.send(p, "event.disabled", dsp.get("event." + Data.estate.getName(), p));
                     });

@@ -31,6 +31,7 @@ import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
+import static de.Iclipse.IMAPI.Data.heads;
 import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
 public class  Lobby implements Listener {
@@ -40,8 +41,7 @@ public class  Lobby implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
-            tablist.setTablist(p);
-            tablist.setPlayer(p);
+            resetPlayer(p);
             if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
                 e.setJoinMessage(null);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
@@ -54,7 +54,6 @@ public class  Lobby implements Listener {
                 new User(p);
             }
             p.teleport(spawn);
-            resetPlayer(p);
             switch (new Random().nextInt(2)) {
                 case 0:
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 0.7f, 1.3f);
@@ -68,6 +67,7 @@ public class  Lobby implements Listener {
     }
 
     public void setLobbyInventory(Player p) {
+        System.out.println("");
         p.getInventory().clear();
         p.setExp(0);
         p.setHealth(20.0);

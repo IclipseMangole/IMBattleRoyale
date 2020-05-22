@@ -29,7 +29,7 @@ public class cmd_teamsize {
             TeamManager.createTeams();
             Bukkit.getOnlinePlayers().forEach(entry -> {
                 dsp.send(entry, "countdown.reset");
-                Data.tablist.setPlayer(entry);
+                de.Iclipse.IMAPI.Data.tablist.setTablist(entry);
                 entry.setExp(0.0f);
                 entry.setLevel(0);
             });

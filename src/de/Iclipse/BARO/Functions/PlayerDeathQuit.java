@@ -4,6 +4,8 @@ import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.Finish;
 import de.Iclipse.BARO.Functions.States.GameState;
+import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.IMAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,6 +49,7 @@ public class PlayerDeathQuit implements Listener {
             User u = User.getUser(e.getEntity());
             if (u != null) {
                 if (u.getTeam() != null) {
+                    Server.setPlayers(IMAPI.getServerName(), Server.getPlayers(IMAPI.getServerName()) - 1);
                     e.setDeathMessage(null);
                     Player killer = null;
                     if (u.isKnocked()) {
@@ -114,6 +117,7 @@ public class PlayerDeathQuit implements Listener {
             User u = User.getUser(e.getPlayer());
             if (u != null) {
                 if (u.getTeam() != null) {
+                    Server.setPlayers(IMAPI.getServerName(), Server.getPlayers(IMAPI.getServerName()) - 1);
                     e.setQuitMessage(null);
                     Player killer = null;
                     if (u.isKnocked()) {

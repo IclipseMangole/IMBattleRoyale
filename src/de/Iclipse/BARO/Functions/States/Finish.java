@@ -9,6 +9,8 @@ import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
 import de.Iclipse.IMAPI.Database.Server;
 import de.Iclipse.IMAPI.Functions.Servers.State;
+import de.Iclipse.IMAPI.Functions.Vanish;
+import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
 import net.minecraft.server.v1_15_R1.Entity;
 import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
@@ -56,6 +58,7 @@ public class Finish implements Listener {
             BossBar.clearBars(entry);
             Scoreboard.boards.get(entry).destroy();
         });
+        Server.setPlayers(IMAPI.getServerName(), Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size());
         Bukkit.getWorld("world").setStorm(false);
         Bukkit.getWorld("world").setTime(12800);
         save();

@@ -10,7 +10,6 @@ import de.Iclipse.BARO.Functions.Events.*;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
-import de.Iclipse.BARO.Functions.HUD.Tablist;
 import de.Iclipse.BARO.Functions.PlayerManagement.UserStats;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.BARO.Functions.States.Lobby;
@@ -36,6 +35,7 @@ import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
+import static de.Iclipse.IMAPI.Data.heads;
 import static de.Iclipse.IMAPI.IMAPI.*;
 
 public class BARO extends JavaPlugin {
@@ -50,7 +50,6 @@ public class BARO extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        super.onEnable();
         Config.correctLocations();
         registerListener();
         registerCommands();
@@ -58,7 +57,6 @@ public class BARO extends JavaPlugin {
         loadResourceBundles();
         Data.state = GameState.Lobby;
         Data.estate = EventState.None;
-        tablist = new Tablist();
         Map.loadMap();
         createTeams();
         scheduler = new Scheduler();
@@ -72,6 +70,7 @@ public class BARO extends JavaPlugin {
         Events.registerEvents();
         Server.setMaxPlayers(getServerName(), 16);
         Server.setState(getServerName(), State.Lobby);
+        Server.setMap(IMAPI.getServerName(), "SURO");
     }
 
     @Override

@@ -62,7 +62,7 @@ public class PlayerSpawns implements Listener {
         int x = (int) (Math.sin(angle) * r);
         int z = (int) (Math.cos(angle) * r);
         int y = 175;
-        Location loc = new Location(p.getWorld(), x, y, z);
+        Location loc = new Location(p.getWorld(), x, y, z, p.getLocation().getYaw(), p.getLocation().getPitch());
         //Tests if new Location is near to old Location to spread Spawnpoints
         p.teleport(loc);
         p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);

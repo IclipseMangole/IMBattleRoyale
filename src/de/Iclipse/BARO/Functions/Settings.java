@@ -1,6 +1,5 @@
 package de.Iclipse.BARO.Functions;
 
-import de.Iclipse.BARO.Data;
 import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
@@ -11,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.heads;
+import static de.Iclipse.IMAPI.Data.heads;
 
 public class Settings {
 
@@ -69,7 +68,7 @@ public class Settings {
 
 
     public static ItemStack getMaxPlayerBarsArrowUp(Player p) {
-        ItemStack item = Data.heads.get("arrowUp");
+        ItemStack item = heads.get("arrowUp");
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setDisplayName(dsp.get("settings.maxPlayerBars.arrowUp", p));
         item.setItemMeta(meta);
@@ -77,7 +76,7 @@ public class Settings {
     }
 
     public static ItemStack getMaxPlayerBarsArrowDown(Player p) {
-        ItemStack item = Data.heads.get("arrowDown");
+        ItemStack item = heads.get("arrowDown");
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setDisplayName(dsp.get("settings.maxPlayerBars.arrowDown", p));
         item.setItemMeta(meta);

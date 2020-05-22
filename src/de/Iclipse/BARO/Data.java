@@ -2,7 +2,6 @@ package de.Iclipse.BARO;
 
 
 import de.Iclipse.BARO.Functions.Events.EventState;
-import de.Iclipse.BARO.Functions.HUD.Tablist;
 import de.Iclipse.BARO.Functions.LastDamage;
 import de.Iclipse.BARO.Functions.PlayerManagement.Team;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
@@ -30,7 +29,6 @@ public class Data {
     public static GameState state;
     public static EventState estate;
     public static EventState nextEvent;
-    public static Tablist tablist;
     public static BossBar borderBossBarEN;
     public static BossBar borderBossBarDE;
     public static BossBar eventBossBarEN;
@@ -51,7 +49,6 @@ public class Data {
     public static ArrayList<EventState> events = new ArrayList<>();
     public static ArrayList<EventState> allEvents = new ArrayList<>();
     public static HashMap<Player, ItemStack> jumppads = new HashMap<>();
-    public static HashMap<String, ItemStack> heads = new HashMap<>();
     public static HashMap<Player, LastDamage.LastDamager> lastDamager = new HashMap<>();
     //Elytra
     public static ArrayList<Player> flyingPlayers = new ArrayList<>();

@@ -7,6 +7,7 @@ import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
 import de.Iclipse.IMAPI.Database.Server;
 import de.Iclipse.IMAPI.Functions.Servers.State;
+import de.Iclipse.IMAPI.IMAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -39,6 +40,8 @@ public class Start {
         BossBar.createBars();
         Data.state = GameState.Running;
         Data.start = Date.from(Instant.now());
+        de.Iclipse.IMAPI.Data.updatePlayers = false;
+        Server.setPlayers(IMAPI.getServerName(), Data.users.size());
     }
 
 }

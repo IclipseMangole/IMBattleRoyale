@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -253,7 +254,7 @@ public class Spectator implements Listener {
 
     public static ItemStack getPlayerHead(Player p) {
         ItemStack item = SkullUtils.getPlayerSkull(p);
-        ItemMeta meta = item.getItemMeta();
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setDisplayName(p.getDisplayName());
         item.setItemMeta(meta);
         return item;
