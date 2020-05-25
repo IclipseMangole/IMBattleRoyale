@@ -40,7 +40,6 @@ public class Watcher implements Listener {
         Data.cameras.put(u.getPlayer(), alives.get(0).getPlayer());
         Data.watchers.add(u);
         setWatcherInventory(u);
-        u.getPlayer().setCollidable(false);
     }
 
     private static void setWatcherInventory(User u) {

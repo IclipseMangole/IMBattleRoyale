@@ -42,8 +42,8 @@ public class  Lobby implements Listener {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
             resetPlayer(p);
+            e.setJoinMessage(null);
             if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
-                e.setJoinMessage(null);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     if (!entry.equals(p)) {
                         dsp.send(entry, "lobby.join", p.getDisplayName());
@@ -90,10 +90,12 @@ public class  Lobby implements Listener {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
             e.setQuitMessage(null);
-            Bukkit.getOnlinePlayers().forEach(entry -> {
-                dsp.send(entry, "lobby.quit", p.getDisplayName());
-            });
-            dsp.send(Bukkit.getConsoleSender(), "lobby.quit", p.getDisplayName());
+            if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "vanish")) {
+                Bukkit.getOnlinePlayers().forEach(entry -> {
+                    dsp.send(entry, "lobby.quit", p.getDisplayName());
+                });
+                dsp.send(Bukkit.getConsoleSender(), "lobby.quit", p.getDisplayName());
+            }
             if (getUser(p) != null) {
                 User u = getUser(p);
                 if (u.getTeam() != null) {

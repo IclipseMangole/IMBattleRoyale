@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -76,9 +76,13 @@ public class PlayerDeathQuit implements Listener {
 
 
                     e.getEntity().getLocation().getBlock().setType(Material.CHEST);
-                    Chest c = (Chest) e.getEntity().getLocation().getBlock().getState();
+                    e.getEntity().getLocation().clone().add(1, 0, 0).getBlock().setType(Material.CHEST);
+                    DoubleChest c = (DoubleChest) e.getEntity().getLocation().getBlock().getState();
                     Inventory chestInv = c.getInventory();
-                    chestInv.addItem(new ItemStack(Material.DIAMOND_SWORD, 1));
+                    e.getEntity().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                    for (ItemStack content : e.getEntity().getInventory().getContents()) {
+                        chestInv.addItem(content);
+                    }
 
 
                     u.setFinished(Data.timer);
