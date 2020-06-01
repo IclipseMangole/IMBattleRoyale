@@ -47,7 +47,7 @@ public class Finish implements Listener {
                 Spectator.removeSpectator(entry);
             }
             dsp.send(entry, "finish.finish", Data.teams.get(0).getColor() + "Team " + dsp.get("color." + Data.teams.get(0).getColor().asBungee().getName(), entry));
-            entry.teleport(Data.spawn);
+            entry.teleport(Data.mapLobbySpawn);
             resetPlayer(entry);
             BorderManager.removeBorderEffect(entry);
             if (User.getUser(entry) != null && User.getUser(entry).isAlive()) {
@@ -79,9 +79,9 @@ public class Finish implements Listener {
 
         for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 4); i++) {
             Location spawn = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-            spawn.setX(Data.spawn.getX() + (random.nextInt(11) - 5));
-            spawn.setZ(Data.spawn.getZ() + (random.nextInt(11) - 5));
-            spawn.setY(Data.spawn.getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
+            spawn.setX(Data.mapLobbySpawn.getX() + (random.nextInt(11) - 5));
+            spawn.setZ(Data.mapLobbySpawn.getZ() + (random.nextInt(11) - 5));
+            spawn.setY(Data.mapLobbySpawn.getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
 
 
             Fireworkgenerator fireworkgenerator = new Fireworkgenerator(Data.instance);

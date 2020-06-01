@@ -89,7 +89,7 @@ public class PlayerDeathQuit implements Listener {
                     e.getEntity().getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 10, (float) ((new Random().nextInt(7) / 10) + 0.2));
                     if (u.getTeam().getAlive() == 0) {
                         u.getTeam().getUsers().forEach(entry -> {
-                            entry.setPlace(Data.teams.size() - 1);
+                            entry.setPlace(Data.teams.size());
                             if (entry.getPlayer() != null) {
                                 entry.getPlayer().sendTitle(dsp.get("finish.team.title", entry.getPlayer()), dsp.get("finish.team.subtitle", entry.getPlayer(), Data.teams.size() + ""), 10, 30, 10);
                             }
@@ -155,7 +155,7 @@ public class PlayerDeathQuit implements Listener {
                     e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 10, (float) ((new Random().nextInt(7) / 10) + 0.2));
                     if (u.getTeam().getAlive() == 0) {
                         u.getTeam().getUsers().forEach(entry -> {
-                            entry.setPlace(Data.teams.size() - 1);
+                            entry.setPlace(Data.teams.size());
                             if (entry.getPlayer() != null) {
                                 entry.getPlayer().sendTitle(dsp.get("finish.team.title", entry.getPlayer()), dsp.get("finish.team.subtitle", entry.getPlayer(), Data.teams.size() + ""), 10, 30, 10);
                             }

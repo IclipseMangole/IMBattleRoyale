@@ -1,12 +1,16 @@
 package de.Iclipse.BARO;
 
 
+import de.Iclipse.BARO.Config.Config;
+import de.Iclipse.BARO.Config.MapConfig;
 import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.LastDamage;
+import de.Iclipse.BARO.Functions.MapLoader;
 import de.Iclipse.BARO.Functions.PlayerManagement.Team;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.States.GameState;
+import de.Iclipse.BARO.Functions.Stats;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
@@ -27,21 +31,20 @@ public class Data {
     public static Scheduler scheduler;
     public static Plugin instance;
     public static GameState state;
+    public static Dispatcher dsp;
+    public static ResourceBundle langDE;
+    public static ResourceBundle langEN;
+    public static Config config;
+    public static MapConfig mapConfig;
+    public static MapLoader mapLoader;
+    public static Stats stats;
     public static EventState estate;
     public static EventState nextEvent;
     public static BossBar borderBossBarEN;
     public static BossBar borderBossBarDE;
     public static BossBar eventBossBarEN;
     public static BossBar eventBossBarDE;
-    public static int defaultcountdown;
-    public static int countdown = defaultcountdown;
-    public static int teamsize;
-    public static int minplayers = teamsize + 1;
-    public static int chests;
     public static Date start;
-    public static Dispatcher dsp;
-    public static ResourceBundle langDE;
-    public static ResourceBundle langEN;
     public static ArrayList<Team> teams = new ArrayList<>();
     public static ArrayList<User> users = new ArrayList<>();
     public static ArrayList<Player> spectators = new ArrayList<>();
@@ -63,10 +66,38 @@ public class Data {
     //Events
     public static ArrayList<User> fishmutation = new ArrayList<>();
 
-    public static Location spawn;
+
+    //Config Stuff
+    public static File mapFolder;
+    public static File defaultLobby;
+    public static Location defaultLobbySpawn;
+    public static int defaultCountdown;
+    public static int countdown = defaultCountdown;
+    public static int skipCountdown;
+    public static int teamsize;
+    public static int minplayers = teamsize + 1;
+
+
+    //MapConfig Stuff
+    //  Lobby
+    public static Location mapLobbySpawn;
+    public static Location mapLobbyMiddle;
+    public static int mapLobbyMaxDistance;
+    public static boolean noWater;
+    public static int noWaterMinDistance;
+    public static Location mapLobbyStats;
+    public static int jumpAndRunReward;
+    //  Game
+    public static int mapScale;
+    public static int spawnHeight;
+    public static int distanceBetweenSpawns;
+    public static int fallHeight;
+    public static int firstRadius;
     public static double progressPerSecond;
     public static double newRadius;
-    public static File worldFile;
+    public static int chestAmount;
+    public static ArrayList<Location> chests = new ArrayList<>();
+    public static boolean noLobbyIsland;
     public static int eventTimeRunning;
     public static int timeBetweenEventsMin;
     public static int timeBetweenEventsMax;

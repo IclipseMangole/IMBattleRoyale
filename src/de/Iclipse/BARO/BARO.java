@@ -1,6 +1,7 @@
 package de.Iclipse.BARO;
 
 import de.Iclipse.BARO.Commands.*;
+import de.Iclipse.BARO.Config.Config;
 import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.*;
 import de.Iclipse.BARO.Functions.Chests.Chests;
@@ -23,10 +24,6 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -36,21 +33,24 @@ import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
 import static de.Iclipse.IMAPI.Data.heads;
-import static de.Iclipse.IMAPI.IMAPI.*;
+import static de.Iclipse.IMAPI.IMAPI.getServerName;
 
 public class BARO extends JavaPlugin {
     @Override
     public void onLoad() {
         super.onLoad();
         Data.instance = this;
-        Config.setStandardConfig();
-        Config.readConfig();
-        loadMap();
+        config = new Config();
+        config.setStandardConfig();
+        config.readConfig();
+        mapLoader.loadDefaultLobby();
+        mapLoader = new MapLoader();
+        mapLoader.loadMap();
     }
 
     @Override
     public void onEnable() {
-        Config.correctLocations();
+        config.correctLocations();
         registerListener();
         registerCommands();
         createTables();
@@ -70,7 +70,6 @@ public class BARO extends JavaPlugin {
         Events.registerEvents();
         Server.setMaxPlayers(getServerName(), 16);
         Server.setState(getServerName(), State.Lobby);
-        Server.setMap(IMAPI.getServerName(), "SURO");
     }
 
     @Override
@@ -135,26 +134,6 @@ public class BARO extends JavaPlugin {
     public void createTables() {
         createBAROGamesTable();
         createBAROStatsTable();
-    }
-
-
-    public void loadMap() {
-        if (new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world").exists()) {
-            deleteFile(new File(Bukkit.getWorldContainer().getAbsolutePath() + "/world"));
-        }
-        File from = new File(worldFile + "/region");
-        File to = new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/region");
-        if (to.exists()) {
-            to.delete();
-        }
-        try {
-            copyFilesInDirectory(from, to);
-            Files.copy(new File(Data.worldFile + "/level.dat").toPath(), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/level.dat").toPath(), StandardCopyOption.REPLACE_EXISTING);
-            copyFilesInDirectory(new File(Data.worldFile + "/maps"), new File(Data.instance.getDataFolder().getAbsoluteFile().getParentFile().getParentFile().getAbsolutePath() + "/world/maps"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 

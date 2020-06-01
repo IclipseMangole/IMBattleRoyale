@@ -203,6 +203,9 @@ public class User {
     }
 
     public void save(int gameId) {
+        if (isAlive()) {
+            finished = Data.timer;
+        }
         BAROStats.insertStats(UUIDFetcher.getUUID(player.getName()), gameId, kills, deaths, damageDealt, damageReceived, blocksPlaced, blocksDestroyed, itemsCrafted, lootedChests, lootedDrops, place, finished);
     }
 

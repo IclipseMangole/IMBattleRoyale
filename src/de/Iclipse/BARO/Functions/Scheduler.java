@@ -14,6 +14,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
 
+import static de.Iclipse.BARO.Data.stats;
+
 
 public class Scheduler {
     private BukkitTask task;
@@ -68,7 +70,7 @@ public class Scheduler {
                             }
                         });
                     }
-
+                    stats.update();
                     Countdown.countdown(seconds);
                 } else if (Data.state == GameState.Running) {
                     Timer.timer();
@@ -86,8 +88,6 @@ public class Scheduler {
                 }
                 seconds = (seconds + 1) % 59;
 
-
-                //LootDrops.newDrops();
             }
         }, 20, 20);
     }

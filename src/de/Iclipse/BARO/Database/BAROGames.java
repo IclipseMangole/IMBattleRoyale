@@ -35,4 +35,8 @@ public class BAROGames {
         return -1;
     }
 
+    public static Date monthBefore() {
+        return new Date(System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000));
+    }
+
 }

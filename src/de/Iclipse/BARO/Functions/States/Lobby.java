@@ -34,7 +34,7 @@ import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
 import static de.Iclipse.IMAPI.Data.heads;
 import static de.Iclipse.IMAPI.Functions.PlayerReset.resetPlayer;
 
-public class  Lobby implements Listener {
+public class Lobby implements Listener {
 
 
     @EventHandler
@@ -53,7 +53,11 @@ public class  Lobby implements Listener {
                 setLobbyInventory(p);
                 new User(p);
             }
-            p.teleport(spawn);
+            if (Bukkit.getWorld("world") != null) {
+                p.teleport(mapLobbySpawn);
+            } else {
+                p.teleport(defaultLobbySpawn);
+            }
             switch (new Random().nextInt(2)) {
                 case 0:
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 0.7f, 1.3f);
@@ -131,9 +135,8 @@ public class  Lobby implements Listener {
                     }
                     Block behind = e.getClickedBlock().getRelative(face.getOppositeFace());
                     if (behind.getType().equals(Material.GOLD_BLOCK)) {
-                        int schnitzel = 1000;
-                        dsp.send(p, "jumpnrun.finished", "" + schnitzel);
-                        de.Iclipse.IMAPI.Database.User.addSchnitzel(UUIDFetcher.getUUID(p.getName()), schnitzel);
+                        dsp.send(p, "jumpnrun.finished", "" + jumpAndRunReward);
+                        de.Iclipse.IMAPI.Database.User.addSchnitzel(UUIDFetcher.getUUID(p.getName()), jumpAndRunReward);
                     }
                 }
             }
@@ -239,12 +242,16 @@ public class  Lobby implements Listener {
     public void PlayerMoveEvent(PlayerMoveEvent e) {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
-            if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
-                if (p.getLocation().distance(spawn) < 70) {
-                    p.setVelocity(spawn.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
-                } else {
-                    p.setVelocity(spawn.toVector().subtract(p.getLocation().toVector()).setY(2));
+            if (noWater) {
+                if (e.getTo().distance(mapLobbyMiddle) > noWaterMinDistance) {
+                    if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
+                        p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
+                        p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).setY(2));
+                    }
                 }
+            }
+            if (e.getTo().distance(mapLobbyMiddle) >= (mapLobbyMaxDistance + Math.abs(e.getTo().getY() - mapLobbyMiddle.getY()))) {
+                p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
             }
         }
     }
@@ -278,9 +285,10 @@ public class  Lobby implements Listener {
 
     @EventHandler
     public void CreatureSpawn(CreatureSpawnEvent e) {
-            if (e.getLocation().distance(spawn) < 60) {
-                e.setCancelled(true);
-            }
+        if (state != GameState.Running) {
+            e.setCancelled(true);
+        }
     }
+
 
 }

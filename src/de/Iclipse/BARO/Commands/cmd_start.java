@@ -1,13 +1,12 @@
 package de.Iclipse.BARO.Commands;
 
-import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Functions.Vanish;
 import de.Iclipse.IMAPI.Util.Command.IMCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.BARO.Data.*;
 
 public class cmd_start {
     @IMCommand(
@@ -19,15 +18,15 @@ public class cmd_start {
             permissions = "im.cmd.start"
     )
     public void start(CommandSender sender) {
-        if (Data.state == GameState.Lobby) {
-            if ((Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size()) >= Data.minplayers) {
-                if (Data.countdown > 10) {
-                    Data.countdown = 10;
+        if (state == GameState.Lobby) {
+            if ((Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size()) >= minplayers) {
+                if (countdown > skipCountdown) {
+                    countdown = skipCountdown;
                 } else {
                     dsp.send(sender, "start.already");
                 }
             } else {
-                dsp.send(sender, "start.missing", "" + (Data.minplayers - (Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size())));
+                dsp.send(sender, "start.missing", "" + (minplayers - (Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size())));
             }
         } else {
             dsp.send(sender, "start.running");

@@ -56,7 +56,7 @@ public class Chests implements Listener {
     public static void loadChests() {
         ArrayList<Location> chests = loadChestList();
         Random random = new Random();
-        while (chests.size() > Data.chests) {
+        while (chests.size() > Data.chestAmount) {
             Location chest = chests.get(random.nextInt(chests.size()));
             chest.getBlock().setType(Material.AIR);
             chests.remove(chest);

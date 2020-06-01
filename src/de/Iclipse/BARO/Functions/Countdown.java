@@ -80,8 +80,8 @@ public class Countdown {
 
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     entry.setLevel(countdown);
-                    if (defaultcountdown <= 100) {
-                        entry.setExp((float) countdown / (float) defaultcountdown);
+                    if (defaultCountdown <= 100) {
+                        entry.setExp((float) countdown / (float) defaultCountdown);
                     } else {
                         if (countdown > 100) {
                             entry.setExp(1);
@@ -93,13 +93,13 @@ public class Countdown {
                 Data.countdown--;
             }
         } else {
-            if (countdown < defaultcountdown) {
+            if (countdown < defaultCountdown) {
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     dsp.send(entry, "countdown.reset");
                     entry.setLevel(0);
                     entry.setExp(0.0f);
                 });
-                countdown = defaultcountdown;
+                countdown = defaultCountdown;
             } else {
                 if (seconds % 20 == 0) {
                     Bukkit.getOnlinePlayers().forEach(entry -> {
