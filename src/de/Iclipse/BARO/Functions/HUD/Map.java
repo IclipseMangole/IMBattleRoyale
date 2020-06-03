@@ -31,8 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.timer;
+import static de.Iclipse.BARO.Data.*;
 
 public class Map implements Listener {
 
@@ -41,7 +40,7 @@ public class Map implements Listener {
     private static HashMap<Integer, Byte> changed = new HashMap<>();
 
     public static void loadMap() {
-        map = loadData(new File(Bukkit.getWorld("world").getWorldFolder().getPath() + "/maps/map_0_0_3.txt"));
+        map = loadData(new File(Bukkit.getWorld("world").getWorldFolder().getPath() + "/maps/map_0_0_" + mapScale + ".txt"));
         lostMap = new byte[128 * 128];
         byte c = 0;
         for (int i = 0; i < 128 * 128; i++) {
@@ -99,10 +98,10 @@ public class Map implements Listener {
 
 
         Collection<MapIcon> list = new ArrayList<>();
-        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) Math.round(p.getLocation().getBlockX() / 4), (byte) Math.round(p.getLocation().getBlockZ() / 4), yawToDirection(p.getLocation().getYaw()), null));
+        list.add(new MapIcon(MapIcon.Type.PLAYER, (byte) Math.round(p.getLocation().getBlockX() / (Math.pow(2, mapScale) / 2)), (byte) Math.round(p.getLocation().getBlockZ() / (Math.pow(2, mapScale) / 2)), yawToDirection(p.getLocation().getYaw()), null));
         LootDrops.drops.forEach((loc, looted) -> {
             if (!looted) {
-                list.add(new MapIcon(MapIcon.Type.RED_X, (byte) (loc.getBlockX() / 4), (byte) (loc.getBlockZ() / 4), (byte) 0, null));
+                list.add(new MapIcon(MapIcon.Type.RED_X, (byte) (loc.getBlockX() / (Math.pow(2, mapScale) / 2)), (byte) (loc.getBlockZ() / (Math.pow(2, mapScale) / 2)), (byte) 0, null));
             }
         });
         if (User.getUser(p) != null) {
@@ -111,21 +110,21 @@ public class Map implements Listener {
                 if (u.isAlive() && u.getTeam().getAlives().size() > 1 || !u.isAlive()) {
                     for (User alive : u.getTeam().getAlives()) {
                         if (!u.equals(alive)) {
-                            list.add(new MapIcon(colorToIconType(u.getTeam().getColor()), (byte) (alive.getPlayer().getLocation().getBlockX() / 4), (byte) (alive.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(alive.getPlayer().getLocation().getYaw()), null));
+                            list.add(new MapIcon(colorToIconType(u.getTeam().getColor()), (byte) (alive.getPlayer().getLocation().getBlockX() / (Math.pow(2, mapScale) / 2)), (byte) (alive.getPlayer().getLocation().getBlockZ() / (Math.pow(2, mapScale) / 2)), yawToDirection(alive.getPlayer().getLocation().getYaw()), null));
                         }
                     }
                 }
             } else {
                 Data.teams.forEach(t -> {
                     t.getAlives().forEach(a -> {
-                        list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / 4), (byte) (a.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
+                        list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / (Math.pow(2, mapScale) / 2)), (byte) (a.getPlayer().getLocation().getBlockZ() / (Math.pow(2, mapScale) / 2)), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
                     });
                 });
             }
         } else {
             Data.teams.forEach(t -> {
                 t.getAlives().forEach(a -> {
-                    list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / 4), (byte) (a.getPlayer().getLocation().getBlockZ() / 4), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
+                    list.add(new MapIcon(colorToIconType(t.getColor()), (byte) (a.getPlayer().getLocation().getBlockX() / (Math.pow(2, mapScale) / 2)), (byte) (a.getPlayer().getLocation().getBlockZ() / (Math.pow(2, mapScale) / 2)), yawToDirection(a.getPlayer().getLocation().getYaw()), null));
                 });
             });
         }
@@ -139,9 +138,9 @@ public class Map implements Listener {
          */
         PacketPlayOutMap packet;
         if (!isPlayerLost(p)) {
-            packet = new PacketPlayOutMap(id, (byte) 3, true, true, list, map, 0, 0, 128, 128);
+            packet = new PacketPlayOutMap(id, (byte) mapScale, true, true, list, map, 0, 0, 128, 128);
         } else {
-            packet = new PacketPlayOutMap(id, (byte) 3, false, true, new ArrayList<>(), lostMap, 0, 0, 128, 128);
+            packet = new PacketPlayOutMap(id, (byte) mapScale, false, true, new ArrayList<>(), lostMap, 0, 0, 128, 128);
         }
         ((CraftPlayer) p).getHandle().playerConnection.networkManager.sendPacket(packet);
     }
@@ -155,16 +154,16 @@ public class Map implements Listener {
     private static void showNextBoarder() {
         Location middle = BorderManager.border.getMiddleNew();
         if (!middle.equals(BorderManager.border.getCurrentMiddle()) && BorderManager.border.getRadiusNew() != BorderManager.border.getCurrentRadius()) {
-            byte mapMiddleX = (byte) Math.floor((middle.getX() + 512) / 8);
-            byte mapMiddleZ = (byte) Math.floor((middle.getZ() + 512) / 8);
-            byte mapRadius = (byte) Math.ceil(BorderManager.border.getRadiusNew() / 8 + 1);
+            byte mapMiddleX = (byte) Math.floor((middle.getX() + firstRadius) / Math.pow(2, mapScale));
+            byte mapMiddleZ = (byte) Math.floor((middle.getZ() + firstRadius) / Math.pow(2, mapScale));
+            byte mapRadius = (byte) Math.ceil(BorderManager.border.getRadiusNew() / Math.pow(2, mapScale) + 1);
             double radius = BorderManager.border.getRadiusNew();
             for (byte z = 0; z <= mapRadius; z++) {
                 byte mapZ = (byte) (mapMiddleZ - mapRadius + z);
                 for (byte x = 0; x < mapRadius; x++) {
                     byte mapX = (byte) (mapMiddleX - mapRadius + x);
-                    Location loc1 = new Location(Bukkit.getWorld("world"), (mapX * 8) - 512, middle.getY(), (mapZ * 8) - 512);
-                    Location loc2 = new Location(Bukkit.getWorld("world"), (mapX * 8 + 7) - 512, middle.getY(), (mapZ * 8 + 7) - 512);
+                    Location loc1 = new Location(Bukkit.getWorld("world"), mapX * Math.pow(2, mapScale) - firstRadius, middle.getY(), mapZ * Math.pow(2, mapScale) - firstRadius);
+                    Location loc2 = new Location(Bukkit.getWorld("world"), (mapX * Math.pow(2, mapScale) + Math.pow(2, mapScale) - 1) - 512, middle.getY(), (mapZ * Math.pow(2, mapScale) + Math.pow(2, mapScale) - 1) - firstRadius);
                     if (loc1.distance(middle) + 1 >= radius && loc2.distance(middle) - 1 <= radius) {
                         setColors(mapX, mapZ, mapMiddleX, mapMiddleZ, (byte) (14 * 4));
                     }
@@ -175,16 +174,16 @@ public class Map implements Listener {
 
     private static void showCurrentBorder() {
         Location middle = BorderManager.border.getCurrentMiddle();
-        byte mapMiddleX = (byte) Math.floor((middle.getX() + 512) / 8);
-        byte mapMiddleZ = (byte) Math.floor((middle.getZ() + 512) / 8);
-        byte mapRadius = (byte) Math.ceil(BorderManager.border.getCurrentRadius() / 8);
+        byte mapMiddleX = (byte) Math.floor((middle.getX() + firstRadius) / Math.pow(2, mapScale));
+        byte mapMiddleZ = (byte) Math.floor((middle.getZ() + firstRadius) / Math.pow(2, mapScale));
+        byte mapRadius = (byte) Math.ceil(BorderManager.border.getCurrentRadius() / Math.pow(2, mapScale) + 1);
         double radius = BorderManager.border.getCurrentRadius();
         for (byte z = 0; z <= mapRadius; z++) {
             byte mapZ = (byte) (mapMiddleZ - mapRadius + z);
             for (byte x = 0; x < mapRadius; x++) {
                 byte mapX = (byte) (mapMiddleX - mapRadius + x);
-                Location loc1 = new Location(Bukkit.getWorld("world"), (mapX * 8) - 512, middle.getY(), (mapZ * 8) - 512);
-                Location loc2 = new Location(Bukkit.getWorld("world"), (mapX * 8 + 7) - 512, middle.getY(), (mapZ * 8 + 7) - 512);
+                Location loc1 = new Location(Bukkit.getWorld("world"), mapX * Math.pow(2, mapScale) - firstRadius, middle.getY(), mapZ * Math.pow(2, mapScale) - firstRadius);
+                Location loc2 = new Location(Bukkit.getWorld("world"), (mapX * Math.pow(2, mapScale) + Math.pow(2, mapScale) - 1) - 512, middle.getY(), (mapZ * Math.pow(2, mapScale) + Math.pow(2, mapScale) - 1) - firstRadius);
                 if (loc1.distance(middle) + 0.5 >= radius && loc2.distance(middle) - 0.5 <= radius) {
                     setColors(mapX, mapZ, mapMiddleX, mapMiddleZ, (byte) (24 * 4));
                 }
@@ -255,7 +254,7 @@ public class Map implements Listener {
         view.setTrackingPosition(true);
         view.setCenterX(0);
         view.setCenterZ(0);
-        view.setScale(MapView.Scale.FAR);
+        view.setScale(MapView.Scale.valueOf((byte) mapScale));
         view.setLocked(true);
         return view;
     }

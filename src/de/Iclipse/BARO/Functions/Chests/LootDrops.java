@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import static de.Iclipse.BARO.Data.dropHeight;
 import static de.Iclipse.BARO.Data.dsp;
 
 public class LootDrops implements Listener {
@@ -163,7 +164,7 @@ public class LootDrops implements Listener {
         System.out.println(angle);
         int x = (int) (Math.sin(angle) * radius);
         int z = (int) (Math.cos(angle) * radius);
-        Location loc = new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + 50, z);
+        Location loc = new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + dropHeight, z);
         if (!drops.containsKey(loc)) {
             return loc;
         } else {

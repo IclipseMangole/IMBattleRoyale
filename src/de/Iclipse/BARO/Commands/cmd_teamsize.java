@@ -24,7 +24,7 @@ public class cmd_teamsize {
             dsp.send(sender, "teamsize.set", "" + teamsize);
             Data.teamsize = teamsize;
             Data.minplayers = teamsize + 1;
-            Data.countdown = Data.defaultcountdown;
+            Data.countdown = Data.defaultCountdown;
             Data.teams = new ArrayList<>();
             TeamManager.createTeams();
             Bukkit.getOnlinePlayers().forEach(entry -> {

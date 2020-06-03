@@ -3,7 +3,9 @@ package de.Iclipse.BARO.Functions.Border;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
+import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.Actionbar;
+import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import net.minecraft.server.v1_15_R1.PacketPlayOutWorldBorder;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
@@ -19,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-import static de.Iclipse.BARO.Data.dsp;
+import static de.Iclipse.BARO.Data.*;
 
 public class BorderManager implements Listener {
-    public static Border border = new Border(new Location(Bukkit.getWorld("world"), 0, 81, 0), 450);
+    public static Border border = new Border(Data.middle, Data.firstRadius);
     public static ArrayList<Player> outOfBorder = new ArrayList<>();
 
     public static void borderMovement() {
@@ -36,7 +38,7 @@ public class BorderManager implements Listener {
         } else {
             border.setRadiusOld(border.getRadiusNew());
             if (border.getRadiusOld() > 10) {
-                border.setRadiusNew((int) (border.getRadiusOld() * 0.6));
+                border.setRadiusNew((int) (border.getRadiusOld() * newRadius));
             } else {
                 border.setRadiusNew(0);
             }
@@ -125,7 +127,7 @@ public class BorderManager implements Listener {
 
     private static Location newMiddle() {
         Location loc = new Location(Bukkit.getWorld("world"), border.getMiddleNew().getX() + randomXZ(), border.getMiddleNew().getY() + randomY(), border.getMiddleNew().getX() + randomXZ());
-        if (loc.distance(new Location(Bukkit.getWorld("world"), 0, loc.getY(), 0)) + border.getRadiusNew() > 450) {
+        if (loc.distance(new Location(Bukkit.getWorld("world"), 0, loc.getY(), 0)) + border.getRadiusNew() > firstRadius) {
             System.out.println("> 450");
             return newMiddle();
         }
@@ -152,11 +154,16 @@ public class BorderManager implements Listener {
     public void onMove(PlayerMoveEvent e) {
         if (Data.state == GameState.Running) {
             Player p = e.getPlayer();
-            if (e.getTo().distance(new Location(e.getTo().getWorld(), 0, e.getTo().getY(), 0)) > 450) {
+            if (e.getTo().distance(middle) > firstRadius) {
                 if (!Data.flyingPlayers.contains(p) || !Data.fallingPlayers.contains(p)) {
-                    p.setVelocity(new Location(p.getWorld(), 0, 81, 0).toVector().subtract(p.getLocation().toVector()).normalize());
+                    p.setVelocity(middle.toVector().subtract(p.getLocation().toVector()).normalize());
                 } else {
-                    p.setVelocity(new Location(p.getWorld(), 0, 81, 0).subtract(p.getLocation()).toVector().normalize().setY(-0.5));
+                    p.setVelocity(middle.subtract(p.getLocation()).toVector().normalize().setY(-0.5));
+                }
+            }
+            if (noLobbyIsland) {
+                if (e.getTo().distance(mapLobbyMiddle) <= mapLobbyMaxDistance) {
+                    p.setVelocity(middle.toVector().subtract(p.getLocation().toVector()).normalize());
                 }
             }
         }
@@ -169,7 +176,7 @@ public class BorderManager implements Listener {
                     for (int z = 0; z < 30; z++) {
                         Location loc = new Location(p.getWorld(), p.getLocation().getX() + (x - 15), p.getLocation().getY() + (y - 15), p.getLocation().getZ() + (z - 15));
                         if (border.getCurrentMiddle().distance(loc) > border.getCurrentRadius() - 0.75 && border.getCurrentMiddle().distance(loc) < border.getCurrentRadius() + 0.75) {
-                            p.spawnParticle(Particle.SPELL_WITCH, loc, 2);
+                            p.spawnParticle(Particle.valueOf(UserSettings.getString(UUIDFetcher.getUUID(p.getName()), "baro_borderParticle")), loc, 2);
                         }
                     }
                 }

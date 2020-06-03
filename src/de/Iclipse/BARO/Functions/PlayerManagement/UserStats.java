@@ -114,7 +114,7 @@ public class UserStats implements Listener {
     @EventHandler
     public void onOpen(InventoryOpenEvent e) {
         if (Data.state == GameState.Running) {
-            if (Chests.notLootedChests.containsKey(e.getInventory().getLocation())) {
+            if (Chests.notLootedChests.contains(e.getInventory().getLocation())) {
                 if (User.getUser((Player) e.getPlayer()) != null) {
                     User u = User.getUser((Player) e.getPlayer());
                     if (u.isAlive()) {

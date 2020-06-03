@@ -61,9 +61,7 @@ public class PlayerSpawns implements Listener {
         int angle = random.nextInt(360);
         int x = (int) (Math.sin(angle) * r);
         int z = (int) (Math.cos(angle) * r);
-        int y = 175;
-        Location loc = new Location(p.getWorld(), x, y, z, p.getLocation().getYaw(), p.getLocation().getPitch());
-        //Tests if new Location is near to old Location to spread Spawnpoints
+        Location loc = new Location(p.getWorld(), x, spawnHeight, z, p.getLocation().getYaw(), p.getLocation().getPitch());
         p.teleport(loc);
         p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
         Actionbar.send(p, dsp.get("teleport.teleport", p));
@@ -98,12 +96,12 @@ public class PlayerSpawns implements Listener {
                 e.setTo(new Location(p.getWorld(), e.getFrom().getX(), e.getFrom().getY(), e.getFrom().getX(), e.getTo().getYaw(), e.getTo().getPitch()));
             }
             if (flyingPlayers.contains(p)) {
-                if (p.getLocation().getBlockY() < 130) {
+                if (p.getLocation().getBlockY() < fallHeight) {
                     fallingPlayers.add(p);
                     flyingPlayers.remove(p);
                     p.getInventory().setChestplate(new ItemStack(Material.AIR));
                     p.setVelocity(p.getVelocity().setY(p.getVelocity().getY() / 4));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 10000, 3, false, false));
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 10000, 5, false, false));
                 }
             }
             if (fallingPlayers.contains(p)) {

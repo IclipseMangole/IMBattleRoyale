@@ -7,6 +7,7 @@ import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import de.Iclipse.IMAPI.Util.menu.MenuItem;
 import de.Iclipse.IMAPI.Util.menu.PopupMenu;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -242,16 +243,22 @@ public class Lobby implements Listener {
     public void PlayerMoveEvent(PlayerMoveEvent e) {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
-            if (noWater) {
-                if (e.getTo().distance(mapLobbyMiddle) > noWaterMinDistance) {
-                    if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
-                        p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
-                        p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).setY(2));
+            if (p.getWorld().getName().equals("world")) {
+                if (noWater) {
+                    if (e.getTo().distance(mapLobbyMiddle) > noWaterMinDistance) {
+                        if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
+                            p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
+                            p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).setY(2));
+                        }
                     }
                 }
-            }
-            if (e.getTo().distance(mapLobbyMiddle) >= (mapLobbyMaxDistance + Math.abs(e.getTo().getY() - mapLobbyMiddle.getY()))) {
-                p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
+                if (e.getTo().distance(mapLobbyMiddle) >= (mapLobbyMaxDistance + Math.abs(e.getTo().getY() - mapLobbyMiddle.getY()))) {
+                    p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
+                }
+            } else {
+                Location loc = e.getTo().clone();
+                loc.setY(8.0);
+                loc.getBlock().setType(Material.IRON_BLOCK);
             }
         }
     }

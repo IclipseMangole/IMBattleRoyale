@@ -116,6 +116,7 @@ public class BARO extends JavaPlugin {
         IMAPI.register(new cmd_maxPlayerBars(), this);
         IMAPI.register(new cmd_barSettingZone(), this);
         IMAPI.register(new cmd_forceEvent(), this);
+        IMAPI.register(new cmd_forceMap(), this);
     }
 
     /*

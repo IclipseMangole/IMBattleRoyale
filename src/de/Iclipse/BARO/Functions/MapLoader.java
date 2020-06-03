@@ -44,27 +44,30 @@ public class MapLoader implements Listener {
         return false;
     }
 
-    public boolean loadMap(String name) {
+    public boolean loadMap(String name, boolean create) {
+        System.out.println("Map " + name + " wird geladen!");
         boolean contains = false;
         for (File file : Data.mapFolder.listFiles()) {
             if (file.getName().equals(name)) {
                 contains = true;
-            }
-            if (Bukkit.getWorld(name) != null) {
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.teleport(Data.defaultLobbySpawn);
+                if (Bukkit.getWorld(name) != null) {
+                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                        onlinePlayer.teleport(Data.defaultLobbySpawn);
+                    }
+                    Bukkit.unloadWorld("world", false);
                 }
-                Bukkit.unloadWorld("world", false);
-            }
-            copyWorld(file, new File("/world"));
-            new WorldCreator("world").createWorld();
+                copyWorld(file, new File(Bukkit.getWorldContainer() + "/world"));
+                if (create) {
+                    new WorldCreator("world").createWorld();
+                }
 
-            mapConfig = new MapConfig();
-            if (!mapConfig.getMapConfigFile().exists()) {
-                mapConfig.createDefaultMapConfig();
+                mapConfig = new MapConfig();
+                if (!mapConfig.getMapConfigFile().exists()) {
+                    mapConfig.createDefaultMapConfig();
+                }
+                mapConfig.readConfig();
+                Server.setMap(IMAPI.getServerName(), name);
             }
-            mapConfig.readConfig();
-            Server.setMap(IMAPI.getServerName(), name);
         }
         return contains;
     }
@@ -74,7 +77,7 @@ public class MapLoader implements Listener {
         File[] files = Data.mapFolder.listFiles();
         if (files.length > 0) {
             int random = new Random().nextInt(files.length);
-            loadMap(files[random].getName());
+            loadMap(files[random].getName(), false);
             return true;
         }
         return false;
@@ -82,8 +85,8 @@ public class MapLoader implements Listener {
 
 
     public void copyWorld(File worldDirectory, File toDirectory) {
-        if (worldDirectory.exists()) {
-            deleteFile(worldDirectory);
+        if (toDirectory.exists()) {
+            deleteFile(toDirectory);
         }
         File from = new File(worldDirectory + "/region");
         File to = new File(toDirectory.getPath() + "/region");
@@ -100,6 +103,7 @@ public class MapLoader implements Listener {
     @EventHandler
     public void onLoad(WorldInitEvent e) {
         if (e.getWorld().getName().equals("world")) {
+            mapConfig.correctLocations();
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.teleport(Data.mapLobbySpawn);
             }

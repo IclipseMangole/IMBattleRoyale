@@ -36,7 +36,7 @@ public class Data {
     public static ResourceBundle langEN;
     public static Config config;
     public static MapConfig mapConfig;
-    public static MapLoader mapLoader;
+    public static MapLoader mapLoader = new MapLoader();
     public static Stats stats;
     public static EventState estate;
     public static EventState nextEvent;
@@ -90,13 +90,14 @@ public class Data {
     //  Game
     public static int mapScale;
     public static int spawnHeight;
-    public static int distanceBetweenSpawns;
     public static int fallHeight;
+    public static Location middle;
     public static int firstRadius;
     public static double progressPerSecond;
     public static double newRadius;
     public static int chestAmount;
     public static ArrayList<Location> chests = new ArrayList<>();
+    public static int dropHeight;
     public static boolean noLobbyIsland;
     public static int eventTimeRunning;
     public static int timeBetweenEventsMin;

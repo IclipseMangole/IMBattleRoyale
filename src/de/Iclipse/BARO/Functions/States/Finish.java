@@ -77,7 +77,7 @@ public class Finish implements Listener {
     public static void firework() {
         Random random = new Random();
 
-        for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 4); i++) {
+        for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 5.0); i++) {
             Location spawn = new Location(Bukkit.getWorld("world"), 0, 0, 0);
             spawn.setX(Data.mapLobbySpawn.getX() + (random.nextInt(11) - 5));
             spawn.setZ(Data.mapLobbySpawn.getZ() + (random.nextInt(11) - 5));

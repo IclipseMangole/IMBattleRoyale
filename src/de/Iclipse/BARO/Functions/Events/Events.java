@@ -6,8 +6,7 @@ import org.bukkit.Sound;
 
 import java.util.Random;
 
-import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.nextEvent;
+import static de.Iclipse.BARO.Data.*;
 
 public class Events {
     public static void events() {
@@ -31,7 +30,7 @@ public class Events {
                     });
                     dsp.send(Bukkit.getConsoleSender(), "event.enabled", dsp.get("event." + Data.estate.getName(), Bukkit.getConsoleSender()));
                     nextEvent = EventState.None;
-                    Data.nextEventTime = Data.timer + 60;
+                    Data.nextEventTime = Data.timer + eventTimeRunning;
                 }
             } else {
                 if (Data.nextEventTime - Data.timer > 0) {
@@ -48,7 +47,7 @@ public class Events {
                     dsp.send(Bukkit.getConsoleSender(), "event.disabled", dsp.get("event." + Data.estate.getName(), Bukkit.getConsoleSender()));
                     Data.estate = Data.nextEvent;
                     nextEvent = nextEvent();
-                    Data.nextEventTime = Data.timer + random.nextInt(100) + 180;
+                    Data.nextEventTime = Data.timer + random.nextInt(timeBetweenEventsMax - timeBetweenEventsMin) + timeBetweenEventsMin;
                 }
             }
         }
