@@ -33,7 +33,7 @@ public class BAROStats {
             if (all) {
                 rs = MySQL.querry("SELECT uuid, (SUM(baro_stats.kills) / SUM(baro_stats.deaths)) AS kd FROM baro_stats GROUP BY uuid ORDER BY kd DESC");
             } else {
-                rs = MySQL.querry("SELECT uuid, (SUM(baro_stats.kills) / SUM(baro_stats.deaths)) AS kd FROM baro_stats, baro_games WHERE baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "')) GROUP BY uuid ORDER BY kd DESC");
+                rs = MySQL.querry("SELECT uuid, (SUM(baro_stats.kills) / SUM(baro_stats.deaths)) AS kd FROM baro_stats, baro_games WHERE baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "' GROUP BY uuid ORDER BY kd DESC");
             }
             int i = 1;
             while (rs.next()) {
@@ -42,6 +42,7 @@ public class BAROStats {
                 }
                 i++;
             }
+            return i + 1; //If no position with uuid
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,6 +59,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("kills");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,6 +78,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("deaths");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,19 +89,22 @@ public class BAROStats {
 
     public static double getKD(UUID uuid, boolean all) {
         NumberFormat formatter = new DecimalFormat("#0.0#");
-        return Double.parseDouble(formatter.format(getKills(uuid, all) / getDeaths(uuid, all)));
+        int deaths = getDeaths(uuid, all) == 0 ? 1 : getDeaths(uuid, all);
+        return Double.parseDouble(formatter.format(getKills(uuid, all) / deaths));
     }
 
     public static int getPlayedGames(UUID uuid, boolean all) {
         try {
             ResultSet rs;
             if (all) {
-                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats, baro_games WHERE uuid = '" + uuid + "'");
+                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats WHERE uuid = '" + uuid + "'");
             } else {
-                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats WHERE uuid = '" + uuid + "' AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
+                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats, baro_games WHERE uuid = '" + uuid + "' AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
             }
             if (rs.next()) {
                 return rs.getInt("gamesPlayed");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,10 +118,12 @@ public class BAROStats {
             if (all) {
                 rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats WHERE uuid = '" + uuid + "' AND place = " + 1);
             } else {
-                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats WHERE uuid = '" + uuid + "' AND place = " + 1 + " AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
+                rs = MySQL.querry("SELECT COUNT(uuid) AS gamesPlayed FROM baro_stats, baro_games WHERE uuid = '" + uuid + "' AND place = " + 1 + " AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
             }
             if (rs.next()) {
                 return rs.getInt("gamesPlayed");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -123,7 +133,8 @@ public class BAROStats {
 
     public static String getWinProbability(UUID uuid, boolean all) {
         NumberFormat formatter = new DecimalFormat("0.00#");
-        return formatter.format(getWonGames(uuid, all) / getPlayedGames(uuid, all) * 100);
+        int playedGames = getPlayedGames(uuid, all) == 0 ? 1 : getPlayedGames(uuid, all);
+        return formatter.format(getWonGames(uuid, all) / playedGames * 100);
     }
 
     public static String getAveragePlace(UUID uuid, boolean all) {
@@ -135,8 +146,12 @@ public class BAROStats {
             } else {
                 rs = MySQL.querry("SELECT SUM(baro_stats.place) AS places FROM baro_stats, baro_games WHERE uuid = '" + uuid + "' AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
             }
-
-            return formatter.format((double) rs.getInt("places") / (double) getPlayedGames(uuid, all));
+            if (rs.next()) {
+                double playedGames = getPlayedGames(uuid, all);
+                return formatter.format((double) rs.getInt("places") / playedGames);
+            } else {
+                return 0 + "";
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -153,6 +168,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("damageDealt");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -170,6 +187,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("damageReceived");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -187,6 +206,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("blocksPlaced");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -204,6 +225,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("blocksDestroyed");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -221,6 +244,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("itemsCrafted");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -238,6 +263,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("lootedChests");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -255,6 +282,8 @@ public class BAROStats {
             }
             if (rs.next()) {
                 return rs.getInt("lootedDrops");
+            } else {
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -270,8 +299,11 @@ public class BAROStats {
             } else {
                 rs = MySQL.querry("SELECT SUM(baro_stats.playedTime) AS playedTime FROM baro_stats, baro_games WHERE uuid = '" + uuid + "' AND baro_stats.game = baro_games.id AND baro_games.finish > '" + IMAPI.monthBefore() + "'");
             }
-
-            return (int) Math.round(((double) rs.getInt("playedTime") / (double) getPlayedGames(uuid, all)) / 60);
+            if (rs.next()) {
+                return (int) Math.round(((double) rs.getInt("playedTime") / (double) getPlayedGames(uuid, all)) / 60);
+            } else {
+                return 0;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

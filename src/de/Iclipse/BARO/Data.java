@@ -3,7 +3,9 @@ package de.Iclipse.BARO;
 
 import de.Iclipse.BARO.Config.Config;
 import de.Iclipse.BARO.Config.MapConfig;
+import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.Events.EventState;
+import de.Iclipse.BARO.Functions.HUD.Map;
 import de.Iclipse.BARO.Functions.LastDamage;
 import de.Iclipse.BARO.Functions.MapLoader;
 import de.Iclipse.BARO.Functions.PlayerManagement.Team;
@@ -37,6 +39,7 @@ public class Data {
     public static Config config;
     public static MapConfig mapConfig;
     public static MapLoader mapLoader = new MapLoader();
+    public static Map map;
     public static Stats stats;
     public static EventState estate;
     public static EventState nextEvent;
@@ -44,6 +47,7 @@ public class Data {
     public static BossBar borderBossBarDE;
     public static BossBar eventBossBarEN;
     public static BossBar eventBossBarDE;
+    public static BorderManager borderManager;
     public static Date start;
     public static ArrayList<Team> teams = new ArrayList<>();
     public static ArrayList<User> users = new ArrayList<>();
@@ -75,7 +79,7 @@ public class Data {
     public static int countdown = defaultCountdown;
     public static int skipCountdown;
     public static int teamsize;
-    public static int minplayers = teamsize + 1;
+    public static int minplayers;
 
 
     //MapConfig Stuff
@@ -91,12 +95,14 @@ public class Data {
     public static int mapScale;
     public static int spawnHeight;
     public static int fallHeight;
+    public static int aboveGround;
     public static Location middle;
     public static int firstRadius;
     public static double progressPerSecond;
     public static double newRadius;
     public static int chestAmount;
     public static ArrayList<Location> chests = new ArrayList<>();
+    public static HashMap<String, Location> villages = new HashMap<>();
     public static int dropHeight;
     public static boolean noLobbyIsland;
     public static int eventTimeRunning;

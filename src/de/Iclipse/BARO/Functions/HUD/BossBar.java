@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
@@ -149,15 +148,15 @@ public class BossBar implements Listener {
             }
         }
 
-        if (BorderManager.border.getProgress() >= 1) {
+        if (Data.borderManager.getBorder().getProgress() >= 1) {
             if (!Data.borderBossBarDE.getTitle().equals(dsp.get("border.nextZone", dsp.getLanguages().get("DE"), false))) {
                 Data.borderBossBarDE.setTitle(dsp.get("border.nextZone", dsp.getLanguages().get("DE"), false));
                 Data.borderBossBarEN.setTitle(dsp.get("border.nextZone", dsp.getLanguages().get("EN"), false));
                 Data.borderBossBarDE.setColor(BarColor.YELLOW);
                 Data.borderBossBarEN.setColor(BarColor.YELLOW);
             }
-            Data.borderBossBarDE.setProgress(1.0 - ((double) ((int) ((BorderManager.border.getProgress() - 1) * 200)) / 100.0));
-            Data.borderBossBarEN.setProgress(1.0 - ((double) ((int) ((BorderManager.border.getProgress() - 1) * 200)) / 100.0));
+            Data.borderBossBarDE.setProgress(1.0 - ((double) ((int) ((Data.borderManager.getBorder().getProgress() - 1) * 200)) / 100.0));
+            Data.borderBossBarEN.setProgress(1.0 - ((double) ((int) ((Data.borderManager.getBorder().getProgress() - 1) * 200)) / 100.0));
         } else {
             if (!Data.borderBossBarDE.getTitle().equals(dsp.get("border.shrink", dsp.getLanguages().get("DE"), false))) {
                 Data.borderBossBarDE.setTitle(dsp.get("border.shrink", dsp.getLanguages().get("DE"), false));
@@ -165,8 +164,8 @@ public class BossBar implements Listener {
                 Data.borderBossBarDE.setColor(BarColor.PURPLE);
                 Data.borderBossBarEN.setColor(BarColor.PURPLE);
             }
-            Data.borderBossBarDE.setProgress(BorderManager.border.getProgress());
-            Data.borderBossBarEN.setProgress(BorderManager.border.getProgress());
+            Data.borderBossBarDE.setProgress(Data.borderManager.getBorder().getProgress());
+            Data.borderBossBarEN.setProgress(Data.borderManager.getBorder().getProgress());
         }
     }
 

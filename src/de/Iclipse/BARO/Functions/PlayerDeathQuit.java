@@ -10,7 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -75,14 +76,28 @@ public class PlayerDeathQuit implements Listener {
                     }
 
 
-                    e.getEntity().getLocation().getBlock().setType(Material.CHEST);
-                    e.getEntity().getLocation().clone().add(1, 0, 0).getBlock().setType(Material.CHEST);
-                    DoubleChest c = (DoubleChest) e.getEntity().getLocation().getBlock().getState();
-                    Inventory chestInv = c.getInventory();
+                    Block chest = e.getEntity().getLocation().getBlock();
+                    Block chest2 = e.getEntity().getLocation().clone().add(1, 0, 0).getBlock();
+
+                    chest.setType(Material.CHEST);
+                    chest2.setType(Material.CHEST);
+
+
+                    Chest chestBlockState1 = (Chest) chest.getBlockData();
+                    chestBlockState1.setType(Chest.Type.LEFT);
+                    chest.setBlockData(chestBlockState1, true);
+
+                    Chest chestBlockState2 = (Chest) chest2.getBlockData();
+                    chestBlockState2.setType(Chest.Type.RIGHT);
+
+                    Inventory chestInv = ((org.bukkit.block.Chest) chest.getState()).getInventory();
                     e.getEntity().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
                     for (ItemStack content : e.getEntity().getInventory().getContents()) {
-                        chestInv.addItem(content);
+                        if (content != null) {
+                            chestInv.addItem(content);
+                        }
                     }
+                    e.getDrops().clear();
 
 
                     u.setFinished(Data.timer);
@@ -99,8 +114,7 @@ public class PlayerDeathQuit implements Listener {
                         });
                         Data.teams.remove(u.getTeam());
                         if (Data.teams.size() == 1) {
-                            u.getPlayer().spigot().respawn();
-                            Finish.finish();
+                            Bukkit.getScheduler().runTaskLater(Data.instance, () -> Finish.finish(), 5);
                         }
                     }
                 }
@@ -145,12 +159,29 @@ public class PlayerDeathQuit implements Listener {
                         }
                         dsp.send(Bukkit.getConsoleSender(), "game.kill", e.getPlayer().getDisplayName(), killer.getDisplayName());
                     }
+                    Block chest = e.getPlayer().getLocation().getBlock();
+                    Block chest2 = e.getPlayer().getLocation().clone().add(1, 0, 0).getBlock();
+
+                    chest.setType(Material.CHEST);
+                    chest2.setType(Material.CHEST);
+
+
+                    Chest chestBlockState1 = (Chest) chest.getBlockData();
+                    chestBlockState1.setType(Chest.Type.LEFT);
+                    chest.setBlockData(chestBlockState1, true);
+
+                    Chest chestBlockState2 = (Chest) chest2.getBlockData();
+                    chestBlockState2.setType(Chest.Type.RIGHT);
+
+                    org.bukkit.block.Chest c = (org.bukkit.block.Chest) e.getPlayer().getLocation().getBlock().getState();
+                    Inventory chestInv = c.getInventory();
                     e.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-                    for (int i = 0; i < e.getPlayer().getInventory().getStorageContents().length; i++) {
-                        if (e.getPlayer().getInventory().getStorageContents()[i] != null) {
-                            e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), e.getPlayer().getInventory().getStorageContents()[i]);
+                    for (ItemStack content : e.getPlayer().getInventory().getContents()) {
+                        if (content != null) {
+                            chestInv.addItem(content);
                         }
                     }
+
                     u.setFinished(Data.timer);
                     e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 10, (float) ((new Random().nextInt(7) / 10) + 0.2));
                     if (u.getTeam().getAlive() == 0) {
@@ -165,7 +196,7 @@ public class PlayerDeathQuit implements Listener {
                         });
                         Data.teams.remove(u.getTeam());
                         if (Data.teams.size() == 1) {
-                            Finish.finish();
+                            Bukkit.getScheduler().runTaskLater(Data.instance, () -> Finish.finish(), 5);
                         }
                     }
                 }

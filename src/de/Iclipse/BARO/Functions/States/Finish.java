@@ -2,7 +2,6 @@ package de.Iclipse.BARO.Functions.States;
 
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Database.BAROGames;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
@@ -12,6 +11,7 @@ import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.Functions.Vanish;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
+import de.Iclipse.IMAPI.Util.UUIDFetcher;
 import net.minecraft.server.v1_15_R1.Entity;
 import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
 import org.bukkit.*;
@@ -39,6 +39,9 @@ public class Finish implements Listener {
         Data.state = GameState.Finished;
         de.Iclipse.IMAPI.Data.restart = 30;
         Bukkit.getOnlinePlayers().forEach(entry -> {
+            if (entry.isDead()) {
+                entry.spigot().respawn();
+            }
             if (Data.cameras.containsKey(entry)) {
                 PacketPlayOutCamera packet = new PacketPlayOutCamera((Entity) entry);
                 ((CraftPlayer) entry).getHandle().playerConnection.sendPacket(packet);
@@ -49,9 +52,11 @@ public class Finish implements Listener {
             dsp.send(entry, "finish.finish", Data.teams.get(0).getColor() + "Team " + dsp.get("color." + Data.teams.get(0).getColor().asBungee().getName(), entry));
             entry.teleport(Data.mapLobbySpawn);
             resetPlayer(entry);
-            BorderManager.removeBorderEffect(entry);
+            Data.borderManager.removeBorderEffect(entry);
             if (User.getUser(entry) != null && User.getUser(entry).isAlive()) {
                 entry.playSound(entry.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.9f);
+                User.getUser(entry).setPlace(1);
+                de.Iclipse.IMAPI.Database.User.addSchnitzel(UUIDFetcher.getUUID(entry.getName()), 250);
             } else {
                 entry.playSound(entry.getLocation(), Sound.ENTITY_ENDER_DRAGON_DEATH, 0.2f, 1f);
             }
@@ -59,8 +64,8 @@ public class Finish implements Listener {
             Scoreboard.boards.get(entry).destroy();
         });
         Server.setPlayers(IMAPI.getServerName(), Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size());
-        Bukkit.getWorld("world").setStorm(false);
-        Bukkit.getWorld("world").setTime(12800);
+        Bukkit.getWorld("map").setStorm(false);
+        Bukkit.getWorld("map").setTime(12800);
         save();
     }
 
@@ -77,11 +82,11 @@ public class Finish implements Listener {
     public static void firework() {
         Random random = new Random();
 
-        for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 5.0); i++) {
-            Location spawn = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-            spawn.setX(Data.mapLobbySpawn.getX() + (random.nextInt(11) - 5));
-            spawn.setZ(Data.mapLobbySpawn.getZ() + (random.nextInt(11) - 5));
-            spawn.setY(Data.mapLobbySpawn.getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
+        for (int i = 0; i < (de.Iclipse.IMAPI.Data.restart / 6.0); i++) {
+            Location spawn = new Location(Bukkit.getWorld("map"), 0, 0, 0);
+            spawn.setX(Data.mapLobbyMiddle.getX() + (random.nextInt(11) - 5));
+            spawn.setZ(Data.mapLobbyMiddle.getZ() + (random.nextInt(11) - 5));
+            spawn.setY(Data.mapLobbyMiddle.getWorld().getHighestBlockAt(spawn.getBlockX(), spawn.getBlockZ()).getY() + 2);
 
 
             Fireworkgenerator fireworkgenerator = new Fireworkgenerator(Data.instance);

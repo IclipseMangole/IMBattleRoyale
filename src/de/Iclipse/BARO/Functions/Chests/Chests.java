@@ -3,6 +3,8 @@ package de.Iclipse.BARO.Functions.Chests;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
@@ -53,7 +55,11 @@ public class Chests implements Listener {
         Random random = new Random();
         while (Data.chests.size() > Data.chestAmount) {
             Location chest = Data.chests.get(random.nextInt(Data.chests.size()));
-            chest.getBlock().setType(Material.AIR);
+            try {
+                chest.getBlock().setType(Material.AIR);
+            } catch (NullPointerException e) {
+                System.out.println(chest);
+            }
             Data.chests.remove(chest);
         }
         Data.chests.forEach(chest -> {
@@ -64,7 +70,11 @@ public class Chests implements Listener {
 
 
     public static void loadInventory(Location loc) {
-        Inventory inv = ((Chest) loc.getBlock()).getBlockInventory();
+        if (loc.getBlock().getType() != Material.CHEST) {
+            System.out.println("No chest: " + loc);
+            return;
+        }
+        Inventory inv = ((Chest) loc.getBlock().getState()).getBlockInventory();
         inv.clear();
         Random random = new Random();
         int itemsAmount = random.nextInt(3) + 5;
@@ -81,7 +91,12 @@ public class Chests implements Listener {
                 itemStack.setAmount(item.getChestMaxAmount());
             }
             inv.setItem(slot, itemStack);
+        }
+        Bukkit.getOperators().forEach(offlinePlayer -> {
+            if (offlinePlayer.isOnline()) {
+                offlinePlayer.getPlayer().setGameMode(GameMode.CREATIVE);
             }
+        });
     }
 
 

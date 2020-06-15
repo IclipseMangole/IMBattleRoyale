@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Functions.HUD;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.IMAPI.Database.UserSettings;
@@ -26,6 +25,10 @@ public class Scoreboard implements Listener {
             if (!boards.containsKey(p)) {
                 ss = new ScoreboardSign(p, "§8« §5§lIM§r§fBARO§r§8 »");
                 ss.create();
+                for (int i = 0; i < 15; i++) {
+                    ss.setLine(i, "");
+                    ss.removeLine(i);
+                }
             } else {
                 ss = boards.get(p);
             }
@@ -55,11 +58,13 @@ public class Scoreboard implements Listener {
             }
             ss.setLine(4, ChatColor.DARK_AQUA + "");
 
+
             showMates(ss, p);
             showEvent(ss, p);//Mates: 5-8 + 9: Free, //Events: 10 + 11: Free //Zone: 12 + 13: Free, Distance: 14
             showZone(ss, p);
 
-            String distance = (int) (BorderManager.border.getCurrentRadius() - p.getLocation().distance(BorderManager.border.getCurrentMiddle())) + "";
+
+            String distance = (int) (Data.borderManager.getBorder().getCurrentRadius() - p.getLocation().distance(Data.borderManager.getBorder().getCurrentMiddle())) + "";
             if (User.getUser(p) != null) {
                 if (User.getUser(p).isAlive()) {
                     if (Data.estate == EventState.Confusion || Data.estate == EventState.Lostness) {
@@ -103,10 +108,10 @@ public class Scoreboard implements Listener {
 
     public static void showZone(ScoreboardSign ss, Player p) {
         if (UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone") && !matesShowedOnScoreboard(p) || !UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
-            if (BorderManager.border.getProgress() > 1) {
-                ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((BorderManager.border.getProgress() - 1) * 200)) + ""));
+            if (Data.borderManager.getBorder().getProgress() > 1) {
+                ss.setLine(10, dsp.get("scoreboard.nextzone", p, ((int) ((Data.borderManager.getBorder().getProgress() - 1) * 200)) + ""));
             } else {
-                ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (BorderManager.border.getProgress() * 100)) + ""));
+                ss.setLine(10, dsp.get("scoreboard.shrink", p, ((int) (Data.borderManager.getBorder().getProgress() * 100)) + ""));
             }
             ss.setLine(11, ChatColor.DARK_BLUE + "");
             return;
@@ -140,6 +145,34 @@ public class Scoreboard implements Listener {
             }
         }
         return false;
+    }
+
+    public static boolean zoneShowedOnScoreboard(Player p) {
+        if (matesShowedOnScoreboard(p)) {
+            if (!UserSettings.getBoolean(UUIDFetcher.getUUID(p.getName()), "baro_barSettingZone")) {
+                if ((Data.nextEventTime - Data.timer) > 60) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean eventsShowedOnScoreboard(Player p) {
+        if (matesShowedOnScoreboard(p)) {
+            if (zoneShowedOnScoreboard(p)) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
     }
 
 

@@ -32,7 +32,9 @@ import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
-import static de.Iclipse.IMAPI.Data.heads;
+import static de.Iclipse.IMAPI.Data.langDE;
+import static de.Iclipse.IMAPI.Data.langEN;
+import static de.Iclipse.IMAPI.Data.*;
 import static de.Iclipse.IMAPI.IMAPI.getServerName;
 
 public class BARO extends JavaPlugin {
@@ -43,27 +45,33 @@ public class BARO extends JavaPlugin {
         config = new Config();
         config.setStandardConfig();
         config.readConfig();
-        mapLoader.loadDefaultLobby();
         mapLoader = new MapLoader();
-        mapLoader.loadMap();
+        mapLoader.loadDefaultLobby();
     }
 
     @Override
     public void onEnable() {
-        config.correctLocations();
         registerListener();
         registerCommands();
+        mapLoader.loadMap();
+        config.correctLocations();
+        mapConfig.correctLocations();
+        stats = new Stats(Data.mapLobbyStats);
+        borderManager = new BorderManager();
         createTables();
         loadResourceBundles();
         Data.state = GameState.Lobby;
         Data.estate = EventState.None;
-        Map.loadMap();
         createTeams();
         scheduler = new Scheduler();
         scheduler.startAsyncScheduler();
         scheduler.startScheduler();
-        Bukkit.getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        Bukkit.getWorld("world").setDifficulty(Difficulty.HARD);
+        scheduler.startMapUpdater();
+        Bukkit.getWorlds().forEach(world -> {
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+            world.setDifficulty(Difficulty.HARD);
+        });
+        //Bukkit.getWorld("world_the_end").getEnderDragonBattle().getEnderDragon().setPhase(EnderDragon.Phase.DYING);
         loadCustomHeads();
         Item.loadItems();
         Chests.loadChests();
@@ -76,6 +84,7 @@ public class BARO extends JavaPlugin {
     public void onDisable() {
         scheduler.stopScheduler();
         scheduler.stopAsyncScheduler();
+        scheduler.stopMapUpdater();
         super.onDisable();
     }
 
@@ -139,22 +148,20 @@ public class BARO extends JavaPlugin {
 
 
     public void loadResourceBundles() {
+        HashMap<String, ResourceBundle> langs = new HashMap<>();
         try {
-            HashMap<String, ResourceBundle> langs = new HashMap<>();
             langDE = ResourceBundle.getBundle("i18n.langDE");
             langEN = ResourceBundle.getBundle("i18n.langEN");
-            langs.put("DE", langDE);
-            langs.put("EN", langEN);
-            Data.dsp = new Dispatcher(this,
-                    langs);
         } catch (MissingResourceException e) {
-            e.printStackTrace();
             de.Iclipse.IMAPI.Data.dispatching = false;
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             System.out.println("Reload oder Bundle not found!");
             de.Iclipse.IMAPI.Data.dispatching = false;
         }
+        langs.put("DE", langDE);
+        langs.put("EN", langEN);
+        Data.dsp = new Dispatcher(this,
+                langs);
     }
 
     public void loadCustomHeads() {

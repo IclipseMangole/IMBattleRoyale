@@ -1,39 +1,34 @@
 package de.Iclipse.BARO.Functions;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
+import net.minecraft.server.v1_15_R1.DataWatcher;
+import net.minecraft.server.v1_15_R1.EntityPlayer;
+import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.IMAPI.Data.protocolManager;
 
 
 public class Knocked implements Listener {
@@ -159,7 +154,7 @@ public class Knocked implements Listener {
         u.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 99999, 1, true, true, false));
         u.getPlayer().setCanPickupItems(false);
         u.getPlayer().setSneaking(true);
-        u.getTeam().getAlives().forEach(p -> sendGlowingPacket(p.getPlayer(), u.getPlayer()));
+        u.getTeam().getUsers().forEach(p -> setGlowing(u.getPlayer(), p.getPlayer(), true));
         u.getPlayer().setWalkSpeed(0.05f);
         if (Data.playerBossBars.containsKey(u.getPlayer())) {
             org.bukkit.boss.BossBar bar = Data.playerBossBars.get(u.getPlayer());
@@ -178,7 +173,7 @@ public class Knocked implements Listener {
         u.getPlayer().setSneaking(false);
         u.getPlayer().setWalkSpeed(0.2f);
         u.getPlayer().setSneaking(false);
-        u.getTeam().getAlives().forEach(p -> sendGlowingPacket(p.getPlayer(), u.getPlayer()));
+        u.getTeam().getUsers().forEach(p -> setGlowing(u.getPlayer(), p.getPlayer(), false));
         //Bukkit.getOnlinePlayers().forEach(o -> sendStandPacket(o, u.getPlayer()));
         u.getPlayer().getActivePotionEffects().forEach(effect -> u.getPlayer().removePotionEffect(effect.getType()));
         if (Data.playerBossBars.containsKey(u.getPlayer())) {
@@ -190,16 +185,43 @@ public class Knocked implements Listener {
         }
     }
 
-    public static void sendGlowingPacket(Player receiver, Player p) {
-        PacketContainer glowPacket = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        glowPacket.getIntegers().write(0, p.getEntityId());
-        WrappedDataWatcher watcher = new WrappedDataWatcher(p);
-        WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(Byte.class);
-        watcher.setObject(0, serializer, (byte) (0x40));
-        glowPacket.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+    public static void setGlowing(Player glowingPlayer, Player sendPacketPlayer, boolean glow) {
         try {
-            protocolManager.sendServerPacket(receiver, glowPacket);
-        } catch (InvocationTargetException e) {
+            EntityPlayer entityPlayer = ((CraftPlayer) glowingPlayer).getHandle();
+
+            DataWatcher toCloneDataWatcher = entityPlayer.getDataWatcher();
+            DataWatcher newDataWatcher = new DataWatcher(entityPlayer);
+
+            // The map that stores the DataWatcherItems is private within the DataWatcher Object.
+            // We need to use Reflection to access it from Apache Commons and change it.
+            Int2ObjectOpenHashMap<DataWatcher.Item<?>> currentMap = (Int2ObjectOpenHashMap<DataWatcher.Item<?>>) FieldUtils.readDeclaredField(toCloneDataWatcher, "entries", true);
+            Int2ObjectOpenHashMap<DataWatcher.Item<?>> newMap = new Int2ObjectOpenHashMap<>();
+
+            // We need to clone the DataWatcher.Items because we don't want to point to those values anymore.
+            for (Integer integer : currentMap.keySet()) {
+                newMap.put(integer, currentMap.get(integer).d()); // Puts a copy of the DataWatcher.Item in newMap
+            }
+
+            // Get the 0th index for the BitMask value. http://wiki.vg/Entities#Entity
+            DataWatcher.Item item = newMap.get(0);
+
+            byte initialBitMask = (Byte) item.b(); // Gets the initial bitmask/byte value so we don't overwrite anything.
+            byte bitMaskIndex = (byte) 6; // The index as specified in wiki.vg/Entities
+            if (glow) {
+                item.a((byte) (initialBitMask | 1 << bitMaskIndex));
+            } else {
+                item.a((byte) (initialBitMask & ~(1 << bitMaskIndex))); // Inverts the specified bit from the index.
+            }
+
+            //item.a(glow);
+
+            // Set the newDataWatcher's (unlinked) map data
+            FieldUtils.writeDeclaredField(newDataWatcher, "entries", newMap, true);
+
+            PacketPlayOutEntityMetadata metadataPacket = new PacketPlayOutEntityMetadata(glowingPlayer.getEntityId(), newDataWatcher, true);
+
+            ((CraftPlayer) sendPacketPlayer).getHandle().playerConnection.sendPacket(metadataPacket);
+        } catch (IllegalAccessException e) { // Catch statement necessary for FieldUtils.readDeclaredField()
             e.printStackTrace();
         }
     }
@@ -239,22 +261,20 @@ public class Knocked implements Listener {
     }
     */
 
-    /*
+
     @EventHandler
-    public void onToggleSwim(EntityPoseChangeEvent e){
+    public void onToggleSwim(EntityPoseChangeEvent e) {
         if (Data.state == GameState.Running) {
             if (e.getEntity() instanceof Player) {
                 if (User.getUser((Player) e.getEntity()) != null) {
                     if (User.getUser((Player) e.getEntity()).isKnocked()) {
-                        if(e.getPose().equals(Pose.STANDING)){
-                            ((Player) e.getEntity()).setSwimming(true);
-                        }
+                        User.getUser((Player) e.getEntity()).getTeam().getUsers().forEach(p -> setGlowing(User.getUser((Player) e.getEntity()).getPlayer(), p.getPlayer(), true));
                     }
                 }
             }
         }
     }
-     */
+
 
     /*
     public static void onPacketReceiving(PacketEvent e) {
@@ -276,6 +296,19 @@ public class Knocked implements Listener {
         if (Data.state == GameState.Running) {
             if (User.getUser(e.getPlayer()) != null) {
                 if (User.getUser(e.getPlayer()).isKnocked()) {
+                    User.getUser(e.getPlayer()).getTeam().getUsers().forEach(p -> setGlowing(User.getUser(e.getPlayer()).getPlayer(), p.getPlayer(), true));
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onToggleSprint(PlayerToggleSprintEvent e) {
+        if (Data.state == GameState.Running) {
+            if (User.getUser(e.getPlayer()) != null) {
+                if (User.getUser(e.getPlayer()).isKnocked()) {
+                    User.getUser(e.getPlayer()).getTeam().getUsers().forEach(p -> setGlowing(User.getUser((Player) e.getPlayer()).getPlayer(), p.getPlayer(), true));
                     e.setCancelled(true);
                 }
             }
@@ -299,6 +332,7 @@ public class Knocked implements Listener {
             if (e.getEntity() instanceof Player) {
                 if (User.getUser((Player) e.getEntity()) != null) {
                     if (User.getUser((Player) e.getEntity()).isKnocked()) {
+                        User.getUser((Player) e.getEntity()).getTeam().getUsers().forEach(p -> setGlowing(User.getUser((Player) e.getEntity()).getPlayer(), p.getPlayer(), true));
                         e.setCancelled(true);
                     }
                 }

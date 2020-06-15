@@ -2,7 +2,9 @@ package de.Iclipse.BARO.Functions.PlayerManagement;
 
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Database.BAROStats;
+import de.Iclipse.IMAPI.Database.UserSettings;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -23,6 +25,8 @@ public class User {
     private boolean knocked;
     private Player knockedBy;
 
+    private Particle particle;
+
     public User(Player player) {
         this.player = player;
         kills = 0;
@@ -38,6 +42,8 @@ public class User {
         finished = 0;
         knocked = false;
         Data.users.add(this);
+
+        particle = Particle.valueOf(UserSettings.getString(UUIDFetcher.getUUID(player.getName()), "baro_borderParticle"));
     }
 
     public static User getUser(Player player) {
@@ -202,6 +208,7 @@ public class User {
         return -1;
     }
 
+
     public void save(int gameId) {
         if (isAlive()) {
             finished = Data.timer;
@@ -209,4 +216,8 @@ public class User {
         BAROStats.insertStats(UUIDFetcher.getUUID(player.getName()), gameId, kills, deaths, damageDealt, damageReceived, blocksPlaced, blocksDestroyed, itemsCrafted, lootedChests, lootedDrops, place, finished);
     }
 
+
+    public Particle getParticle() {
+        return particle;
+    }
 }

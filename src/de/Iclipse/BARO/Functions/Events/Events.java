@@ -23,7 +23,7 @@ public class Events {
                         });
                     }
                 } else {
-                    Bukkit.getScheduler().runTask(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
+                    Bukkit.getScheduler().runTaskAsynchronously(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
                     Data.estate = Data.nextEvent;
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         dsp.send(p, "event.enabled", dsp.get("event." + Data.estate.getName(), p));
@@ -40,7 +40,7 @@ public class Events {
                         });
                     }
                 } else {
-                    Bukkit.getScheduler().runTask(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
+                    Bukkit.getScheduler().runTaskAsynchronously(Data.instance, () -> Bukkit.getPluginManager().callEvent(new EventChangeEvent(Data.estate, Data.nextEvent)));
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         dsp.send(p, "event.disabled", dsp.get("event." + Data.estate.getName(), p));
                     });
@@ -70,7 +70,7 @@ public class Events {
         Data.events.add(EventState.Lostness);
         Data.events.add(EventState.Endergames);
         Data.events.add(EventState.LavaEvent);
-        Data.events.add(EventState.FishMutation);
+        //Data.events.add(EventState.FishMutation);
         Data.events.add(EventState.Levitation);
 
         Data.allEvents.add(EventState.PoisonWater);

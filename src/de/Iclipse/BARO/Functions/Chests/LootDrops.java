@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Functions.Chests;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
@@ -12,8 +11,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 
 import static de.Iclipse.BARO.Data.dropHeight;
@@ -23,6 +20,7 @@ public class LootDrops implements Listener {
     public static HashMap<Location, Boolean> drops = new HashMap<>();
 
     public static void lootDropMovement() {
+        /*
         Iterator it = drops.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry item = (Map.Entry) it.next();
@@ -34,10 +32,18 @@ public class LootDrops implements Listener {
                     loc.subtract(0, 1, 0);
                     loc.getBlock().setType(Material.CHEST);
                 }
-            } else {
-                it.remove();
             }
         }
+         */
+        drops.forEach((loc, looted) -> {
+            if (loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.AIR) {
+
+                loc.getBlock().setType(Material.AIR);
+                loc.subtract(0, 1, 0);
+                loc.getBlock().setType(Material.CHEST);
+
+            }
+        });
     }
 
     public static void newDrops() {
@@ -49,8 +55,18 @@ public class LootDrops implements Listener {
 
     @EventHandler
     public void onChestOpen(InventoryOpenEvent e) {
-        if (drops.containsKey(e.getInventory().getLocation())) {
-            if (!drops.get(e.getInventory().getLocation())) {
+        final Location[] drop = new Location[1];
+        final boolean[] looted = new boolean[1];
+        if (drops.size() > 0) {
+            drops.forEach((location, aBoolean) -> {
+                System.out.println(location.equals(e.getInventory().getLocation()));
+                drop[0] = location;
+                looted[0] = aBoolean;
+            });
+        }
+        if (drop[0] != null) {
+            System.out.println(looted[0]);
+            if (!looted[0]) {
                 if (User.getUser((Player) e.getPlayer()) != null) {
                     User u = User.getUser((Player) e.getPlayer());
                     u.setLootedDrops(u.getLootedDrops() + 1);
@@ -59,10 +75,10 @@ public class LootDrops implements Listener {
                 loadInventory().forEach((slot, item) -> {
                     e.getInventory().setItem(slot, item);
                 });
-                unsendBeacon(e.getInventory().getLocation());
-                sendParticlesAround(e.getInventory().getLocation());
+                unsendBeacon(drop[0]);
+                sendParticlesAround(drop[0]);
                 Bukkit.getOnlinePlayers().forEach(p -> dsp.send(p, "drop.looted"));
-                drops.remove(e.getInventory().getLocation());
+                drops.remove(drop[0]);
                 Bukkit.getOnlinePlayers().forEach(entry -> {
                     entry.playSound(entry.getLocation(), Sound.BLOCK_BELL_RESONATE, 1, 1.0f);
                 });
@@ -73,6 +89,7 @@ public class LootDrops implements Listener {
 
     public static void spawnDrop() {
         Location loc = randomLocationInZone();
+        loc.getChunk().setForceLoaded(true);
         Bukkit.getOnlinePlayers().forEach(o -> {
             dsp.send(o, "drop.spawned");
         });
@@ -103,6 +120,7 @@ public class LootDrops implements Listener {
     }
 
     public static void unsendBeacon(Location loc) {
+        loc.getChunk().setForceLoaded(false);
         Location change = new Location(loc.getWorld(), loc.getBlockX(), 3, loc.getBlockZ());
         sendBlockChange(change, Bukkit.createBlockData(Material.BLACK_STAINED_GLASS));
         Bukkit.getScheduler().runTaskLater(Data.instance, new Runnable() {
@@ -129,26 +147,24 @@ public class LootDrops implements Listener {
 
     public static void sendParticlesAround(Location loc) {
         Random random = new Random();
-        loc.subtract(1, 1, 1);
+        Location change = loc.clone();
+        change.subtract(1, 1, 1);
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
                     if (random.nextInt(3) == 0) {
-                        loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 1);
+                        change.getWorld().spawnParticle(Particle.SMOKE_LARGE, change, 1);
                     }
-                    loc.add(0, 0, 1);
+                    change.add(0, 0, 1);
                 }
-                loc.add(0, 1, -3);
+                change.add(0, 1, -3);
             }
-            loc.add(1, -3, 0);
+            change.add(1, -3, 0);
         }
     }
 
     public static void sendBlockChange(Location loc, BlockData data) {
         //System.out.println(loc + ", " + data.getMaterial().toString());
-        if (!loc.getChunk().isLoaded()) {
-            loc.getChunk().load();
-        }
         Bukkit.getOnlinePlayers().forEach(p -> p.sendBlockChange(loc, data));
     }
 
@@ -158,13 +174,14 @@ public class LootDrops implements Listener {
 
     public static Location randomLocationInZone() {
         Random random = new Random();
-        int radius = random.nextInt((int) BorderManager.border.getCurrentRadius());
-        System.out.println(radius);
+        int distance = random.nextInt((int) Data.borderManager.getBorder().getCurrentRadius());
+        System.out.println("Radius: " + (int) Data.borderManager.getBorder().getCurrentRadius());
+        System.out.println("Distance: " + distance);
         int angle = random.nextInt(360);
         System.out.println(angle);
-        int x = (int) (Math.sin(angle) * radius);
-        int z = (int) (Math.cos(angle) * radius);
-        Location loc = new Location(Bukkit.getWorld("world"), x, Bukkit.getWorld("world").getHighestBlockYAt(x, z) + dropHeight, z);
+        int x = (int) (Math.sin(angle) * distance);
+        int z = (int) (Math.cos(angle) * distance);
+        Location loc = new Location(Bukkit.getWorld("map"), x, Bukkit.getWorld("map").getHighestBlockYAt(x, z) + dropHeight, z);
         if (!drops.containsKey(loc)) {
             return loc;
         } else {
@@ -184,6 +201,7 @@ public class LootDrops implements Listener {
             }
             Item item = Item.getDropItems().get(random.nextInt(Item.getDropItems().size()));
             ItemStack itemStack = item.getItem();
+
             if (item.getDropMinAmount() != item.getDropMaxAmount()) {
                 itemStack.setAmount(random.nextInt(item.getDropMaxAmount() - item.getDropMinAmount()) + item.getDropMinAmount());
             } else {
@@ -193,5 +211,6 @@ public class LootDrops implements Listener {
         }
         return inv;
     }
+
 
 }

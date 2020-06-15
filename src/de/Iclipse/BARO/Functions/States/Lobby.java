@@ -9,7 +9,6 @@ import de.Iclipse.IMAPI.Util.menu.PopupMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Switch;
@@ -27,8 +26,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.Random;
 
 import static de.Iclipse.BARO.Data.*;
 import static de.Iclipse.BARO.Functions.PlayerManagement.User.getUser;
@@ -54,11 +51,12 @@ public class Lobby implements Listener {
                 setLobbyInventory(p);
                 new User(p);
             }
-            if (Bukkit.getWorld("world") != null) {
+            if (Bukkit.getWorld("map") != null) {
                 p.teleport(mapLobbySpawn);
             } else {
                 p.teleport(defaultLobbySpawn);
             }
+            /*
             switch (new Random().nextInt(2)) {
                 case 0:
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_WAIT, 0.7f, 1.3f);
@@ -67,7 +65,8 @@ public class Lobby implements Listener {
                     p.playSound(p.getLocation(), Sound.MUSIC_DISC_FAR, 0.7f, 1.3f);
                     break;
             }
-
+             */
+            stats.showArmorStands(p);
         }
     }
 
@@ -243,12 +242,11 @@ public class Lobby implements Listener {
     public void PlayerMoveEvent(PlayerMoveEvent e) {
         if (state != GameState.Running) {
             Player p = e.getPlayer();
-            if (p.getWorld().getName().equals("world")) {
+            if (p.getWorld().getName().equals("map")) {
                 if (noWater) {
                     if (e.getTo().distance(mapLobbyMiddle) > noWaterMinDistance) {
                         if (e.getTo().getBlock().getType().equals(Material.WATER) || e.getTo().getBlock().getType().equals(Material.KELP_PLANT)) {
                             p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).normalize().setY(1.6));
-                            p.setVelocity(mapLobbyMiddle.toVector().subtract(p.getLocation().toVector()).setY(2));
                         }
                     }
                 }
@@ -258,7 +256,7 @@ public class Lobby implements Listener {
             } else {
                 Location loc = e.getTo().clone();
                 loc.setY(8.0);
-                loc.getBlock().setType(Material.IRON_BLOCK);
+                loc.getBlock().setType(Material.BARRIER);
             }
         }
     }

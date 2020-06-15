@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import org.bukkit.Bukkit;
@@ -25,7 +24,7 @@ public class Timer {
         Bukkit.getOnlinePlayers().forEach(entry -> {
             if (User.getUser(entry) != null) {
                 User u = User.getUser(entry);
-                if (!Data.spawningPlayers.contains(entry) && !BorderManager.outOfBorder.contains(entry)) {
+                if (!Data.spawningPlayers.contains(entry) && !Data.borderManager.getOutOfBorder().contains(entry)) {
                     boolean contains = false;
                     for (Map.Entry<ArrayList<User>, Integer> e : Data.reviving.entrySet()) {
                         ArrayList<User> list = e.getKey();

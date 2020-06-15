@@ -14,16 +14,9 @@ public class Lostness implements Listener {
             Bukkit.getScheduler().runTask(Data.instance, () -> {
                 Data.users.forEach(u -> {
                     if (u.isAlive()) {
-                        u.getPlayer().setHealthScale(20.0); //TODO Hungerbalken usw.
                         u.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 1));
                     }
                 });
-            });
-        } else if (e.getBefore() == EventState.Lostness) {
-            Data.users.forEach(u -> {
-                if (u.isAlive()) {
-                    u.getPlayer().setHealthScale(u.getPlayer().getHealth());
-                }
             });
         }
     }

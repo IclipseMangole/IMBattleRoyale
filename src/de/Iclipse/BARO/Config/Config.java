@@ -11,8 +11,8 @@ import java.io.IOException;
 import static de.Iclipse.BARO.Data.*;
 
 public class Config {
-    File configFile;
-    FileConfiguration fileConfiguration;
+    private File configFile;
+    private FileConfiguration fileConfiguration;
 
     public Config() {
         configFile = new File("plugins/" + instance.getDescription().getName(), "config.yml");
@@ -43,6 +43,7 @@ public class Config {
         defaultCountdown = fileConfiguration.getInt("defaultCountdown");
         skipCountdown = fileConfiguration.getInt("skipCountdown");
         teamsize = fileConfiguration.getInt("teamsize");
+        minplayers = teamsize + 1;
     }
 
     public void correctLocations() {

@@ -1,7 +1,6 @@
 package de.Iclipse.BARO.Functions;
 
 import de.Iclipse.BARO.Data;
-import de.Iclipse.BARO.Functions.Border.BorderManager;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
 import org.bukkit.Location;
@@ -28,7 +27,7 @@ public class PlayerSpawns implements Listener {
     public static void teleport() {
         //Middle X: 0 Z: 0 Radius: 450
         if (spawningPlayers.size() > 0) {
-            if (Data.timer <= 80) {
+            if (Data.timer < 80) {
                 if (Data.timer % 10 == 0) {
                     Data.spawningPlayers.forEach(entry -> {
                         teleportRandom(entry);
@@ -41,12 +40,12 @@ public class PlayerSpawns implements Listener {
                 }
             } else if (timer == 80) {
                 spawningPlayers.forEach(p -> {
-                    flyingPlayers.add(p);
                     p.getInventory().setChestplate(getElytra(p));
                     p.setGliding(true);
                     p.setGravity(true);
                     p.setAllowFlight(false);
                     dsp.send(p, "teleport.left");
+                    flyingPlayers.add(p);
                 });
                 spawningPlayers.clear();
             }
@@ -56,7 +55,7 @@ public class PlayerSpawns implements Listener {
     public static void teleportRandom(Player p) {
         //Middle X: 0 Z: 0 Radius: 450
         Random random = new Random();
-        int radius = (int) Math.round(Math.sqrt(Math.pow(BorderManager.border.getCurrentRadius(), 2) - Math.pow(175, 2)));
+        int radius = (int) Math.round(Math.sqrt(Math.pow(Data.borderManager.getBorder().getCurrentRadius(), 2) - Math.pow(175, 2)));
         int r = (int) Math.round(radius * Math.pow((double) random.nextInt(100) / 100.0, 2));
         int angle = random.nextInt(360);
         int x = (int) (Math.sin(angle) * r);
@@ -96,7 +95,7 @@ public class PlayerSpawns implements Listener {
                 e.setTo(new Location(p.getWorld(), e.getFrom().getX(), e.getFrom().getY(), e.getFrom().getX(), e.getTo().getYaw(), e.getTo().getPitch()));
             }
             if (flyingPlayers.contains(p)) {
-                if (p.getLocation().getBlockY() < fallHeight) {
+                if (p.getLocation().getBlockY() < fallHeight || (p.getLocation().getBlockY() - p.getWorld().getHighestBlockYAt(p.getLocation())) < aboveGround) {
                     fallingPlayers.add(p);
                     flyingPlayers.remove(p);
                     p.getInventory().setChestplate(new ItemStack(Material.AIR));

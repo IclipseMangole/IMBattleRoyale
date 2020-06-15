@@ -42,7 +42,7 @@ public class FishMutation implements Listener {
                         } else {
                             System.out.println("Not Water");
                             System.out.println("Remaining after: " + event.getAmount() + " Remaining before: " + ((Player) event.getEntity()).getRemainingAir());
-                            if (event.getAmount() >= ((Player) event.getEntity()).getRemainingAir()) {
+                            if (event.getAmount() > ((Player) event.getEntity()).getRemainingAir()) {
                                 event.setCancelled(true);
                             }
                         }
@@ -59,7 +59,7 @@ public class FishMutation implements Listener {
                     Player player = user.getPlayer();
                     Location playerhead = player.getLocation();
                     playerhead.setY(playerhead.getY() + 1);
-                    if (!playerhead.getBlock().getType().equals(Material.WATER)) {
+                    if (!playerhead.getBlock().getType().equals(Material.WATER) && !playerhead.getBlock().getType().equals(Material.KELP_PLANT)) {
                         if (player.getRemainingAir() > 0) {
                             player.setRemainingAir(player.getRemainingAir() - 1);
                         }
