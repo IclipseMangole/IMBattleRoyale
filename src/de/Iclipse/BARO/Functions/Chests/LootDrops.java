@@ -41,7 +41,6 @@ public class LootDrops implements Listener {
                 loc.getBlock().setType(Material.AIR);
                 loc.subtract(0, 1, 0);
                 loc.getBlock().setType(Material.CHEST);
-                new HashMap<>().remove()
 
             }
         });

@@ -4,10 +4,10 @@ import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.IMAPI.Util.Actionbar;
-import net.minecraft.server.v1_15_R1.PacketPlayOutWorldBorder;
+import net.minecraft.server.v1_16_R1.PacketPlayOutWorldBorder;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -194,7 +194,7 @@ public class BorderManager implements Listener {
 
     public void sendBorderEffect(Player p) {
         p.playSound(p.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1, 1);
-        net.minecraft.server.v1_15_R1.WorldBorder w = new net.minecraft.server.v1_15_R1.WorldBorder();
+        net.minecraft.server.v1_16_R1.WorldBorder w = new net.minecraft.server.v1_16_R1.WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);
         w.setWarningDistance(30_000_005);
@@ -203,7 +203,7 @@ public class BorderManager implements Listener {
     }
 
     public void removeBorderEffect(Player p) {
-        net.minecraft.server.v1_15_R1.WorldBorder w = new net.minecraft.server.v1_15_R1.WorldBorder();
+        net.minecraft.server.v1_16_R1.WorldBorder w = new net.minecraft.server.v1_16_R1.WorldBorder();
         w.world = ((CraftWorld) p.getWorld()).getHandle();
         w.setSize(30_000_000);
         w.setWarningDistance(1);

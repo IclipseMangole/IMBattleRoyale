@@ -12,10 +12,10 @@ import de.Iclipse.IMAPI.Functions.Vanish;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
-import net.minecraft.server.v1_15_R1.Entity;
-import net.minecraft.server.v1_15_R1.PacketPlayOutCamera;
+import net.minecraft.server.v1_16_R1.Entity;
+import net.minecraft.server.v1_16_R1.PacketPlayOutCamera;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.event.Listener;
 
 import java.time.Instant;
