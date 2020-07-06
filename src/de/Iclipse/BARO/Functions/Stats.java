@@ -41,7 +41,9 @@ public class Stats {
         boolean page1 = count % 20 < 10;
 
         showStats(player, all, page1);
-
+        armorStands[10].setCustomName(new ChatComponentText(getStringCounter()));
+        PacketPlayOutEntityMetadata packetPlayOutEntityMetadata = new PacketPlayOutEntityMetadata(armorStands[10].getId(), armorStands[10].getDataWatcher(), true);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packetPlayOutEntityMetadata);
     }
 
     public void update() {
@@ -117,7 +119,6 @@ public class Stats {
     private String getStringCounter() {
         int pageCount = count % 20;
         String stringCounter = dsp.get("stats.counter", Bukkit.getConsoleSender());
-        ;
         if (pageCount < 10) {
             stringCounter = stringCounter.substring(0, pageCount) + "§7" + stringCounter.substring(pageCount);
             stringCounter = "§e" + stringCounter;
