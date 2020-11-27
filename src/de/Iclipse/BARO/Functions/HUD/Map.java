@@ -11,15 +11,15 @@ import de.Iclipse.BARO.Functions.Chests.LootDrops;
 import de.Iclipse.BARO.Functions.Events.EventState;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.States.GameState;
-import net.minecraft.server.v1_16_R1.ChatComponentText;
-import net.minecraft.server.v1_16_R1.MapIcon;
-import net.minecraft.server.v1_16_R1.PacketPlayOutMap;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.MapIcon;
+import net.minecraft.server.v1_16_R3.PacketPlayOutMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R1.map.CraftMapView;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.map.CraftMapView;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -148,7 +148,6 @@ public class Map implements Listener {
                 });
             });
         }
-
 
 
         PacketPlayOutMap packet;

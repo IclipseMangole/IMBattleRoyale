@@ -14,7 +14,7 @@ import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.PlayerManagement.UserStats;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.BARO.Functions.States.Lobby;
-import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Database.ServerManager;
 import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
@@ -29,11 +29,11 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import static de.Iclipse.BARO.Data.*;
+import static de.Iclipse.BARO.Data.langDE;
+import static de.Iclipse.BARO.Data.langEN;
 import static de.Iclipse.BARO.Database.BAROGames.createBAROGamesTable;
 import static de.Iclipse.BARO.Database.BAROStats.createBAROStatsTable;
 import static de.Iclipse.BARO.Functions.PlayerManagement.TeamManager.createTeams;
-import static de.Iclipse.IMAPI.Data.langDE;
-import static de.Iclipse.IMAPI.Data.langEN;
 import static de.Iclipse.IMAPI.Data.*;
 import static de.Iclipse.IMAPI.IMAPI.getServerName;
 
@@ -76,8 +76,8 @@ public class BARO extends JavaPlugin {
         Item.loadItems();
         Chests.loadChests();
         Events.registerEvents();
-        Server.setMaxPlayers(getServerName(), 16);
-        Server.setState(getServerName(), State.Lobby);
+        ServerManager.setMaxPlayers(getServerName(), 16);
+        ServerManager.setState(getServerName(), State.Lobby);
     }
 
     @Override

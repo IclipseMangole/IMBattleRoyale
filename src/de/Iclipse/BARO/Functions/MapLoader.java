@@ -3,7 +3,7 @@ package de.Iclipse.BARO.Functions;
 import de.Iclipse.BARO.Config.MapConfig;
 import de.Iclipse.BARO.Data;
 import de.Iclipse.BARO.Functions.HUD.Map;
-import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Database.ServerManager;
 import de.Iclipse.IMAPI.IMAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -70,7 +70,7 @@ public class MapLoader {
                 stats = new Stats(Data.mapLobbyStats);
                 Bukkit.getWorld("map").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
                 Bukkit.getWorld("map").setDifficulty(Difficulty.HARD);
-                Server.setMap(IMAPI.getServerName(), name);
+                ServerManager.setMap(IMAPI.getServerName(), name);
                 Data.map = new Map(new File(Bukkit.getWorldContainer() + "/map"));
 
                 Bukkit.getScheduler().runTaskLater(Data.instance, () -> {

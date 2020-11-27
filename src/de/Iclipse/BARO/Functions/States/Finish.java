@@ -6,16 +6,16 @@ import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.HUD.Scoreboard;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
-import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Database.ServerManager;
 import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.Functions.Vanish;
 import de.Iclipse.IMAPI.IMAPI;
 import de.Iclipse.IMAPI.Util.Fireworkgenerator;
 import de.Iclipse.IMAPI.Util.UUIDFetcher;
-import net.minecraft.server.v1_16_R1.Entity;
-import net.minecraft.server.v1_16_R1.PacketPlayOutCamera;
+import net.minecraft.server.v1_16_R3.Entity;
+import net.minecraft.server.v1_16_R3.PacketPlayOutCamera;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.event.Listener;
 
 import java.time.Instant;
@@ -35,7 +35,7 @@ public class Finish implements Listener {
     }
 
     public static void finish() {
-        Server.setState(getServerName(), State.Finished);
+        ServerManager.setState(getServerName(), State.Finished);
         Data.state = GameState.Finished;
         de.Iclipse.IMAPI.Data.restart = 30;
         Bukkit.getOnlinePlayers().forEach(entry -> {
@@ -63,7 +63,7 @@ public class Finish implements Listener {
             BossBar.clearBars(entry);
             Scoreboard.boards.get(entry).destroy();
         });
-        Server.setPlayers(IMAPI.getServerName(), Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size());
+        ServerManager.setPlayers(IMAPI.getServerName(), Bukkit.getOnlinePlayers().size() - Vanish.getVanishsOnServer().size());
         Bukkit.getWorld("map").setStorm(false);
         Bukkit.getWorld("map").setTime(12800);
         save();

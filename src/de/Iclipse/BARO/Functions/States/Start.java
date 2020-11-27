@@ -5,7 +5,7 @@ import de.Iclipse.BARO.Functions.HUD.BossBar;
 import de.Iclipse.BARO.Functions.PlayerManagement.TeamManager;
 import de.Iclipse.BARO.Functions.PlayerManagement.User;
 import de.Iclipse.BARO.Functions.Spectator;
-import de.Iclipse.IMAPI.Database.Server;
+import de.Iclipse.IMAPI.Database.ServerManager;
 import de.Iclipse.IMAPI.Functions.Servers.State;
 import de.Iclipse.IMAPI.IMAPI;
 import org.bukkit.Bukkit;
@@ -21,7 +21,7 @@ import static de.Iclipse.IMAPI.IMAPI.getServerName;
 
 public class Start {
     public static void startGame() {
-        Server.setState(getServerName(), State.Running);
+        ServerManager.setState(getServerName(), State.Running);
         Data.users.forEach(user -> {
             TeamManager.autoFill();
             TeamManager.autoDelete();
@@ -41,7 +41,7 @@ public class Start {
         Data.state = GameState.Running;
         Data.start = Date.from(Instant.now());
         de.Iclipse.IMAPI.Data.updatePlayers = false;
-        Server.setPlayers(IMAPI.getServerName(), Data.users.size());
+        ServerManager.setPlayers(IMAPI.getServerName(), Data.users.size());
     }
 
 }

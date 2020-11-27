@@ -14,11 +14,13 @@ import de.Iclipse.BARO.Functions.Scheduler;
 import de.Iclipse.BARO.Functions.States.GameState;
 import de.Iclipse.BARO.Functions.Stats;
 import de.Iclipse.IMAPI.Util.Dispatching.Dispatcher;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class Data {
     public static Stats stats;
     public static EventState estate;
     public static EventState nextEvent;
+    public static Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     public static BossBar borderBossBarEN;
     public static BossBar borderBossBarDE;
     public static BossBar eventBossBarEN;

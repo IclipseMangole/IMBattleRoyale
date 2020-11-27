@@ -11,9 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.Iclipse.BARO.Data.dsp;
-import static de.Iclipse.BARO.Data.teamsize;
-import static de.Iclipse.IMAPI.Functions.Tablist.scoreboard;
+import static de.Iclipse.BARO.Data.*;
 
 public class Team {
 
